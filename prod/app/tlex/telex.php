@@ -99,10 +99,9 @@ static function save($p){$txt=val($p,$p['ids']); $_POST['ntf']='';
 $lbl=val($p,'lbl'); if($lbl && !is_numeric($lbl))
 	$lbl=Sql::read('id','labels','v','where ref="'.$lbl.'"');
 //if($conn=val($p,'conn'))$txt='['.$txt.':'.$conn.']';//obsolete
-if(ses('uid'))$ok=1;
-if($oAuth=val($p,'oAuth'))$ok=Sql::read('puid','profile','v','where oAuth="'.$oAuth.'"');
-if(!isset($ok))return 'error'; else sez('uid',$ok);
-if($ok && $txt){$txt=self::build_conn($txt,1);
+if($oAuth=val($p,'oAuth')){$ok=Sql::read('puid','profile','v','where oAuth="'.$oAuth.'"');
+	if($ok)sez('uid',$ok); else return 'error';}
+if($txt){$txt=self::build_conn($txt,1);
 	$id=Sql::insert(self::$db,array(ses('uid'),$txt,$lbl,val($p,'ibs'),''));
 	if(isset($_POST['ntf']))self::saventf($id,1,'ntf');
 	if(isset($_POST['ntf-r']))self::saventf($id,2,'ntf-r');}
