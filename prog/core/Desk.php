@@ -38,14 +38,14 @@ class Desk{
 					if($v[1]=='' && class_exists($v[2])){
 						$bt=span(pic($v[3],$sz).span($v[4]),$css);
 						$bt=aj('popup,,,1|'.$v[2].'|headers=1',$bt);
-						//if($auth)$bt.=span(ajax($k,'desktop,modifbt','id='.$k,'',$v[4]),'',$k);
+						//if($auth)$bt.=span(aj($k.'|desktop,modifbt|id='.$k,$v[4]),'',$k);
 						//else $bt.=span($v[4]);
 						$ret[]=$bt;}
 					elseif($v[1]=='j')$ret[]=Ajax::j($v[2],$bt,$css);
-					elseif($v[1]=='pop')$ret[]=Ajax::j('popup,,,1|'.$v[2].',headers=1',$bt,$css);
-					elseif($v[1]=='pag')$ret[]=Ajax::j('pagup,,,1|'.$v[2].',headers=1',$bt,$css);
-					elseif($v[1]=='img')$ret[]=imgup('img/telex/full/'.$v[2],$bt,$css);
-					//elseif($v[1]=='img')$ret[]=telex::playthumb($v[2],'micro');
+					elseif($v[1]=='pop')$ret[]=popup($v[2].',headers=1',$bt,$css);
+					elseif($v[1]=='pag')$ret[]=pagup($v[2].',headers=1',$bt,$css);
+					//elseif($v[1]=='img')$ret[]=imgup('img/full/'.$v[2],$bt,$css);
+					elseif($v[1]=='img')$ret[]=telex::playthumb($v[2],'micro','',$css);
 					elseif($v[1]=='in')$ret[]=br().App::open($v[2],$v[3]);
 					elseif($v[1]=='lk')$ret[]=href('/app'.$v[2],$bt,$css,'',1);
 				}
@@ -54,7 +54,7 @@ class Desk{
 					//can use popup instead of div
 					$bt=span(pic('folder',$sz).span($next_level),$css);
 					$bt=aj('div,'.$rid.',2|Desk,call|dir='.$dir.'/'.$next_level.',app='.$app.',mth='.$mth.',rid='.$rid.',title='.$dir.'/'.$next_level,$bt);
-					//if($auth)$bt.=span(ajax($k,'desktop,modifdir',
+					//if($auth)$bt.=span(aj($k.'|desktop,modifdir',
 					//'dir='.$dir.'/'.$next_level,'',$next_level),'',$k);
 					//else $bt.=span($next_level);
 					$ret[$next_level]=$bt;
@@ -68,9 +68,9 @@ class Desk{
 			$back.=aj('div,'.$rid.',2|Desk,call|dir='.$dr.',app='.$app.',mth='.$mth.',rid='.$rid.',title='.$dr.'/',$v,'btn');}
 		//edit
 		$prm='dir='.$dir.',app='.$app.',mth='.$mth.',rid='.$rid.'';
-		$edit=ajax('div,'.$rid.',y','Desk,call',$prm.',display=grid','',pic('th-large'),'');
-		$edit.=ajax('div,'.$rid.',y','Desk,call',$prm.',display=list','',pic('list'),'');
-		if(ses('uid'))$edit.=ajax('popup','desktop,manage','dir='.$dir,'',langpi('edit'),'');
+		$edit=aj('div,'.$rid.',y|Desk,call|'.$prm.',display=grid',pic('th-large'),'');
+		$edit.=aj('div,'.$rid.',y|Desk,call|'.$prm.',display=list',pic('list'),'');
+		if(ses('uid'))$edit.=aj('popup|desktop,manage|dir='.$dir,langpi('edit'),'');
 		//$edit.=href('/app/'.$app.'/dir:'.$dir,pic('link'),'btn');
 		$edit=span($edit,'right');
 		if($ret)return div($edit.$back).implode('',$ret);

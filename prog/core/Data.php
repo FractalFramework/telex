@@ -24,7 +24,7 @@ class Data{
 	}
 	
 	static function init($root){
-		$dir=strExtract($root,'/',1,0);
+		$dir=before($root,'/');
 		$file=self::file($root);
 		if(!is_dir('db/'.$dir))
 			self::makeDirs($file);

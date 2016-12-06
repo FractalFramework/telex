@@ -32,8 +32,8 @@ class midi{
 		$p['p1']=val($p,'param',val($p,'p1','Toccata.mid'));//unamed param before
 		$ret=hlpbt('midi');
 		$ret.=input('fil','value1',$p['p1'],'1');
-		$ret.=ajax('popup','midi,build','','fil',lang('send'),'btn');
-		return div($ret,'deco',$p['rid']);
+		$ret.=aj('popup|midi,build||fil',lang('send'),'btn');
+		return div($ret,'',$p['rid']);
 	}
 }
 ?>

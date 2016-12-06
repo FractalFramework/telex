@@ -45,14 +45,14 @@ class forms{
 		return Sql::read('id','forms_vals','v','where fvuid='.ses('uid').' and fid='.$fid);}
 		
 	static function read($p){$fid=val($p,'fid'); $rid=val($p,'rid');
-		if(self::already($fid))return help('form_filled','valid');
 		if($fid)$r=Sql::read('id,ftit,ftxt,fcom,fcl,dateup','forms_lead','ra','where id='.$fid);
 		if($r)$rb=Form::buildfromstring($r['fcom']);
-		$ret=div($r['ftit'],'btit').div($r['ftxt'],'ftxt');
-		$ret.=self::play($rb);
+		$ret=div($r['ftit'],'tit').div($r['ftxt'],'txt');
+		if(self::already($fid))$ret.=help('form_filled','valid');
+		else{$ret.=self::play($rb);
 		$n=substr_count($r['fcom'],','); for($i=1;$i<=$n+1;$i++)$vr[]='q'.$i; $vars=implode(',',$vr);
-		$ret.=div(aj('fcbk|forms,sav|fid='.$fid.',rid='.$rid.'|'.$vars,langp('send'),'btsav')).br();//send
-		return div($ret,'','fcbk');}
+		$ret.=div(aj('fcbk|forms,sav|fid='.$fid.',rid='.$rid.'|'.$vars,langp('send'),'btsav'));}//send
+		return div($ret,'paneb','fcbk');}
 	
 	static function sav_lead($p){$fid=val($p,'fid');
 		$r=vals($p,['ftit','ftxt','fcom']);
@@ -62,7 +62,7 @@ class forms{
 		return self::edit_lead($p);}
 	
 	static function edit_form($p){$fcom=str_replace("\n",'',val($p,'fcom')); $fid=val($p,'id');
-		if(!$fcom)$fcom='input:name,textarea:message,select:choice:a;b;c,checkbox:options:a;b,radio:choose one:a;b'; $fcom=str_replace(',',",\n",$fcom);
+		if(!$fcom)$fcom='input:name,textarea:message,select:choice:a;b;c,checkbox:options:a;b,radio:choose one:a;b,bar:evaluation'; $fcom=str_replace(',',",\n",$fcom);
 		$ret=textarea('fcom',$fcom,40,4,lang('fields'),'console').br();
 		$ret.=div(aj('fscrpt|forms,edit_form|id='.$fid.'|fcom',langp('preview'),'btn')).br();//preview
 		$r=Form::buildfromstring($fcom);
@@ -77,7 +77,7 @@ class forms{
 		//$ret.=tag('h4','',lang('edit form'));
 		$ret.=input('ftit',val($r,'ftit'),28,lang('title')).br();
 		$ret.=textarea('ftxt',val($r,'ftxt'),28,4,lang('presentation')).br();
-		$ret.=aj($rid.'|forms,sav_lead|fid='.$fid.',rid='.$rid.'|ftit,ftxt,fcom',lang('save'),'btsav');//save
+		$ret.=aj($rid.'|forms,sav_lead|fid='.$fid.',rid='.$rid.',xid='.$xid.'|ftit,ftxt,fcom',lang('save'),'btsav');//save
 		if($fid)if(self::already($fid))return $ret.br().br().help('form is not editable','alert');
 		$ret.=tag('h4','',lang('edit fields').' '.hlpbt('forms_com'));
 		$ret.=div(self::edit_form($r),'','fscrpt');
@@ -88,11 +88,11 @@ class forms{
 		$r=Sql::read('id,ftit,ftxt,fcom,fcl,dateup','forms_lead','rr','where fuid='.ses('uid'));
 		if($r)foreach($r as $k=>$v){
 			$tit=aj('popup|forms,read|fid='.$v['id'],$v['ftit']);
-			$bt=aj($rid.'|forms,edit_lead|fid='.$v['id'].',rid='.$rid.',xid='.$xid,pico('edit'));//edit
-			$answ=aj('popup|forms,answers|fid='.$v['id'],langp('answers'),'btn').' ';
+			$edit=aj($rid.'|forms,edit_lead|fid='.$v['id'].',rid='.$rid.',xid='.$xid,pico('edit'),'btn');//edit
+			$answ=aj('popup|forms,answers|fid='.$v['id'],langp('answers'),'btn');
 			if($xid)$in=insertbt(lang('use'),$v['id'].':forms',$xid);
 			//if($xid)$in=telex::publishbt($v['id'],'forms'); else $v['insert']='';
-			$ret.=div($tit.$bt.$answ.$in,'menu');}
+			$ret.=div($tit.br().$edit.$answ.$in,'menu');}
 		return $ret;}
 	
 	//com
@@ -100,12 +100,13 @@ class forms{
 		return Sql::read('ftit','forms_lead','v','where id='.$id);}
 	
 	static function call($p){$p['fid']=val($p,'id');
+		//$ret=div(langp('forms'),'stit');$ret.
 		return self::read($p);}
 	
 	static function com($p){$p['xid']=val($p,'rid');
 		$p['rid']=randid('fr');
 		$ret=self::menu($p);
-		return div($ret,'deco',$p['rid']);}
+		return div($ret,'',$p['rid']);}
 	
 	//interface
 	static function content($p){
@@ -114,6 +115,6 @@ class forms{
 		$p['fid']=val($p,'param',val($p,'fid'));
 		$ret=hlpbt('forms');
 		$ret.=self::menu($p);
-		return div($ret,'deco',$p['rid']);}
+		return div($ret,'',$p['rid']);}
 }
 ?>

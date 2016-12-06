@@ -144,6 +144,6 @@ user-select:none;
 	static function content($p){
 		$p['rid']=randid('md');
 		return self::build($p);
-		return div($ret,'deco',$p['rid']);}
+		return div($ret,'',$p['rid']);}
 }
 ?>

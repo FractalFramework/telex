@@ -88,8 +88,8 @@ class update{
 	#interface
 	static function content($p){
 		$f=val($p,'f'); $ret='';
-		if(auth(1))$ret=ajax('cbupd','update,loaddl','','',lang('update'),'btn').' ';
-		if(auth(6))$ret.=ajax('cbupd','update,creategz','','',lang('publish'),'btn');
+		if(auth(1))$ret=aj('cbupd|update,loaddl',lang('update'),'btn').' ';
+		if(auth(6))$ret.=aj('cbupd|update,creategz',lang('publish'),'btn');
 		return $ret.div('','','cbupd');}
 }
 ?>

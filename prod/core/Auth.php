@@ -23,7 +23,7 @@ class Auth {
 		$mail=Sql::read('mail',self::$db,'v','where name="'.$user.'" and mail="'.$mail.'"');
 		if(!$mail)return 'unknown_user';
 		$id=Sql::read('id',self::$db,'v','where name="'.$user.'"');
-		$rid=keygen::build(''); ses('recoveryId',$id); ses('recoveryRid',$rid); ses('recoveryUsr',$user);
+		$rid=randid('rcvd'); ses('recoveryId',$id); ses('recoveryRid',$rid); ses('recoveryUsr',$user);
 		$title=lang('reset_pswd');
 		$msg='http://'.$_SERVER['HTTP_HOST'].'/app/login/recovery:'.$rid;
 		Mail::send($mail,$title,$msg,self::$mailAdmin,'text');
@@ -37,13 +37,13 @@ class Auth {
 		if($uid)self::activateSession($uid,$user,$auth);
 		self::activateCookie($uid,$user);
 		$title=lang('register');
-		$msg=lang('register_mail');
-		Mail::send($mail,$title,$msg,self::$mailAdmin,'txt');
-		if($uid>0)return 'loged';
+		$msg=lang('register_success');
+		if($uid>0){Mail::send($mail,$title,$msg,self::$mailAdmin,'text');
+			return 'loged';}
 		else return 'register_error';}
 
 	static function activateSession($uid,$user,$auth){
-		ses('uid',$uid); ses('user',$user); ses('auth',$auth);}
+		sez('uid',$uid); sez('user',$user); sez('auth',$auth);}
 
 	static function activateCookie($uid,$user){
 		cookie('uid',$uid); cookie('user',$user);}
@@ -69,8 +69,8 @@ class Auth {
 	static function login($user='',$pass=''){
 		//self::install();
 		$uid=ses('uid'); if($uid)return 'loged';
-		$user=normalizeString($user);
-		$pass=normalizeString($pass);
+		$user=normalize($user);
+		$pass=normalize($pass);
 		//$uid=cookie('uid'); if($uid)$state='cookie_found';//login with cookies
 		if(self::$noregister)$state='loged_private'; else $state='loged_out';
 		if($user){
@@ -93,13 +93,11 @@ class Auth {
 	static function autolog(){
 		$r=self::getUserFromCookie();
 		if(isset($r['name']))self::activateSession($r['id'],$r['name'],$r['auth']);
-		//else $r=self::getUserFromIp();
-		//if(isset($r['name']))self::activateSession($r['id'],$r['name'],$r['auth']);
-		//ses('time',time());
-		}
+		else $r=self::getUserFromIp();
+		if(isset($r['name']))self::activateSession($r['id'],$r['name'],$r['auth']);}
 	
 	static function logbt($o=''){
-		if($o){$mode='menu'; login::$css='';} else{$mode='pagup'; login::$css='btn';}
+		if($o){$mode='menu'; login::$css='';} else{$mode='pagup'; login::$css='btn abbt';}
 		//if(!ses('time'))self::autolog();
 		$bt=ses('user')?ses('user'):lang('login');
 		return Ajax::j($mode.',,1|login|auth=2,o='.$o,pic('user').' '.$bt,login::$css);}//level2 default

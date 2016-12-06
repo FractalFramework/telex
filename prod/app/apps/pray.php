@@ -52,7 +52,7 @@ private static function week($prm){//idPray,idEv
 			if($currentTime<=$now){$c=$ok?' active':'';
 				$ico=$ok?pic('check'):pic('minus');
 				if($v!=$user)$bt=tag('span','class=minicon opac'.$c,$ico);
-				else $bt=Ajax::j('praycontent|pray,checkDay|idPray='.$prm['idPray'].',idEv='.$prm['idEv'].',user='.$v.',status='.$ok.',day='.$currentDate,$ico,'minicon'.$c);
+				else $bt=aj('praycontent|pray,checkDay|idPray='.$prm['idPray'].',idEv='.$prm['idEv'].',user='.$v.',status='.$ok.',day='.$currentDate,$ico,'minicon'.$c);
 			}
 			else $bt=' ';
 			$rb[$v][]=$bt;
@@ -84,7 +84,7 @@ static function eventSave($prm){
 }
 static function eventAdd($prm){
 	$ret=input('evDate',date('Y-m-d',time()),8);
-	$ret.=Ajax::j('div,praycontent,x|pray,eventSave|idPray='.$prm['idPray'].'|evDate','save','btn');
+	$ret.=aj('div,praycontent,x|pray,eventSave|idPray='.$prm['idPray'].'|evDate','save','btn');
 	return $ret;
 }
 
@@ -94,20 +94,20 @@ static function eventPane($prm){//idPray,idEv
 		$prm['idPray']=Sql::read('idPray','pray_event','v','where id='.$prm['idEv']);
 	$r=Sql::read('day,user','pray_event','ry','where id='.$prm['idEv']);
 	list($eventDate,$userEvent)=$r;
-	$back=Ajax::j('praycontent|pray,announce|idPray='.$prm['idPray'],'#'.$prm['idPray'],'btn');
-	$date=Ajax::j('praycontent|pray,eventPane|idPray='.$prm['idPray'].',idEv='.$prm['idEv'],$eventDate,'btn');
+	$back=aj('praycontent|pray,announce|idPray='.$prm['idPray'],'#'.$prm['idPray'],'btn');
+	$date=aj('praycontent|pray,eventPane|idPray='.$prm['idPray'].',idEv='.$prm['idEv'],$eventDate,'btn');
 	$ret=$back.' '.$date.' '.lang('created by').' '.$userEvent;
 	$bt=href('/app/pray/idPray='.$prm['idPray'].'/idEv='.$prm['idEv'],pic('link'));
 	//register
 	$user=ses('user');
 	if(ses('user')){
 		$uid=Sql::read('id','pray_group','v','where idEvent="'.$prm['idEv'].'" and user="'.$user.'"');
-		if(!$uid)$bt.=Ajax::j('praycontent|pray,eventParticipation|idPray='.$prm['idPray'].',idEv='.$prm['idEv'].',subscribe=ok,uid='.$uid,'participer','btn');
-		else $bt.=Ajax::j('praycontent|pray,eventParticipation|idPray='.$prm['idPray'].',idEv='.$prm['idEv'].',subscribe=ko,uid='.$uid,lang('unsubscribe'),'btn');
+		if(!$uid)$bt.=aj('praycontent|pray,eventParticipation|idPray='.$prm['idPray'].',idEv='.$prm['idEv'].',subscribe=ok,uid='.$uid,'participer','btn');
+		else $bt.=aj('praycontent|pray,eventParticipation|idPray='.$prm['idPray'].',idEv='.$prm['idEv'].',subscribe=ko,uid='.$uid,lang('unsubscribe'),'btn');
 	}
 	//admin
 	if($userEvent==ses('user'))
-		$bt.=Ajax::j('praycontent|pray,eventDel|idEv='.$prm['idEv'].',idPray='.$prm['idPray'],lang('remove'),'btn');
+		$bt.=aj('praycontent|pray,eventDel|idEv='.$prm['idEv'].',idPray='.$prm['idPray'],lang('remove'),'btn');
 	$ret.=span($bt,'right');
 	//calendar
 	$ret.=self::week($prm);
@@ -126,7 +126,7 @@ static function announceEdit($prm){
 	$r=array('id'=>'text','cols'=>60,'rows'=>4,'onkeyup'=>'strcount(\'text\',255)');
 	$ret=tag('textarea',$r,'').br();
 	$ret.=span('','small right','strcount');
-	$ret.=Ajax::j('praycontent,xx|pray,announceUpdate|idPray='.$prm['idPray'].'|text','save','btn');
+	$ret.=aj('praycontent,xx|pray,announceUpdate|idPray='.$prm['idPray'].'|text','save','btn');
 	return $ret;
 }
 static function announceDel($prm){
@@ -142,14 +142,14 @@ static function announceAdd(){
 	$r=array('id'=>'text','cols'=>60,'rows'=>4,'onkeyup'=>'strcount(\'text\',255)');
 	$ret=tag('textarea',$r,'').br();
 	$ret.=span('','small right','strcount');
-	$ret.=Ajax::j('praycontent,,x|pray,announceSave||text','save','btn');
+	$ret.=aj('praycontent,,x|pray,announceSave||text','save','btn');
 	return $ret;
 }
 
 private static function eventsList($id){$ret='';
 	$r=Sql::read('id,day','pray_event','','where idPray='.$id);
 	if($r)foreach($r as $v)
-		$ret.=Ajax::j('praycontent|pray,eventPane|idPray='.$id.',idEv='.$v[0],$v[1],'btn');
+		$ret.=aj('praycontent|pray,eventPane|idPray='.$id.',idEv='.$v[0],$v[1],'btn');
 	if($ret)return 'Sessions: '.$ret;
 }
 
@@ -160,15 +160,15 @@ static function announce($prm){//idPray
 	//bt
 	$bt=href('/app/pray/idPray='.$prm['idPray'],pic('link'));
 	if(ses('user')){
-		$bt.=Ajax::j('bubble,,1|pray,eventAdd|idPray='.$prm['idPray'],lang('add event'),'btn');}
+		$bt.=aj('bubble,,1|pray,eventAdd|idPray='.$prm['idPray'],lang('add event'),'btn');}
 	if($r['user']==ses('user')){
-		$bt.=Ajax::j('praycontent|pray,announceEdit|idPray='.$prm['idPray'],lang('modif'),'btn');
-		$bt.=Ajax::j('praycontent|pray,announceDel|idPray='.$prm['idPray'],lang('delete'),'btn');}
+		$bt.=aj('praycontent|pray,announceEdit|idPray='.$prm['idPray'],lang('modif'),'btn');
+		$bt.=aj('praycontent|pray,announceDel|idPray='.$prm['idPray'],lang('delete'),'btn');}
 	$bt=div($bt,'right');
 	$txt=div(nl2br($r['text']),'text');
 	//events
 	$events=self::eventsList($prm['idPray']);
-	$go=Ajax::j('praycontent|pray,announce|idPray='.$prm['idPray'],'#'.$prm['idPray'],'btn');
+	$go=aj('praycontent|pray,announce|idPray='.$prm['idPray'],'#'.$prm['idPray'],'btn');
 	return div($go.' '.lang('by').' '.$r['user'].$bt.br().$txt.$events,'pane').br();
 }
 
@@ -185,9 +185,9 @@ static function content($prm){$ret='';
 	//self::install();
 	//Lang::$app='pray';//context for new voc
 	$logbt=ses('user')?ses('user'):'login';
-	$ret.=Ajax::j('popup|login|auth=2',pic('user').' '.$logbt,'btn right');
-	$ret.=Ajax::j('praycontent|pray,announces',pic('list'),'btn').' ';
-	if(ses('uid'))$ret.=Ajax::j('praycontent|pray,announceAdd',pic('plus'),'btn');
+	$ret.=aj('popup|login|auth=2',pic('user').' '.$logbt,'btn right');
+	$ret.=aj('praycontent|pray,announces',pic('list'),'btn').' ';
+	if(ses('uid'))$ret.=aj('praycontent|pray,announceAdd',pic('plus'),'btn');
 	$ret.=hlpbt('pray');
 	$ret.=br().br();
 	//root

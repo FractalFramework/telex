@@ -83,7 +83,7 @@ class tabler{
 	static function content($p){
 		$bt=hlpbt('tabler_app').' ';
 		$pr=array('html','php','json','csv','connectors','sql');
-		$bt.=radio('mode',$pr,'html').' ';
+		$bt.=radio($pr,'mode','html',1).' ';
 		$bt.=aj('popup|tabler,build||txarea,mode',lang('convert'),'btn').br();
 		$bt.=tag('div',array('id'=>'txarea','contenteditable'=>'true'),'');
 		return $bt.div('','','tablr');

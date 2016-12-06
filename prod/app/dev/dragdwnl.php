@@ -119,7 +119,7 @@ html5Upload.initialize({
 		$p['p1']=val($p,'param',val($p,'p1'));
 		//$ret=hlpbt('drag');
 		$ret=input('inp1',$p['p1'],'10',1);
-		$ret.=ajax('popup','drag,build','msg=text','inp1',lang('send'),'btn');
-		return div($ret,'deco',$p['rid']);}
+		$ret.=aj('popup|drag,build|msg=text|inp1',lang('send'),'btn');
+		return div($ret,'',$p['rid']);}
 }
 ?>

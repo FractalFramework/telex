@@ -3,7 +3,7 @@
 class login{
 	static $private='0';
 	static $authlevel='1';
-	static $css='';
+	static $css='btsav';
 
 	static function headers(){
 		Head::add('csscode','#cbklg{display:inline;}');}
@@ -63,20 +63,21 @@ class login{
 		return Sql::read('id','login','v','where name="'.$p['user'].'"');}
 	
 	static function registerForm($p){$ret='';
-		$user=val($p,lang('user')); $sz='18';
+		$user=val($p,lang('user')); $sz='28';
 		//$cntx=val($p,'cntx');
 		$ret=tag('input',['id'=>'user','placeholder'=>$user?$user:lang('user',1),'size'=>$sz,'maxlength'=>20,'onkeyup'=>'verifchars(this); verifusr(this);'],'',1).span(lang('user used'),'alert hide','usrexs').br();
-		$ret.=password('pass',lang('password',1),$sz,1).aj('popup|keygen,build',pic('key')).br();
+		$ret.=password('pass',lang('password',1),$sz,1);
+		$ret.=aj('lgkg|keygen,build',pic('key')).span('','','lgkg').br();
 		$ret.=div(input('mail','',$sz,lang('mail',1)));
 		$ret.=hidden('auth',ses('authlevel'));
 		//$ret.=hidden('cntx',$cntx);
 		$btn=langp('register');
-		$ret.=ajax('cbklg','login,register','time='.time(),'user,pass,mail,auth',$btn,'btsav');
+		$ret.=aj('div,cbklg,reload|login,register|time='.time().'|user,pass,mail,auth',$btn,'btsav');
 		return $ret;}
 	
 	static function registerBtn($user=''){
 		$btn=langp('register');
-		return ajax('cbklg','login,registerForm','user='.$user,'',$btn,self::$css);}
+		return aj('cbklg|login,registerForm|user='.$user,$btn,self::$css);}
 	
 	//logout
 	static function disconnect(){
@@ -86,7 +87,7 @@ class login{
 	static function logoutBtn($user){
 		$ret=tag('span','class=small',$user).' ';
 		$btn=langp('logout');
-		return ajax('div,cbklg,reload','login,disconnect','','',$btn,self::$css);}
+		return aj('div,cbklg,reload|login,disconnect',$btn,self::$css);}
 	
 	static function loged($user){
 		return span(lang('logok').' '.$user.' (auth:'.ses('auth').')','valid');}
@@ -105,14 +106,14 @@ class login{
 		if($user)$ret=input('user',$user,$sz); else $ret=input('user','user',8,1);
 		$ret.=password('pass','*****',$sz,1);
 		$btn=langp('login');
-		//$ret.=ajax('div,cbklg','login,authentificate','time='.time(),'user,pass',$btn,self::$css);//,reload
+		//$ret.=aj('div,cbklg|login,authentificate|time='.time().'|user,pass',$btn,self::$css);//,reload
 		$ret.=aj('reload,cbklg,loged_ok|login,authentificate|time='.time().'|user,pass',$btn,self::$css);
 		return $ret;}
 	
 	static function loginBtn($user=''){
 		if(!$user)$user=cookie('user');
 		$btn=langp('login');
-		return ajax('cbklg','login,loginForm','user='.$user,'',$btn,self::$css);}
+		return aj('cbklg|login,loginForm|user='.$user,$btn,self::$css);}
 	
 	//alerts
 	static function reaction($state,$user=''){
@@ -146,7 +147,7 @@ class login{
 		$user=val($p,'user');
 		$pass=val($p,'pass');
 		$auth=val($p,'auth');
-		//if(val($p,'o'))self::$css='';
+		if(val($p,'o'))self::$css='';
 		ses('authlevel',$auth?$auth:self::$authlevel);
 		$state=Auth::login($user,$pass);
 		if($reco=val($p,'recovery'))$state=self::recoverVerif($reco);

@@ -135,10 +135,10 @@ class desktop{
 			$rb['uid']=ses('uid'); $rb['dir']=$dir;
 			$nid=Sql::insert('desktop',$rb);}
 		//$ret.=aj('dskmg|desktop,addline',lang('add'),'btn');
-		if(auth(4))$ret=ajax('dskmg','desktop,manage','dir='.$dir.',addrow=1','',langp('add'),'btn');
-		//$ret.=ajax('dskmg','desktop,manage','dir='.$dir,'',langp('refresh'),'btn');
-		//$ret.=ajax('page','desktop','dir='.$dir,'',langp('reload'),'btn');
-		//$ret.=ajax('popup','desktop,readapps','','',langs('reflush,apps'),'btn');
+		if(auth(4))$ret=aj('dskmg|desktop,manage|dir='.$dir.',addrow=1',langp('add'),'btn');
+		//$ret.=aj('dskmg|desktop,manage|dir='.$dir,langp('refresh'),'btn');
+		//$ret.=aj('page|desktop|dir='.$dir,langp('reload'),'btn');
+		//$ret.=aj('popup|desktop,readapps|'.langs('reflush,apps'),'btn');
 		//$ret.=hlpbt('desktop').br().br();
 		//table
 		if(auth(4))$keys='id,dir,type,com,picto,bt,auth'; else $keys='id,dir,picto,bt,auth';

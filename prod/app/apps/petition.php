@@ -31,14 +31,14 @@ class petition{
 	static function already($pid){
 		return Sql::read('id','petition_vals','v','where pvuid='.ses('uid').' and pid='.$pid);}
 		
-	static function read($p){$pid=val($p,'pid'); $rid=val($p,'rid'); $ret='';
+	static function read($p){$pid=val($p,'pid'); $rid=val($p,'rid'); $nb='';
 		if($pid){$r=Sql::read('id,ptit,ptxt,pcl,dateup','petition_lead','ra','where id='.$pid);
 			$n=Sql::read('count(id)','petition_vals','v','where pid='.$pid);}
-		if($n)$ret.=div($n.' '.lang('signatures'),'alert right');
-		$ret.=div($r['ptit'],'tit').div($r['ptxt'],'txt');
-		if(self::already($pid))return $ret.help('petition_filled','valid');
-		$ret.=div(aj('fcbk|petition,sav|pid='.$pid.',rid='.$rid,langp('sign'),'btsav')).br();//send
-		return div($ret,'','fcbk');}
+		$ret=div($r['ptit'],'tit').div($r['ptxt'],'txt');
+		if($n)$nb=' '.span($n.' '.lang('signature'.plurial($n)),'btok');
+		if(self::already($pid))$ret.=help('petition_filled','valid').$nb;
+		else $ret.=div(aj('fcbk|petition,sav|pid='.$pid.',rid='.$rid,langp('sign'),'btsav').$nb);//send
+		return div($ret,'paneb','fcbk');}
 	
 	static function sav_lead($p){$pid=val($p,'pid');
 		$r=vals($p,['ptit','ptxt']);
@@ -65,7 +65,7 @@ class petition{
 			if($xid)$in=insertbt(lang('use'),$v['id'].':petition',$xid); else $v['insert']='';
 			//if($xid)$in=telex::publishbt($v['id'],'petition'); else $v['insert']='';
 			$answ=aj('popup|petition,answers|pid='.$v['id'],langp('answers'),'btn');
-			$ret.=div($tit.$bt.$answ.$in,'menu');}
+			$ret.=div($tit.br().$bt.$answ.$in,'menu');}
 		return $ret;}
 	
 	//call
@@ -73,13 +73,14 @@ class petition{
 		return Sql::read('ptit','petition_lead','v','where id='.$id);}
 	
 	static function call($p){$p['pid']=val($p,'id');
+		//$ret=div(langp('petition'),'stit');$ret.
 		return self::read($p);}
 	
 	//com
 	static function com($p){$p['xid']=val($p,'rid');
 		$p['rid']=randid('fr');
 		$ret=self::menu($p);
-		return div($ret,'deco',$p['rid']);}
+		return div($ret,'',$p['rid']);}
 	
 	//interface
 	static function content($p){
@@ -88,6 +89,6 @@ class petition{
 		$p['pid']=val($p,'param',val($p,'pid'));
 		$ret=hlpbt('petition');
 		$ret.=self::menu($p);
-		return div($ret,'deco',$p['rid']);}
+		return div($ret,'',$p['rid']);}
 }
 ?>

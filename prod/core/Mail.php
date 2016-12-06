@@ -32,7 +32,7 @@ class Mail{
 		if($ok)return 'mail_sent'; else return 'mail_fail';}
 		
 	static function send($to,$subject,$msg,$from,$format=''){
-		if($format=='text')return self::sendText($to,$subject,$msg,$from);
-		else return self::sendHtml($to,$subject,$msg,$from);}
+		if($format=='html')return self::sendHtml($to,$subject,$msg,$from);
+		else return self::sendText($to,$subject,$msg,$from);}
 	
 }

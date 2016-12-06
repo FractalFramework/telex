@@ -7,17 +7,6 @@ var clientVer=parseInt(navigator.appVersion);
 var is_ie=((clientPC.indexOf('msie')!=-1) && (clientPC.indexOf('opera')==-1));
 var is_win=((clientPC.indexOf('win')!=-1) || (clientPC.indexOf('16bit')!=-1));
 
-/*function selectindiv(div){
-	var ob=getbyid(div);
-    var range=document.createRange();
-    range.selectNodeContents(ob);
-    var sel=window.getSelection();
-	//range.setStart(ob.lastChild,ob.lastChild.length);
-	range.collapse(true);
-    sel.removeAllRanges();
-    sel.addRange(range);
-	}*/
-
 function selectxt(input,selectionStart,selectionEnd){
 	if(input.setSelectionRange){input.focus();
 		input.setSelectionRange(selectionStart,selectionEnd);}
@@ -202,12 +191,32 @@ if(n>0)for(var i=0;i<n;i++)if(exb[i] && exb[i]!=pid){
 	var bt=getbyid(exb[i].substr(3)); if(bt){bt.rel=''; bt.className='';}
 	Close(exb[i]); exb[i]=0;}}
 
+//upload for telex
+function upload(rid){
+	var form=getbyid("upl"); var prm='';
+	var fileSelect=getbyid("upfile");
+	var files=fileSelect.files;
+	for(var i=0;i<1;i++){//files.length
+		var formData=new FormData();
+		var time=Math.floor(Date.now()/1000);
+		var file=files[i];
+		var xtr=file.name.split('.'); var xt=xtr[xtr.length-1];
+		var filename='upl'+time+'.'+xt;
+		if(!file.type.match("image.*"))continue;
+		formData.append("upfile",file,filename);
+		insert('['+filename+':img]',rid);
+		//var prm="getinp:1"; else var prm="";
+		var url="/call.php?appName=Upload&appMethod=save&params="+prm;
+		var ajax=new AJAX(url,"atend","tlxapps","load",formData);
+	}
+}
+
 //continuous scrolling
 var exs=[]; var prmtm='';
 function loadscroll(component,div){
 	var content=getbyid(div);
 	if(typeof content!=='object')return;
-	var prmtm=getbyid('prmtm').value;
+	var prmtm=String(getbyid('prmtm').value);
 	if(prmtm)prmtm+=','; else return;
 	var scrl=pageYOffset+innerHeight;
 	var mnu=content.childNodes;
@@ -234,8 +243,8 @@ function updateurl(ret,url){
 	window.history.pushState({'html':ret.html,'pageTitle':ret.pageTitle},'',url);}
 
 //keyPressEnter
-function checkEnter(e,frm,id){var character; var ok=1; //if(id)var ok=getbyid(id).value; && ok.length>0
-	if(e && e.which){e=e; characterCode=e.which;} else{e=event; characterCode=e.keyCode;}
+function checkEnter(e,frm,id){
+	if(e && e.which){characterCode=e.which;} else{e=e.keyCode; characterCode=e.keyCode;}
 	if(characterCode==13){document.forms[frm].submit(); return false;}
 	else return true;}
 

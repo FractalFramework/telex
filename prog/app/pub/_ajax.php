@@ -10,9 +10,9 @@ class _ajax{
 		//$ret=Ajax::j('bubble,,1|utils,result|msg=txt,inp1=ok','bubble as menu','btn');
 		$ret=dropdown('utils,result|msg=txt,inp1=ok','bubble as menu','btn');
 		//$ret.=Ajax::j('callback|utils,resistance','no loading','btn');
-		$ret.=ajax('callback','utils,resistance','','','no loading','btn');
-		$ret.=Ajax::j('callback,,x|utils,result|msg=txt,inp1=ok,','close popup','btn');
-		$ret.=Ajax::j('callback,,y|utils,result|msg=txt,inp1=ok,','resize popup','btn');
+		$ret.=aj('callback|utils,resistance','no loading','btn');
+		$ret.=aj('callback,,x|utils,result|msg=txt,inp1=ok,','close popup','btn');
+		$ret.=aj('callback,,y|utils,result|msg=txt,inp1=ok,','resize popup','btn');
 		return div($ret,'','cbtest');
 	}
 	
@@ -68,7 +68,7 @@ class _ajax{
 		
 		$options=array(1=>'one','two','three','four','five');
 		$attributs=array('id'=>'inp4','style'=>'');
-		$ret.=select($options,$attributs,'v','two');
+		$ret.=select($options,$attributs,'two','v');
 			
 		$params=array(
 			'com'=>'div,callback,y',

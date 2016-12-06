@@ -58,7 +58,7 @@ class fontawesome{
 	
 	static function search($p){
 		$ret=input('inp1','',val($p,'p1'),'1');
-		$ret.=ajax('popup','fontawesome,build','','inp1',lang('search'),'btn');
+		$ret.=aj('popup|fontawesome,build||inp1',lang('search'),'btn');
 		return $ret;
 	}
 	
@@ -71,7 +71,7 @@ class fontawesome{
 		//$ret.=div('use pic(\'tv\');');
 		$ret.=self::build($p);
 		$ret.=div('','clear');
-		return div($ret,'deco',$p['rid']);
+		return div($ret,'',$p['rid']);
 	}
 }
 ?>

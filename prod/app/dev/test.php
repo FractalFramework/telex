@@ -26,7 +26,7 @@ class test{
 		$p['type']='city';
 		//$ret=App::open('gps',$p);
 		$ret=App::open('Gps',$p);
-		return div($ret,'deco');
+		return div($ret,'');
 	}
 }
 ?>

@@ -22,7 +22,7 @@ class article{
 		//$ret.=tag('button',array('onclick'=>'format(\'FontSize\',\'22\');'),pic('font'));
 		$r=array('bold'=>'bold','italic'=>'italic','underline'=>'underline','insertUnorderedList'=>'list-ul','insertOrderedList'=>'list-ol','Indent'=>'indent','Outdent'=>'outdent','JustifyLeft'=>'align-left','JustifyCenter'=>'align-center','createLink'=>'link','delete'=>'ban','inserthorizontalrule'=>'minus');
 		foreach($r as $k=>$v)
-			$ret.=tag('button',array('onclick'=>'format(\''.$k.'\');'),pic($v,16));
+			$ret.=tag('button',array('onclick'=>'format(\''.$k.'\');'),pic($v,12));
 		//$ret.=tag('button',array('onclick'=>'format(\'foreColor\',\'#ff0000\');'),pic('paint-brush'));
 		//$ret.=tag('button',array('onclick'=>'format(\'foreColor\',\'#000000\');'),pic('paint-brush'));
 	return $ret;}
@@ -36,7 +36,7 @@ class article{
 	
 	//edit
 	static function del($p){$id=val($p,'id');
-		if(!val($p,'confirm'))return ajax('art'.$id,'article,del','id='.$id.',confirm=1','',langp('confirm deleting').' art. '.$id,'btdel'); else{Sql::delete('articles',$id);
+		if(!val($p,'confirm'))return aj('art'.$id.'|article,del|id='.$id.',confirm=1',langp('confirm deleting').' art. '.$id,'btdel'); else{Sql::delete('articles',$id);
 			Sql::delete('desktop','pagup|article,read|headers=1,tlx=1,id='.$id,'com');}
 		return href('/app/article',langp('new'),'btn');}
 	static function mkpub($p){
@@ -51,13 +51,9 @@ class article{
 		$tit=val($p,'tit'); $txt=val($p,'txt'); $tlx=val($p,'tlx');
 		if(!$tit or !$txt)
 			return div(aj('tlxart|article,edit_telex|rid='.val($p,'rid'),lang('empty form')),'alert');
-		//$txt=unicode($txt);
-		$txt=str_replace(array('<p>','</p>'),"\n",$txt);
-		$txt=str_replace('<br>',"\n",$txt);
-		$txt=clean_n($txt);
-		$txt=trim($txt);
+		$p['txt']=$txt;//replace memtmp
+		$txt=Trans::call($p);
 		$savr=array('uid'=>ses('uid'),'tit'=>$tit,'txt'=>$txt,'pub'=>'0');
-		//pr($savr);
 		if(!$id){$id=Sql::insert('articles',$savr); $p['id']=$id;
 				$com='pagup|article,read|headers=1,tlx=1,id='.$id;//desk
 			$nid=Sql::insert('desktop',[ses('uid'),'/documents','j',$com,'file',$tit,2]);}
@@ -71,10 +67,12 @@ class article{
 		$r=Sql::read('id,tit','articles','kv','where uid="0"'.$where);
 		foreach($r as $k=>$v)$ret.=aj('tlxapps|article,read_telex|id='.$k.',rid='.$rid,$v,'');
 		return div($ret,'list');}
+	
 	static function read_telex($p){$id=val($p,'id'); $rid=val($p,'rid');
 		$cols='id,tit,txt,pub';
 		$r=Sql::read($cols,'articles','ra','where id='.$id); $r['rid']=$rid;
 		return self::edit_telex($r);}
+	
 	static function edit_telex($p){$id=val($p,'id'); $rid=val($p,'rid');
 		$ret=input('tit',val($p,'tit'),40,lang('title'),'tit'); $ok='';
 		//$ret=hidden('tit','tlex'.$id);
@@ -85,27 +83,29 @@ class article{
 		$sav=aj('tlxart|article,save|tlx=1,id='.$id.',rid='.$rid.'|tit,txt',$bt,$id?'btn':'btsav');
 		$ret.=span($mnu.$sav.$ok,'right');
 		$ret.=self::wysiwyg($id);
-		$ret.=tag('div',['contenteditable'=>'true','id'=>'txt','class'=>'txth'],val($p,'txt'));
+		$txt=Conn::load(['msg'=>val($p,'txt'),'ptag'=>1]);
+		$ret.=tag('div',['contenteditable'=>'true','id'=>'txt','class'=>'txth'],$txt);
 		return div($ret,'','tlxart');}
 	
 	//edit
 	static function edit($p){
 		$id=val($p,'id'); $name=val($p,'name'); $date=val($p,'date'); $pub=val($p,'pub');
-		$right=ajax('art'.$id.',,y','article,save','id='.$id,'tit,txt',langp('save'),'btsav');		
-		if($id && auth(2) && $name==ses('user')){
-			$right.=ajax('art'.$id,'article,del','id='.$id,'',langpi('delete'),'btdel');
-			$right.=ajax('art'.$id,'article,mkpub','id='.$id,'',langpi('make public'),'btn');
-			if($pub)$right.=ajax('art'.$id,'article,mkico','id='.$id.',pub=0','',langpi('hide icon'),'btn'); else $right.=ajax('art'.$id,'article,mkico','id='.$id.',pub=1','',langpi('make icon'),'btn');}
 		$ret=div(input('tit',val($p,'tit'),28,'','tit'));
+		$right=aj('art'.$id.',,y|article,save|id='.$id.'|tit,txt',langp('save'),'btsav');
+		if($id && auth(2) && $name==ses('user')){
+			$right.=aj('art'.$id.'|article,del|id='.$id,langpi('delete'),'btdel');
+			$right.=aj('art'.$id.'|article,mkpub|id='.$id,langpi('make public'),'btn');
+			if($pub)$right.=aj('art'.$id.'|article,mkico|id='.$id.',pub=0',langpi('hide icon'),'btn');
+			else $right.=aj('art'.$id.'|article,mkico|id='.$id.',pub=1',langpi('make icon'),'btn');}
 		$ret.=span($right,'right');
-		//$ret.=hlpbt('article').' ';
 		$ret.=self::wysiwyg($id);
 		return $ret;}
 	
 	static function editconn($p){$id=val($p,'id'); if(!$id)return;
 		list($tit,$txt)=Sql::read('tit,txt','articles','rw','where id='.$id);
-		$ret=textarea('txt',$txt,60,20).hidden('tit',$tit).br();
-		$ret.=aj('art'.$id.',,x|article,save|id='.$id.'|tit,txt',langp('save'),'btsav');
+		$ret=aj('art'.$id.',,y|article,read|id='.$id.',edit=1',pico('back'),'btn').' ';
+		$ret.=aj('art'.$id.',,y|article,save|brut=1,id='.$id.'|tit,txt',langp('save'),'btsav').br();
+		$ret.=textarea('txt',$txt,64,24).hidden('tit',$tit);
 		return $ret;}
 	
 	//read
@@ -113,19 +113,20 @@ class article{
 		$id=val($p,'id'); $name=val($p,'name'); 
 		$date=val($p,'date'); $priv=val($p,'private');
 		$title=val($p,'tit'); $txt=val($p,'txt'); $edit=val($p,'edit');
+		if(ses('uid'))$right=aj('art'.$id.',,y|article,read|id='.$id,pico('refresh'),'btn').' ';
 		if(ses('user')==$name or !$name){
 			if($edit)$edition=self::edit($p);
-			else $right=aj('art'.$id.',,y|article,read|id='.$id.',edit=1',langp('edit'),'btn').' ';
+			else $right.=aj('art'.$id.',,y|article,read|id='.$id.',edit=1',langp('edit'),'btn').' ';
 			if($edit)$prm=array('contenteditable'=>'true','id'=>'txt','class'=>'txt');
 			else $prm=array('class'=>'article');}
 		else $prm=array('class'=>'article');
-		if($edit)$right.=aj('popup|article,editconn|id='.$id.',edit=1',pico('edit'),'btn').' ';
-		if(ses('uid'))$right.=ajax('popup','article','','',langpi('folder'),'btn').' ';
+		if($edit)$right.=aj('art'.$id.',,y|article,editconn|id='.$id.',edit=1',pico('edit'),'btn').' ';
+		if(ses('uid'))$right.=aj('popup|article',langpi('folder'),'btn').' ';
 		//$right.=href('/app/article',langp('new'),'btn');
 		//$right.=dropdown('article,menu|id='.$id,langpi('open'),'btn').' ';
 		if(ses('uid'))$right.=href('/app/article'.($id?'/'.$id:''),langpi('url'),'btn');
 		$ret['mnu']=span($right,'right');
-		if($title)$ret['t']=tag('h1','',$title);
+		if($title && !$edit)$ret['t']=tag('h1','',$title);
 		if($name && ses('uid'))$ret['by']=span(tag('h4','',lang('by').' '.$name.', '.$date),'small');
 		$ret['edit']=$edition;
 		//$txt=ptag($txt);
@@ -134,9 +135,9 @@ class article{
 		return implode('',$ret);}
 	
 	static function artlx($p){
-		$id=val($p,'id'); $txt=val($p,'txt'); $txt=ptag($txt);
+		$id=val($p,'id'); $txt=val($p,'txt');
 		$ret=btj(pic('close'),'Close(\'popup\');','btn');
-		$ret.=span(href('/app/article/'.$id,pic('link')),'right');
+		$ret.=span(href('/art/'.$id,pic('link')),'right');
 		$txt=Conn::load(['msg'=>$txt,'ptag'=>1]);
 		$ret.=div($txt,'article');
 		return $ret;}
@@ -146,16 +147,10 @@ class article{
 		if($id)$r=Sql::read_inner($cols,'articles','login','uid','ra','where articles.id='.$id);
 		if(isset($r))$p=merge($p,$r); else{$p['id']=''; $p['edit']=1;}
 		$apf=val($p,'appFrom');
-		if($apf){$apf::$title=$r['tit'];
+		if($apf){$apf::$title=$r['tit'];//meta
 			$apf::$description=substr(strip_tags($r['txt']),0,200); $apf::$image='';}
 		if($tlx)return self::artlx($p);
 		else return self::art($p);}
-	
-	/*static function readtxt($p){$id=val($p,'id');
-		$cols='name,tit,txt,DATE_FORMAT(articles.up,"%d/%m/%Y %H:%i") as date,pub';
-		if($id)$r=Sql::read_inner($cols,'articles','login','uid','ra','where articles.id='.$id);
-		return tag('div',array('class'=>'article'),$r['txt']);
-	}*/
 	
 	static function tit($p){$id=val($p,'id');
 		if($id)return Sql::read('tit','articles','v','where id='.$id);}
@@ -172,11 +167,11 @@ class article{
 		$p['id']=val($p,'param',val($p,'id'));
 		if($p['id'])return self::call($p);
 		//self::install();
-		$ret.=ajax('popup,,,1','article,call','','',pic('plus',36).div(lang('new')),'bicon');
+		$ret.=aj('popup,,,1|article,call',pic('plus',36).div(lang('new')),'bicon');
 		$r=Sql::read('id,tit','articles','kv','where uid=0 or uid="'.ses('uid').'" or pub="1"');
 		if($r)foreach($r as $k=>$v)if($v){
 			$bt=pic('file',32).div($v);
-			$ret.=ajax('popup,,,1','article,call','id='.$k,'',$bt,'bicon');}
+			$ret.=aj('popup,,,1|article,call|id='.$k,$bt,'bicon');}
 		return $ret;}
 }
 ?>

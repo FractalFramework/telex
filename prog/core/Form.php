@@ -8,16 +8,17 @@ class Form{
 			switch($v['type']){
 				case('input'):$d=input($k,'',20,'','100p'); break;//$v['value']
 				case('textarea'):$d=textarea($k,'',40,10,'','100p'); break;
-				case('select'):$d=select($v['opts'],['id'=>$k],'kv',''); break;
+				case('select'):$d=select($v['opts'],['id'=>$k],'',''); break;
 				case('checkbox'):$d=checkbox($k,$v['opts']); break;
-				case('radio'):$d=radio($k,$v['opts'],''); break;
-				case('hidden'):$d=hidden($k,$v['value']); break;}
+				case('radio'):$d=radio($v['opts'],$k,''); break;
+				case('hidden'):$d=hidden($k,$v['value']); break;
+				case('bar'):$d=bar($k); break;}
 			$ret[$k]['inp']=div($d,'fcell');}
 	return $ret;}
 	
 	static function buildfromstring($fcom){
 		$r=explode(',',$fcom);
-		foreach($r as $k=>$v)if(trim($v)){$vb=explode(':',trim($v));
+		foreach($r as $k=>$v)if(trim($v)){$vb=explode(':',trim($v));//readconn(trim($v))
 			$id='q'.($k+1); $type=trim($vb[0]); $val=$vb[1];
 			$rb[$id]=['type'=>$type,'label'=>$val];
 			//if($type=='var' or $type=='int' or $type=='input')$rb[$id]['value']=$val;
@@ -52,8 +53,8 @@ class Form{
 		}
 		$ret=self::build($rb).br();
 		$inps=implode(',',array_keys($r));
-		if($id)$ret.=ajax('popup','Form,save','table='.$table.',id='.$id,$inps,langp('save'),'btn');
-		else $ret.=ajax('popup','Form,save','table='.$table,$inps,langp('save'),'btn');
+		if($id)$ret.=aj('popup|Form,save|table='.$table.',id='.$id.'|'.$inps,langp('save'),'btn');
+		else $ret.=aj('popup|Form,save|table='.$table.'|'.$inps,langp('save'),'btn');
 		return $ret;
 	}
 

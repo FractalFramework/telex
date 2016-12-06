@@ -16,20 +16,20 @@ class profile{
 	#builders	
 	//banner		
 	static function banner_save($p){$f=val($p,'bkgim');
-		$f=File::saveimg($f,'profile','300','100');
+		if(substr($f,0,4)=='http')$f=File::saveimg($f,'prf','300','100');
 		Sql::update(self::$db,'banner',$f,ses('uid'),'puid');
 		return self::read(['usr'=>ses('user'),'uid'=>ses('uid'),'big'=>val($p,'big')]);}
 	
 	static function banner_edit($p,$big){$ret='';
 		$im=val($p,'banner'); $ret='';
-		$f='/img/profile/medium/'.$im;
+		$f='/img/medium/'.$im;
 		//if(is_file($f))$ret.=img($f).br();
-		$ret.=input('bkgim','',30,lang('url',1)).' ';
+		$ret.=input('bkgim',$im,30,lang('url',1)).' ';
 		$ret.=aj('prfl|profile,banner_save|usr='.val($p,'usr').',big='.$big.'|bkgim',langp('save'),'btsav');
 		return $ret;}
 	
 	static function banner($r,$big){
-		$ban='img/profile/full/'.$r['banner'];
+		$ban='img/full/'.$r['banner'];
 		if(is_file($ban))
 			$sty='background-color:#'.$r['clr'].'; background-image:url(/'.$ban.');';
 		else $sty='background-image:linear-gradient(#'.$r['clr'].',#97c2ff);';
@@ -40,18 +40,18 @@ class profile{
 	
 	//avatar
 	static function avatar_im($im,$sz){//mini,full
-		if(!$im)return 'icon/person-8x.png'; else return 'img/profile/'.$sz.'/'.$im;}
+		if(!$im)return 'icon/person-8x.png'; else return 'img/'.$sz.'/'.$im;}
 		
 	static function avatar_save($p){$f=val($p,'urlim');
-		$f=File::saveimg($f,'profile','140','140');
+		if(substr($f,0,4)=='http')$f=File::saveimg($f,'prf','140','140');
 		Sql::update(self::$db,'avatar',$f,ses('uid'),'puid');
 		return self::avatar(val($p,'usr'),$f,val($p,'big'));}
 	
 	static function avatar_edit($p,$big){
 		$im=val($p,'avatar'); $ret='';
-		$f='/img/profile/mini/'.$im;
+		$f='/img/mini/'.$im;
 		//if(is_file($f))$ret=img($f).br();
-		$ret.=input('urlim','',30,lang('url',1)).' ';
+		$ret.=input('urlim',$im,30,lang('url',1)).' ';
 		$ret.=aj('avt|profile,avatar_save|usr='.val($p,'usr').',big='.$big.'|urlim',langp('save'),'btsav').br();
 		return $ret;}
 
@@ -93,7 +93,7 @@ class profile{
 	
 	static function status($r){
 		$ret=div(nl2br(val($r,'status')),'statusdiv');
-		if($web=val($r,'web'))$ret.=div(href(http($web),$web.' '.pic('link',12),'grey','',1),'statusdiv');
+		if($web=val($r,'web'))$ret.=div(pic('link',12).' '.href(http($web),$web,'grey','',1),'statusdiv');
 		$ret.=div(self::gps($r),'statusdiv');
 		return div($ret,'statustxt');}
 	
@@ -105,18 +105,18 @@ class profile{
 		Sql::update(self::$db,'location',$loc,$id);
 		return $loc;}
 	
-	static function gps($r){$ret=''; $bt='';
+	static function gps($r){$ret='';
 		$loc=$r['location']?$r['location']:lang('location');
-		if($r['gps'])$bt=popup('map,com|coords='.$r['gps'],pico('location'),'grey');
-		if($r['puid']==ses('uid'))$ret=btj(span($loc,'','gpsloc'),'geo()','grey');
-		elseif($r['location'])$ret=span($r['location'],'grey');
-		return $ret.' '.$bt;}
+		if($r['gps'])$ret.=popup('map,com|coords='.$r['gps'],pico('location'),'grey');
+		if($r['puid']==ses('uid'))$ret.=btj(span($loc,'','gpsloc'),'geo()','grey');
+		elseif($r['location'])$ret.=span($r['location'],'grey');
+		return $ret;}
 	
 	//privacy
 	static function privbt($p){$state=val($p,'privacy'); $sav=val($p,'sav');
 		if($sav){$state=$state==1?'0':'1'; Sql::update('profile','privacy',$state,ses('uid'),'puid');}
-		if($state==1){$ic='toggle-on'; $bt='private'; $hlp=help('privacy_on');}
-		else{$ic='toggle-off'; $bt='public'; $hlp=help('privacy_off');}
+		if($state==1){$ic='toggle-on'; $bt='private'; $hlp=help('privacy_on','alert');}
+		else{$ic='toggle-off'; $bt='public'; $hlp=help('privacy_off','valid');}
 		return aj('prvc|profile,privbt|sav=1,privacy='.$state,pic($ic,22).lang($bt)).div($hlp);}
 	
 	//oAuth
@@ -128,8 +128,12 @@ class profile{
 	static function oAuth($p){
 		$ret=span($p['oAuth'],'grey','oath').' ';
 		$ret.=aj('oath|profile,oAuthsav|id='.$p['id'],langp('gen oAuth'),'btn').' ';
-		$ret.=div('http://tlex.fr/api.php?app=Api&mth=call&prm=tm:'.ses('user'),'valid');
-		$ret.=div('http://tlex.fr/api.php?app=Api&mth=post&&msg=hello&prm=oAuth:'.$p['oAuth'],'valid');
+		$ret.=tag('h4','',lang('call timeline'));
+		$ret.=div('http://tlex.fr/api/call/tm:'.ses('user'),'valid');
+		$ret.=tag('h4','',lang('call id'));
+		$ret.=div('http://tlex.fr/api/call/id:312','valid');
+		$ret.=tag('h4','',lang('post telex'));
+		$ret.=div('http://tlex.fr/api.php?oAuth='.$p['oAuth'].'&msg=hello','valid');
 		return $ret;}
 	
 	//com
@@ -144,7 +148,7 @@ class profile{
 	//edit
 	static function profile_edit($p){
 		$cols='id,puid,pname,status,clr,avatar,banner,web,gps,location,privacy,oAuth';
-		$r=Sql::read($cols,self::$db,'ra','where puid='.ses('uid')); $r['usr']=ses('user');
+		$r=Sql::read($cols,self::$db,'ra','where puid='.ses('uid'),0); $r['usr']=ses('user');
 		//$ret=aj('prfl|profile,read|usr='.$p['usr'],langp('close'),'btn');
 		$ret=tag('h2','',lang('status'));
 		$ret.=self::status_edit($r);
@@ -158,12 +162,12 @@ class profile{
 		$ret.=div(self::privbt($r),'','prvc');
 		$ret.=tag('h2','','Api');
 		$ret.=self::oAuth($r);
-		return div($ret,'paneb','','width:440px;');}
+		return div($ret,'board');}
 	
 	//read
 	static function read($p){
-		$usr=val($p,'usr'); $uid=val($p,'uid'); $big=val($p,'big');
 		$subscribe=''; $follow=''; $map='';
+		$usr=val($p,'usr'); $uid=val($p,'uid'); $big=val($p,'big'); $sm=val($p,'small'); $fc=val($p,'face');
 		$cols='puid,pname,status,clr,avatar,banner,web,gps,location,privacy';
 		$r=Sql::read_inner($cols,'profile','login','puid','ra','where name="'.$usr.'"');
 		if(!$r && $usr && $usr==ses('user'))$r=self::create($usr);
@@ -171,10 +175,10 @@ class profile{
 		if(!$clr=val($r,'clr'))$r['clr']=sesif('clr'.$usr,'7ba8fd'); else ses('clr'.$usr,$clr);//clr
 		$banner=div(self::banner($r,$big),'banr');//banner
 		$avatar=span(self::avatar($usr,$r['avatar'],$big),'','avt');//avatar
-		if(ses('user') && ses('user')!=$usr)$follow=telex::followbt(['usr'=>$usr]);//follow
+		if(ses('user') && ses('user')!=$usr)$follow=telex::followbt(['usr'=>$usr,'small'=>$sm]);//follow
 		$subscribe=div($follow.telex::subscribt($usr,$uid),'subscrban');//subscribe
 		$username=div(self::username($r),'username');
-		$status=div(self::status($r),'status');
+		if(!$fc)$status=div(self::status($r),'status'); else $status='';
 		if($big)return array($banner.$subscribe,$avatar.div($username.$status,'board'));
 		return $banner.$avatar.$follow.div($username.$status);}
 	

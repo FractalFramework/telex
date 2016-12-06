@@ -2,6 +2,7 @@
 #ph1.fr license GNU/GPL
 session_start();
 require('boot.php');
+//echo ses('user').ses('uid').'-';
 $app=get('appName');
 $mth=get('appMethod');
 $p=_jrb(get('params'),1);

@@ -40,14 +40,14 @@ class applist{
 	static function content($prm){$ret='';
 		if(isset($prm['iframe']))$mod=$prm['iframe'];
 		else $mod=get('app');	
-	    $r=Dir::read('app');
+	    $r=Dir::read(ses('dev').'/app');
 		if(isset($r)){
 			foreach($r as $k=>$v){
 				if(is_array($v))$ret.=self::appdir($k,$v);
 				else $rb[$k]=$v;
 			}
 		}
-		if(count($rb))$first=self::appdir('root',$rb);
+		if(isset($rb))$first=self::appdir('root',$rb);
 		else $first='';
 		return $first.$ret;
 	}

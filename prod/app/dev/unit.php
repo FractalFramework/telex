@@ -29,13 +29,13 @@ class unit{
 	static function content($p){
 		$p['rid']=randid('md');
 		$p['p1']=val($p,'inp1','Vue');
-		$p['p2']=val($p,'inp2','test');
-		$p['p3']=val($p,'inp3');
+		$p['p2']=val($p,'inp2','call');
+		$p['p3']=val($p,'inp3','p1=v1,p2...');
 		$ret=input_label('inp1',$p['p1'],'app').br();
 		$ret.=input_label('inp2',$p['p2'],'method').br();
-		$ret.=input_label('inp3',$p['p3'],'param1=p1,...').br();
-		$ret.=ajax($p['rid'],'unit,build','headers=1,injectJs=1','inp1,inp2,inp3',lang('ok'),'btn');
-		return $ret.div('','deco',$p['rid']);
+		$ret.=textarea('inp3',$p['p3'],40,4,'','console').br();
+		$ret.=aj($p['rid'].'|unit,build|headers=1,injectJs=1|inp1,inp2,inp3',lang('ok',1),'btn');
+		return $ret.div('','',$p['rid']);
 	}
 }
 ?>

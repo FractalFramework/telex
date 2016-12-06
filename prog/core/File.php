@@ -56,22 +56,32 @@ class File{
 		$ret=self::read($params['fileRoot']);
 		return tag('pre','',$ret);}
 	
-	static function mkthumb($nm,$dir,$w,$h){
-		$fa='img/'.$dir.'/full/'.$nm; Dir::mkdir_r($fa);
-		$fb='img/'.$dir.'/mini/'.$nm; Dir::mkdir_r($fb);
-		$fc='img/'.$dir.'/medium/'.$nm; Dir::mkdir_r($fc);
+	static function mkthumb($nm,$w,$h=''){if(!$h)$h=$w;
+		$fa='img/full/'.$nm; //Dir::mkdir_r($fa);
+		$fb='img/mini/'.$nm; Dir::mkdir_r($fb);
+		$fc='img/medium/'.$nm; Dir::mkdir_r($fc);
 		Img::thumb($fa,$fb,170,170,0);
 		list($wa,$ha)=getimagesize($fa);
 		if($wa>$w or $ha>$h)Img::thumb($fa,$fc,$w,$h,0);}
 	
-	static function saveimg($f,$dir,$w,$h=''){$er=1;
+	/*static function saveimg($f,$dir,$w,$h=''){$er=1;
 		if(substr($f,0,4)!='http')return;
 		$xt=extension($f); if(!$xt)$xt='.jpg';
 		$nm='tlx'.substr(md5($f),0,10); $h=$h?$h:$w;
 		$fa='img/'.$dir.'/full/'.$nm.$xt; Dir::mkdir_r($fa);
 		$ok=@copy($f,$fa);
-		if(!$ok){$d=file_get_contents($f); $er=File::write($fa,$d);}
+		if(!$ok){$d=@file_get_contents($f); if($d)$er=File::write($fa,$d);}
 		if($ok or !$er){if(is_file($fa))self::mkthumb($nm.$xt,$dir,$w,$h);
+			return $nm.$xt;}}*/
+	
+	static function saveimg($f,$prf,$w,$h=''){$er=1;
+		if(substr($f,0,4)!='http')return;
+		$xt=extension($f); if(!$xt)$xt='.jpg';
+		$nm=$prf.substr(md5($f),0,10); $h=$h?$h:$w;
+		$fa='img/full/'.$nm.$xt; Dir::mkdir_r($fa);
+		$ok=@copy($f,$fa);
+		if(!$ok){$d=@file_get_contents($f); if($d)$er=File::write($fa,$d);}
+		if($ok or !$er){if(is_file($fa))self::mkthumb($nm.$xt,$w,$h);
 			return $nm.$xt;}}
 }
 

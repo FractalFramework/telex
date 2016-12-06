@@ -37,7 +37,7 @@ class admin_icons{
 		$ret.=goodinput($rid,$r['icon']);
 		$ret.=Ajax::j('admm,,x|admin_icons,update|id='.$prm['id'].',rid='.$rid.'|'.$rid,lang('save'),'btsav');
 		$ret.=Ajax::j('admm,,x|admin_icons,del|id='.$prm['id'],lang('del'),'btdel');
-		$ret.=ajax('popup','fontawesome','','',pic('eye'),'btn');
+		$ret.=aj('popup|fontawesome',pic('eye'),'btn');
 		return $ret;
 	}
 	

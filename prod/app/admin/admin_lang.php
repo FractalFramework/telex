@@ -67,16 +67,19 @@ class admin_lang{
 	//table
 	static function select($app,$lang){
 		$ret=hidden('app',$app).hidden('lang',$lang);
-		$r=Sql::read('distinct(app)','lang','rv','');
+		//langs
+		$r=Sql::read('distinct(lang)','lang','rv','');
+		foreach($r as $v){$c=$v==$lang?' active':'';
+			$rc[]=aj('admlng|admin_lang,com|lang='.$v.'|app',$v,'btn'.$c);}
+		$bt=implode(' ',$rc).' :: ';
+		//apps
+		$r=Sql::read('distinct(app)','lang','rv','order by app');
 		$c=$app=='all'?' active':'';
 		$rb[]=aj('admlng,,y|admin_lang,com|app=all|lang','all','btn'.$c);
 		foreach($r as $v){$c=$v==$app?' active':'';
 			$rb[]=aj('admlng,,y|admin_lang,com|app='.$v.'|lang',$v,'btn'.$c);}
-		$ret.=div(implode(' ',$rb),'pane');
-		$r=Sql::read('distinct(lang)','lang','rv','');
-		foreach($r as $v){$c=$v==$lang?' active':'';
-			$rc[]=aj('admlng|admin_lang,com|lang='.$v.'|app',$v,'btn'.$c);}
-		$ret.=div(implode(' ',$rc),'pane').br();
+		$bt.=implode(' ',$rb);
+		$ret.=div($bt,'pane');
 		if(ses('auth')>6){
 			$ret.=aj('popup|admin_lang,add|app='.$app,langp('add'),'btn');
 			$ret.=aj('admlng|admin_lang,equilibrium||app,lang',langp('update'),'btn');

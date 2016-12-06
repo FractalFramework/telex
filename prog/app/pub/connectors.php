@@ -26,7 +26,7 @@ class connectors{
 			case('art'):return App::open($c,['param'=>$p,'headers'=>1]); break;
 			case('web'):$ret=telex::playweb($p); break;
 			case('pub'):$t=Sql::read('tit',article::$db,'v','where id="'.$p.'"');
-				return ajax('popup','art','param='.$p,'',pic('file-text-o').' '.$t,'btn'); break;
+				return aj('popup|art|param='.$p,pic('file-text-o').' '.$t,'btn'); break;
 			default:$ret=Conn::reader($d,$p); break;}//default connectors
 	return $ret;}
 	
@@ -60,7 +60,7 @@ class connectors{
 		$ret.=hlpbt('connectors');
 		$ret.=tag('textarea',array('id'=>'msg','cols'=>'100%','rows'=>'10','onkeyup'=>'connread()'),$p['msg']);
 		//param (app=connectors,mth=reader) will use local connectors instead of default
-		$ret.=ajax($p['rid'],'Conn,load','app=connectors,mth=reader','msg',lang('convert'),'btn').br();
-		return $ret.div(Conn::load($p),'deco',$p['rid']);}
+		$ret.=aj($p['rid'].'|Conn,load|app=connectors,mth=reader|msg',lang('convert'),'btn').br();
+		return $ret.div(Conn::load($p),'board',$p['rid']);}
 }
 ?>

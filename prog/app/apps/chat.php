@@ -29,9 +29,9 @@ static function headers(){
 	.row-reverse{-webkit-flex-direction: row-reverse; flex-direction: row-reverse;}
 	.flex-container li{margin:0;}  
 	.row-reverse .chatpane{background:steelblue; color:white;}
-	.roomenu,.roomenuactive{clear:left; background:#f4f4f4; margin:0; padding:4px 7px;}
-	.roomenuactive{background:#ffffff;}
-	.roomenu:hover{background:#fff;}
+	.menu,.menuactive{clear:left; background:#f4f4f4; margin:0; padding:4px 7px;}
+	.menuactive{background:#ffffff;}
+	.menu:hover{background:#ffffff;}
 ');
 	Head::add('jscode',self::injectJs());}
 
@@ -48,7 +48,7 @@ static function pane($r){$ret='';
 		$txt=tag('li',['class'=>'chatpane'],nl2br($v[1]));
 		$date=tag('div',['class'=>'chatdate'],self::attime($v[2]));
 		if($v[0]==ses('user')){
-			$bt=ajax('popup','chat,del','id='.$v[3],'',pic('bolt'));
+			$bt=aj('popup|chat,del|id='.$v[3],pic('bolt'));
 			$del=tag('li',['class'=>'chatdate'],$bt);}
 		if($v[0]==ses('user'))$css='row-reverse'; else $css='row ';
 		$ret.=div($user.$txt.$date.$del,'flex-container '.$css);}
@@ -79,7 +79,7 @@ static function save($p){
 		if(isset($id))return self::read(['id'=>$id]);}}
 
 static function del($p){
-	if(!isset($p['ok']))return ajax('chtbck,,x','chat,del','ok=1,id='.$p['id'],'',langp('confirm deleting'),'btdel');
+	if(!isset($p['ok']))return aj('chtbck,,x|chat,del|ok=1,id='.$p['id'],langp('confirm deleting'),'btdel');
 	if($p['id'])$id=Sql::delete('chat',$p['id']);
 		return self::read([]);}
 
@@ -116,7 +116,7 @@ static function chatinvit($p){$rid=val($p,'rid'); $ret='';
 	if($r)foreach($r as $k=>$v){
 		$avatar=profile::com($k,1);
 		$ret.=aj('invits|chat,chatinvit|op=del,usr='.$k,$avatar.div($k),'cicon');}
-	$ret=div($ret,'roomenu');
+	$ret=div($ret,'menu');
 	$rusr=ses('chtnvt');
 	if($rusr)$usrs=ses('uid').'-'.implode('-',$rusr); else $usrs=ses('uid');
 	//$ret.=aj('newchat|chat,create|users='.$usrs.',rid='.$rid,lang('create room'),'btsav');
@@ -146,7 +146,7 @@ static function menu($p){$ret=''; $rid=val($p,'rid');//tlex
 		//if($rid)$in=telex::publishbt($v['room'],'chat');
 		//if($rid)$pp='popup'; else $pp='chtwrp,,y';
 		$cssvu=$v['vu']||$ntf?'active':'';
-		$bt=div($im.$from.$prv.$nfo.$in,'roomenu'.$cssvu);
+		$bt=div($im.$from.$prv.$nfo.$in,'menu'.$cssvu);
 		$ret.=aj('pagup|chat|headers=1,room='.$v['room'],$bt);
 	}
 	$ret.=div(toggle('newchat|chat,newchat',langp('select users'),'btsav')).' ';
@@ -193,8 +193,8 @@ static function content($prm){
 	$area=tag('textarea',['id'=>'chtsav','placeholder'=>'message','class'=>'chatarea','rows'=>'2','maxlenght'=>'1000','onkeypress'=>'checkEnter(event,\'chtsavfrm\');'],'').br();
 $ret=div($head,'chatform').div($txt,'chatcontent','chtbck');
 $ret.=tag('form',$prm,div($area,'chatform').hidden('chtroom',$room));
-//$ret.=ajax('chtwrp','chat,menu','','','menu','btn');
-//$ret.=ajax('chtwrp','chat,invite','','','invite','btn');
+//$ret.=aj('chtwrp|chat,menu','menu','btn');
+//$ret.=aj('chtwrp|chat,invite','invite','btn');
 return div($ret,'chatwrapper','chtwrp','');}
 }
 ?>

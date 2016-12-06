@@ -35,7 +35,7 @@ class admin_labels{
 		$ret.=goodinput($rid,$r['icon']);
 		$ret.=Ajax::j('admm,,x|admin_labels,update|id='.$prm['id'].',rid='.$rid.'|'.$rid,lang('save'),'btsav');
 		$ret.=Ajax::j('admm,,x|admin_labels,del|id='.$prm['id'],lang('del'),'btdel');
-		$ret.=ajax('popup','fontawesome','','',pic('eye'),'btn');
+		$ret.=aj('popup|fontawesome',pic('eye'),'btn');
 		return $ret;
 	}
 	

@@ -35,7 +35,7 @@ class biogen{
 		$ret[]=$r[$nb];
 		//del used emplacement
 		unset($r[$nb]); sort($r);
-		$ret=ajax($rid,'biogen,algo_exec',prm($r),'',lang('next'),'btn');
+		$ret=aj($rid.'|biogen,algo_exec|'.prm($r),lang('next'),'btn');
 		return $ret;
 	}
 	
@@ -57,7 +57,7 @@ class biogen{
 		$n=pow(2,$it);
 		$ret=self::algo($p1,$n);
 		$prm='p1='.$p1.',it='.($it+1).',rid='.$rid;
-		$ret.=ajax($rid,'biogen,build',$prm,'',lang('iteration').($it+1),'btn');
+		$ret.=aj($rid.'|biogen,build|'.$prm,lang('iteration').($it+1),'btn');
 		return div($ret).div('','',$rid);
 	}
 	
@@ -67,7 +67,7 @@ class biogen{
 		$bt=hlpbt('biogen');
 		$bt.=input_label('p1',$p1,'dominance').br();
 		$bt.=self::iter(array(1,0));
-		$bt.=ajax($p['rid'],'biogen,build','','p1',lang('iteration').$it,'btn');
+		$bt.=aj($p['rid'].'|biogen,build||p1',lang('iteration').$it,'btn');
 		return $bt.div('','',$p['rid']);
 	}
 }

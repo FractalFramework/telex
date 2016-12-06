@@ -17,7 +17,7 @@ class doc_ajax{
 		$ret.=textarea('textarea','',20,4,'hello');
 		$options=array(1=>'one','two','three','four','five');
 		$attributs=array('id'=>'select','style'=>'');
-		$ret.=select($options,$attributs,'v','two');
+		$ret.=select($options,$attributs,'two','v');
 			
 		$params=array(
 			'com'=>'div,callback2,y',
@@ -123,24 +123,14 @@ $params=array(
 $ret.=Ajax::call($params,\'Ajax::call(bubble)\',\'btn\');'));
 		$ret.=br();
 		
-		#Ajax::j()
+		#aj()
 		$ret.=tag('h3','','Ajax::j()');
 		//test
-		$ret.=Ajax::j('popup|File,fdate|fileRoot=app/pub/doc_ajax.php','Test: Ajax::j()','btn');
+		$ret.=aj('popup|File,fdate|fileRoot=app/pub/doc_ajax.php','Test: Ajax::j()','btn');
 		//code
 		$ret.=tag('div','class=console',Build::Code('
 //popup,option,injectJs|app,method|key1=p1,key2=p2|inp1,checkbox
 $ret.=Ajax::j(\'div,popup|File,fdate|fileRoot=app/pub/doc_ajax.php\',\'Ajax::j()\',\'btn\');'));
-		$ret.=br();
-		
-		#ajax()
-		$ret.=tag('h3','','ajax()');
-		//test
-		$ret.=ajax('popup','File,fdate','fileRoot=app/pub/doc_ajax.php','','Test: Ajax::j()','btn');
-		//code
-		$ret.=tag('div','class=console',Build::Code('
-//popup,option,injectJs|app,method|key1=p1,key2=p2|inp1,checkbox
-$ret.=ajax(\'popup\',\'File,fdate\',\'fileRoot=app/pub/doc_ajax.php\',\'\',\'ajax()\',\'btn\');'));
 		$ret.=br();
 		
 		#ajax form
@@ -159,7 +149,7 @@ $ret.=textarea(\'textarea\',\'\',20,4,\'hello\');
 //select
 $options=array(1=>\'one\',\'two\',\'three\',\'four\',\'five\');
 $attributs=array(\'id\'=>\'select\',\'style\'=>\'\');
-$ret.=select($options,$attributs,\'v\',\'two\');
+$ret.=select($options,$attributs,\'two\',\'v\');
 
 //send button
 $params=array(

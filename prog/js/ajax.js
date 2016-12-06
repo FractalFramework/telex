@@ -1,8 +1,7 @@
 //ph1.fr GNU/GPL
+var wait=0,popnb=0,curid=0,cpop=0,cpop_difx=0,cpop_dify=0,popz=1,fixpop=1,amt=0,cutat=2000;
 
-var wait=1,popnb=0,curid=0,cpop=0,cpop_difx=0,cpop_dify=0,popz=1,fixpop=1,amt=0,cutat=2000;
-
-function AJAX(aUrl,aMethod,aTarget,aOption){
+function AJAX(aUrl,aMethod,aTarget,aOption,aPost){
 if(aUrl!=undefined)this.mUrl=aUrl;
 if(aTarget!=undefined)this.targetId=aTarget;
 if(aOption!=undefined)this.ajaxOption=aOption;
@@ -11,8 +10,8 @@ if(this.mRequest!=undefined){this.mRequest.abort(); delete this.mRequest;}
 this.mRequest=this.createReqestObject();
 var m_This=this;
 this.mRequest.onreadystatechange=function(){m_This.handleResponse();}
-this.mRequest.open("POST",this.mUrl,true);
-this.mRequest.send(null);}
+this.mRequest.open('POST',this.mUrl,true);
+this.mRequest.send(aPost?aPost:null);}
 
 AJAX.prototype.mUrl=undefined;
 AJAX.prototype.targetId=undefined;
@@ -27,9 +26,9 @@ return req;}
 
 //ajaxOption: string=bubbles options; load, y=repos
 AJAX.prototype.handleResponse=function(){
-if(this.mRequest.readyState==4){wait=1;
+if(this.mRequest.readyState==4){wait=0;
 	var method=this.method; var target=this.targetId; var option=this.ajaxOption;
-	if(option=='load' || option=='xy')wait=0;
+	//if(option=='load')wait=0;
 	if(this.mRequest.status=="200"){
 		var result=this.mRequest.responseText;
 		if(method!='returnVar' && target)var content=getbyid(target);
@@ -63,9 +62,9 @@ if(this.mRequest.readyState==4){wait=1;
 	}
 	delete this.mRequest;
 }
-else if(wait==0 && this.method=='div'){wait=1;
-	var div=getbyid(this.targetId);
-	waitmsg(div);}}
+else if(this.ajaxOption=='load' && wait==0){wait=1;
+	//var percent=this.loaded/this.total*100;
+	if(this.method=='div')waitmsg(getbyid(this.targetId));}}
 
 //composants
 function waitmsg(div){div.innerHTML='Loading...';}
@@ -112,7 +111,8 @@ if(getbyid('page'))prm['pagewidth']=getbyid('page').offsetWidth-40;
 //var 
 var str=jrb(prm);
 //str=encodeURI(str);
-var url='/call.php?appName='+appName+appMethod+'&params='+str+'&'+cbMethod+'==';
+var host='http://'+window.location.hostname;
+var url=host+'/call.php?appName='+appName+appMethod+'&params='+str+'&'+cbMethod+'==';
 //send
 if(na){mem=[url,cbMethod,cbId,cbOption]; return;}
 else var ajax=new AJAX(url,cbMethod,cbId,cbOption);
@@ -135,6 +135,7 @@ function ajb(p,e){var com=p[0];
 	if(!cbk[1] && z!='popup' && z!='pagup' && z!='imgup' && z!='bubble' && z!='menu' && z!='input' && z!='before' && z!='after' && z!='begin' && z!='atend' && z!='reload' && z!='ses'){cbk[0]='div'; cbk[1]=z;}
 	var com=cbk.join(',');
 	return ajaxCall(com+'|'+app,prm,inp);}
+
 function ajbt(e){var p2='';
 	if(e.dataset.toggle){var ok=toggle(e,e.dataset.toggle); if(ok)return false;}
 	if(e.dataset.prmtm){
@@ -172,6 +173,7 @@ else if(type=='textarea'){var content=el.value; if(!content)var content=(el.inne
 else if(type=='checkbox')var content=el.checked?1:0;
 else if(type=='radio')var content=el.options[el.selectedIndex].value;
 else if(type=='select')var content=el.options[el.selectedIndex].value;
+else if(type=='range')var content=el.value;
 else if(type=='div')var content=el.innerHTML;//encodeURIComponent
 else var content=el.value;
 //content=escape(content);
@@ -250,7 +252,8 @@ popa.id='popa'+nb; popu.id='popu'+nb;}
 
 var move=0;
 function pageUp(res,img){
-if(popnb)Close('pop'+popnb); popnb+=1; var nb=popnb;
+if(popnb)Close('pop'+popnb);//used for second pagup
+popnb+=1; var nb=popnb;
 var content=getbyid('popup'); if(!res)return;
 var popup=document.createElement('div');
 popup.id='pop'+nb; popup.style.position='fixed';
@@ -358,12 +361,12 @@ var posbub=getPositionRelative(popup);
 var bub=getPositionRelative(popu); var sz=innersizes();
 if(mode=='1'){//vertical
 	var px=posRel.x; var py=posRel.y+posRel.h; var pz='';
-	//if(px+posbub.w>sz.w)px=px+posRel.w-posbub.w+10;//flip
-	if(px+posbub.w>sz.w){px=''; pz=-10;}
+	if(posAbs.x+posbub.w>sz.w)px=px+posRel.w-posbub.w+10;//flip
+	//if(px+posbub.w>sz.w){px=''; pz=-10;}
 }
 else{//horizontal, second iteration
 	var px=posRel.x+posRel.w; var py=posRel.y; var pz='';
-	if(posAbs.x+posRel.w+bub.w>sz.w)px=posRel.x-bub.w;
+	if(posAbs.x+posRel.w+bub.w+10>sz.w)px=posRel.x-bub.w;
 }
 if(px)popup.style.left=px+'px';
 if(pz)popup.style.right=pz+'px';
@@ -407,7 +410,7 @@ function zindex(id){popz++; curid=id; var bub=getbyid(id);
 if(bub!=null)bub.style.zIndex=popz;}
 
 function addiv(tar,res,st){var ob=getbyid(tar); if(ob==null)return;
-var div=document.createElement('div'); div.innerHTML=res; var parent=ob.parentNode; 
+var div=document.createElement('span'); div.innerHTML=res; var parent=ob.parentNode; 
 if(st=='before')parent.insertBefore(div,ob);
 else if(st=='after'){var childs=div.childNodes, n=childs.length;
 	for(i=0;i<n;i++)if(typeof childs[i]=='object')parent.appendChild(childs[i]);}

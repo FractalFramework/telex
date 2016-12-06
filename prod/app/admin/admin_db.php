@@ -18,7 +18,7 @@ class admin_db{
 	
 	static function add($root){
 		$ret=tag('input','type=text,id=inp1','','shortTag');
-		$ret.=ajax('dataTable','dbtest,save','root='.$root,'inp1',lang('add'),'btn');
+		$ret.=aj('dataTable|dbtest,save|root='.$root.'|inp1',lang('add'),'btn');
 		return $ret;
 	}
 	

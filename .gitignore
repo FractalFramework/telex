@@ -49,7 +49,12 @@ _dev
 _old
 _notes
 db/ummo*
-priv/connect.php
-priv/twitter_oAuth.php
+cnfg/connect_phi.php
+cnfg/connect_tlex.php
+cnfg/twitter_oAuth.php
 app/oomo
 app/tlex
+fonts
+img
+usr
+cnfg

@@ -86,13 +86,14 @@ static function mysql_array2($r,$o=''){
 	foreach($r as $k=>$v)$rb[]=self::mysql_array($v,$o);
 	return implode(',',$rb);}
 
-static function insert2($b,$r,$o='',$z=''){if($o){self::backup($b); self::trunc($b);}
-	$sql='insert into `'.$b.'` values '.self::mysql_array2($r,$o);
+static function insert2($b,$r,$o='',$z=''){
+	if($o){self::backup($b); self::trunc($b);}
+	$sql='insert into '.$b.' values '.self::mysql_array2($r,$o);
 	$rq=self::query($sql,$z); return mysqli_insert_id(self::$dbq);}
 
 #update
 static function insert($b,$r,$z=''){
-	$sql='insert into  `'.$b.'` values '.self::mysql_array($r);
+	$sql='insert into '.$b.' values '.self::mysql_array($r);
 	$rq=self::query($sql,$z); return mysqli_insert_id(self::$dbq);}
 static function select($s,$b,$w=''){
 	self::query('select '.$s.' from '.$b.' '.$w);}

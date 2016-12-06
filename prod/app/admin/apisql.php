@@ -1,7 +1,7 @@
 <?php
 
 class apisql{
-	static $private=1;
+	static $private=6;
 	static $server='tlex.fr';
 	
 	static function admin(){
@@ -38,10 +38,10 @@ class apisql{
 	}
 	
 	static function menu($p){//system tables
-		$r=array('login'=>'Auth','desktop','lang'=>'admin_lang','icons'=>'admin_icons','help'=>'admin_help','labels'=>'labels','desktop'=>'desktop');
+		$r=array('lang'=>'admin_lang','icons'=>'admin_icons','help'=>'admin_help','labels'=>'labels');//,'desktop'=>'desktop'
 		foreach($r as $k=>$v){
 			$app=!is_numeric($k)?$k:$v;
-			if($k!='login')$ret[]=ajax($p['rid'],'apisql,call','app='.$app,'',$app,'btn');
+			if($k!='login')$ret[]=aj($p['rid'].'|apisql,call|app='.$app,$app,'btn');
 		}
 		return implode('',$ret);
 	}
@@ -49,10 +49,11 @@ class apisql{
 	static function content($p){
 		$p['rid']=randid('md');
 		$p['p1']=val($p,'param',val($p,'p1'));//unamed param before
-		$bt=input('app','value1',$p['p1'],'1');
-		$bt.=ajax($p['rid'],'apisql,call','','app',lang('import'),'btsav');
+		$bt=hlpbt('apisql');
+		//$bt=input('app','value1',$p['p1'],'1');
+		//$bt.=aj($p['rid'].'|apisql,call||app',lang('import'),'btsav');
 		$bt.=self::menu($p);
-		return $bt.div('','deco',$p['rid']);
+		return $bt.div('','',$p['rid']);
 	}
 }
 ?>

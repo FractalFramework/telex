@@ -7,9 +7,11 @@ class Build{
 		$pwidth=val($prm,'pagewidth'); $width=val($prm,'popwidth');
 		$style='min-width:320px;';
 		$style.=' max-width:'.($pwidth<640?$pwidth:($width?$width:$pwidth-100)).'px;';
-		$ret=tag('a',['class'=>'imbtn','onclick'=>'Close(\'popup\');'],picto('close',20));
-		$ret.=tag('a',['class'=>'imbtn','onclick'=>'Reduce(\'popup\');'],picto('less',20));
-		$ret.=tag('a',['class'=>'imbtn','onclick'=>'Repos();'],picto('ktop',20));		
+		$cl=picto('close',20); $min=picto('less',20); $rez=picto('ktop',20);
+		//$cl=pic('close',16); $min=pic('window-minimize',16); $rez=pic('window-restore',16);
+		$ret=tag('a',['class'=>'imbtn','onclick'=>'Close(\'popup\');'],$cl);
+		$ret.=tag('a',['class'=>'imbtn','onclick'=>'Reduce(\'popup\');'],$min);
+		$ret.=tag('a',['class'=>'imbtn','onclick'=>'Repos();'],$rez);		
 		$app=val($prm,'appName'); $mth=val($prm,'appMethod');
 		$lk=href('/app/'.$app,pic('link'),'black').' ';
 		$title=$lk.$app;//.($mth?'::'.$mth:'');

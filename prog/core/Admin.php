@@ -10,7 +10,7 @@ class Admin{
 			if($r)foreach($r as $k=>$v)if(is_dir($dr.'/'.$v))
 				if(is_file($dr.'/'.$v.'/'.$f))$appFile=$dr.'/'.$v.'/'.$f;
 			if($appFile)$ret=file_get_contents($appFile);
-			if(auth(6))$bt=ajax('popup','dev,com','headers=1,f='.$appFile,'',lang('edit'),'btn');
+			if(auth(6))$bt=aj('popup|dev,com|headers=1,f='.$appFile,lang('edit'),'btn');
 			if(isset($ret))return div($bt.Build::Code($ret),'pane');
 		}
 	}

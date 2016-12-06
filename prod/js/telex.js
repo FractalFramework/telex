@@ -19,7 +19,7 @@ function recbt(nbnew){if(nbnew)var rn=nbnew.split("-");
 	if(rn[3]>=1){btmsg.parentNode.className="btn abbt hlight";//messages
 		btmsg.innerHTML=rn[3]; btmsg.style=sty;}
 		else{btmsg.parentNode.className="btn abbt"; btmsg.innerHTML=""; btmsg.style="padding:0";}}
-function refresh(){var id=lastelex(); var prmtm=String(getbyid("prmtm").value);
+function refresh(){var id=lastelex(); var prmtm=getbyid("prmtm").value;//String()
 	if(id)ajaxCall("returnVar,nbnew|telex,refresh","since="+id+","+prmtm);
 	if(nbnew)setTimeout("recbt(nbnew)",200);}
 function telexlive(ok){if(ok)activelive=0;
@@ -28,8 +28,16 @@ addEvent(document,"scroll",function(event){loadscroll("telex,read","tlxbck")});
 
 //search
 function search2(id){
-	var d=getbyid(id).value; if(d){getbyid('prmtm').value='sr='+d;
-	ajaxCall("div,timbck,resetform|telex,search_txt","",id);}}
+	var d=getbyid(id).value; if(d){getbyid('prmtm').value='srh='+d;
+	ajaxCall("div,tlxbck|telex,search_txt","",id);}}
+function Search(old,id){
+	var ob=getbyid(id); if(ob!=null)var src=ob.value;
+	if(!src||src.length<2)return;
+	if(src!=old){if(!old)return SearchT(id); else return;}
+	if(src)search2(id);}
+function SearchT(id){var ob=getbyid(id); 
+	if(ob!=null)var old=ob.value; else var old='';
+	setTimeout(function(){Search(old,id)},1000);}
 
 //chat
 chatliv=1;

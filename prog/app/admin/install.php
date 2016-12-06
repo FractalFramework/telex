@@ -1,17 +1,13 @@
 <?php
-
-/**
-installation : set private=0; uncomment line 14.
-*/
-
+//installation : set private=0;
 class install{
 	static $private=6;
 	
 	static function menubt($dr,$f){
 		$app=before($f,'.');
 		if(method_exists($app,'install')){
-			echo $app.' - ';
-			//$app::install();
+			//echo $app.' - ';
+			$app::install();
 			return $f.br();
 		}
 	}
@@ -30,8 +26,9 @@ class install{
 	static function content($p){
 		$p['rid']=randid('md');
 		$bt=hlpbt('install').' ';
-		$bt.=ajax($p['rid'],'install,build','','',lang('install'),'btn');
-		return $bt.div('','deco',$p['rid']);
+		$bt.=aj($p['rid'].'|install,build',lang('install'),'btn');
+		$bt.=href('/app/apisql',lang('databases'),'btn');
+		return $bt.div('','',$p['rid']);
 	}
 }
 ?>

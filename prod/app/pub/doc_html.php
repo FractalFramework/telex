@@ -79,12 +79,12 @@ $ret.=textarea(\'inp2\',\'\',20,4,\'hello\');'));
 		//test
 		$options=array(1=>'one','two','three','four','five');
 		$attributs=array('id'=>'inp4','style'=>'');
-		$ret.=select($options,$attributs,'v','two');
+		$ret.=select($options,$attributs,'two','v');
 		//code
 		$ret.=tag('div','class=console',Build::Code('
 $options=array(1=>\'one\',\'two\',\'three\',\'four\',\'five\');
 $attributs=array(\'id\'=>\'inp4\',\'style\'=>\'\');
-$ret.=select($options,$attributs,\'v\',\'two\');'));
+$ret.=select($options,$attributs,\'two\',\'v\');'));
 		$ret.=br();
 		
 		#checkbox
@@ -102,11 +102,11 @@ $ret.=checkbox(\'options\',$opts,\'1\');'));
 		$ret.=tag('h2','','radio()');
 		//test
 		$opts=array('1b'=>lang('yes'),'2b'=>lang('no'));
-		$ret.=radio('position',$opts,'1',' ');
+		$ret.=radio($opts,'position','1');
 		//code
 		$ret.=tag('div','class=console',Build::Code('
 $opts=array(\'1\'=>lang(\'yes\'),\'2\'=>lang(\'no\'));
-$ret.=radio(\'position\',$opts,\'1\');'));
+$ret.=radio($opts,\'position\',\'1\');'));
 		$ret.=br();
 		
 		#datalist

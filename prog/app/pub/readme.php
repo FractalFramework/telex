@@ -12,8 +12,8 @@ class readme{
 	static function content($prm){
 		$f=val($prm,'file');
 		if($f)return self::read($prm,'');
-		$ret=ajax('pagup','readme,read','file=readme.txt','',lang('readme'),'btn');
-		$ret.=ajax('pagup','readme,read','file=releases.txt','',lang('releases'),'btn');
+		$ret=aj('pagup|readme,read|file=readme.txt',lang('readme'),'btn');
+		$ret.=aj('pagup|readme,read|file=releases.txt',lang('releases'),'btn');
 	return $ret;}
 }
 ?>

@@ -15,7 +15,8 @@ class dev2prod{
 		$fa=$dr.'/'.$f; $da=filemtime($fa); $sa=filesize($fa);
 		$fb='prod/'.substr($fa,5); Dir::mkdir_r($fb);
 		if(is_file($fb)){$db=filemtime($fb); $sb=filesize($fb);}
-		if($sa!=$sb or $da>$db){Dir::mkdir_r($old); copy($fb,$old.$f); copy($fa,$fb);
+		if($sa!=$sb or $da>$db){Dir::mkdir_r($old);
+			if(is_file($fb))copy($fb,$old.$f); copy($fa,$fb);
 		return before($f,'.',1);}
 	}
 	

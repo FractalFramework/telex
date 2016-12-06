@@ -51,7 +51,7 @@ class blockchains{
 		$ret.=hlpbt('blockchains');
 		$ret.=tag('textarea',array('id'=>'msg','cols'=>'100%','rows'=>'10','onkeyup'=>'connread()'),$p['msg']);
 		//param (app=blockchains,mth=reader) will use local connectors instead of default
-		$ret.=ajax($p['rid'],'Conn,load','app=blockchains,mth=reader','msg',lang('convert'),'btn').br();
-		return $ret.div(Conn::load($p),'deco',$p['rid']);}
+		$ret.=aj($p['rid'].'|Conn,load|app=blockchains,mth=reader|msg',lang('convert'),'btn').br();
+		return $ret.div(Conn::load($p),'',$p['rid']);}
 }
 ?>
