@@ -111,8 +111,8 @@ if(getbyid('page'))prm['pagewidth']=getbyid('page').offsetWidth-40;
 //var 
 var str=jrb(prm);
 //str=encodeURI(str);
-var host='http://'+window.location.hostname;
-var url=host+'/call.php?appName='+appName+appMethod+'&params='+str+'&'+cbMethod+'==';
+//var host='http://'+window.location.hostname;host+
+var url='/call.php?appName='+appName+appMethod+'&params='+str+'&'+cbMethod+'==';
 //send
 if(na){mem=[url,cbMethod,cbId,cbOption]; return;}
 else var ajax=new AJAX(url,cbMethod,cbId,cbOption);
