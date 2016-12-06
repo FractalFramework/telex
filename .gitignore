@@ -42,17 +42,13 @@ Network Trash Folder
 Temporary Items
 .apdisk
 *.xml
-*.txt
 _old
 _bckp
 _dev
-_old
 _notes
-db/ummo*
 cnfg/connect_phi.php
 cnfg/connect_tlex.php
 cnfg/twitter_oAuth.php
-app/oomo
 app/tlex
 fonts
 img
