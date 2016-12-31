@@ -118,7 +118,7 @@ class poll{
 		//pane
 		for($i=1;$i<=$nb;$i++)$ret.=self::pane($rb,$rs,$i,$sum,$closed,$vote,$com);
 		//footer
-		$ret.=span($sum.' '.lang('vote'.plurial($sum),1),'tot');
+		$ret.=span($sum.' '.plurial('vote',$sum,1),'tot');
 		if($closed)$state=lang('poll closed').' '.lang('the',1).' '.date('d/m/Y',$endtime);
 		else $state=lang('time left').' : '.self::leftime($endtime);
 		$ret.=div($state,'grey');

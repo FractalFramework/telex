@@ -1,6 +1,7 @@
 <?php
 class Help{
-	static function read($ref){$lg=ses('lng')?ses('lng'):parent::$lang;
+	static function read($ref){
+		$lg=ses('lng')?ses('lng'):(property_exists('paren','lang')?parent::$lang:'fr');
 		return Sql::read('txt','help','v','where ref="'.$ref.'" and lang="'.$lg.'"');}
 	static function get($p){$lg=ses('lng')?ses('lng'):self::$lang; $bt='';
 		$r=Sql::read('id,txt','help','rw','where ref="'.$p['ref'].'" and lang="'.$lg.'"');

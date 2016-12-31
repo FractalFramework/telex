@@ -17,7 +17,7 @@ class dev2prod{
 		if(is_file($fb)){$db=filemtime($fb); $sb=filesize($fb);}
 		if($sa!=$sb or $da>$db){Dir::mkdir_r($old);
 			if(is_file($fb))copy($fb,$old.$f); copy($fa,$fb);
-		return before($f,'.',1);}
+			return $f;}
 	}
 	
 	static function walkMethod($dir,$file){

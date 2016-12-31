@@ -3,22 +3,25 @@ var activelive=0; var nbnew=0; var reloadtime=10000;
 function lastelex(){var mnu=getbyid("tlxbck"); var firstchild=mnu.childNodes[0];
 	if(firstchild)if(mnu){var first=firstchild.id; return id=first.substr(3);}}
 function recbt(nbnew){if(nbnew)var rn=nbnew.split("-");
-	var btref=getbyid("tlxrec"); var btntf=getbyid("tlxntf");
-	var tlxsubnb=getbyid("tlxsubnb").value; var btmsg=getbyid("tlxmsg");
-	var sty='padding:0 3px; margin-left:4px;';
+	var btref=getbyid("tlxrec"); var btntf=getbyid("tlxntf"); var btmsg=getbyid("tlxmsg");
+	var tlxsub=getbyid("tlxsub"); var tlxabs=getbyid("tlxabs");
+	var styon="padding:0 3px;"; var styoff="padding:0;";
 	if(btref){var div=btref.parentNode;
 	if(rn[0]>=1){div.style="display:block;";//new posts
-		btref.innerHTML=rn[0]; btref.style=sty;}
-		else{div.style="display:none;"; btref.innerHTML=""; btref.style="padding:0;";}}
+		btref.innerHTML=rn[0]; btref.style=styon;}
+	else{div.style="display:none;"; btref.innerHTML=""; btref.style=styoff;}}
 	if(rn[1]>=1){btntf.parentNode.className="btn abbt hlight";//notifications
-		btntf.innerHTML=rn[1]; btntf.style=sty;}
-		else{btntf.parentNode.className="btn abbt"; btntf.innerHTML=""; btntf.style="padding:0";}
-	if(rn[2]){//subscriptions
-		if(rn[2]>tlxsubnb){tlxsub.parentNode.color="#0088e6"; tlxsub.innerHTML=rn[2];}
-		else{tlxsub.parentNode.color="#1da1f2"; tlxsub.innerHTML=tlxsubnb;}}
-	if(rn[3]>=1){btmsg.parentNode.className="btn abbt hlight";//messages
-		btmsg.innerHTML=rn[3]; btmsg.style=sty;}
-		else{btmsg.parentNode.className="btn abbt"; btmsg.innerHTML=""; btmsg.style="padding:0";}}
+		btntf.innerHTML=rn[1]; btntf.style=styon;}
+	else{btntf.parentNode.className="btn abbt"; btntf.innerHTML=""; btntf.style=styoff;}
+	if(rn[2]>=1)//subscriptions
+		//var tlxsubnb=getbyid("tlxsubnb").value;
+		tlxsub.style.color="#ff4000"; else tlxsub.style.color="#1da1f2";
+	if(rn[3]>=1)//approbations
+		//var tlxabsnb=getbyid("tlxabsnb").value;
+		tlxabs.style.color="#ff4000"; else tlxabs.style.color="#1da1f2";
+	if(rn[4]>=1){btmsg.parentNode.className="btn abbt hlight";//messages
+		btmsg.innerHTML=rn[4]; btmsg.style=styon;}
+	else{btmsg.parentNode.className="btn abbt"; btmsg.innerHTML=""; btmsg.style=styoff;}}
 function refresh(){var id=lastelex(); var prmtm=getbyid("prmtm").value;//String()
 	if(id)ajaxCall("returnVar,nbnew|telex,refresh","since="+id+","+prmtm);
 	if(nbnew)setTimeout("recbt(nbnew)",200);}

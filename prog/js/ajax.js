@@ -53,7 +53,7 @@ if(this.mRequest.readyState==4){wait=0;
 		else if(method=='mem')amt_ending();
 		if(option=='xy' || option=='y')Repos();
 		if(option=='x' || option=='xy')Close('popup');
-		if(option=='xx')setTimeout("Close('popup')",2000);
+		if(option=='xx')setTimeout("Close('popup')",4000);
 		//if(this.ajaxOption=='select')selectindiv(target);
 	}
 	else if(this.onError!=undefined){

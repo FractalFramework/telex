@@ -3,7 +3,7 @@
 class login{
 	static $private='0';
 	static $authlevel='1';
-	static $css='btsav';
+	static $css='btn';
 
 	static function headers(){
 		Head::add('csscode','#cbklg{display:inline;}');}
@@ -67,7 +67,7 @@ class login{
 		//$cntx=val($p,'cntx');
 		$ret=tag('input',['id'=>'user','placeholder'=>$user?$user:lang('user',1),'size'=>$sz,'maxlength'=>20,'onkeyup'=>'verifchars(this); verifusr(this);'],'',1).span(lang('user used'),'alert hide','usrexs').br();
 		$ret.=password('pass',lang('password',1),$sz,1);
-		$ret.=aj('lgkg|keygen,build',pic('key')).span('','','lgkg').br();
+		$ret.=aj('lgkg|keygen,build',pic('key')).div('','','lgkg');
 		$ret.=div(input('mail','',$sz,lang('mail',1)));
 		$ret.=hidden('auth',ses('authlevel'));
 		//$ret.=hidden('cntx',$cntx);
@@ -100,14 +100,12 @@ class login{
 		if($state=='loged_ok')return $state;//expected for reload
 		return self::reaction($state,$user);}
 	
-	static function loginForm($p){$ret='';
-		$user=val($p,'user'); $sz='18';
+	static function loginForm($p){$ret=''; $user=val($p,'user');
 		if(!$user)$user=Sql::read('name','login','v','where ip="'.ip().'"');
-		if($user)$ret=input('user',$user,$sz); else $ret=input('user','user',8,1);
-		$ret.=password('pass','*****',$sz,1);
-		$btn=langp('login');
-		//$ret.=aj('div,cbklg|login,authentificate|time='.time().'|user,pass',$btn,self::$css);//,reload
-		$ret.=aj('reload,cbklg,loged_ok|login,authentificate|time='.time().'|user,pass',$btn,self::$css);
+		if($user)$ret=input('user',$user,12); else $ret=input('user','user',8,1);
+		$ret.=password('pass','*****',10,1);
+		$j='reload,cbklg,loged_ok|login,authentificate|time='.time().'|user,pass';
+		$ret.=aj($j,langp('login'),self::$css);
 		return $ret;}
 	
 	static function loginBtn($user=''){
@@ -121,24 +119,36 @@ class login{
 		$alert=lang($state);
 		//$reload=href('/app/'.ses('app'),langp('reload'),self::$css);
 		switch($state){
-			case('loged'):$ret=self::loged($user).' '.self::logoutBtn($user); break;
-			case('loged_ok'):$ret=self::loged($user).' '.self::logoutBtn($user); break;
-			case('loged_out'):$ret=$login.' '.self::registerBtn($user); break;
+			case('loged'):$ret=self::loged($user).self::logoutBtn($user); break;
+			case('loged_ok'):$ret=self::loged($user).self::logoutBtn($user); break;
+			case('loged_out'):$ret=$login.self::registerBtn($user); break;
 			case('loged_private'):$ret=$login; break;
-			case('bad_password'):$ret=$login.' '.self::recoverBtn($user); break;
-			case('unknown_user'):$ret=$login.' '.self::registerBtn($user); break;
-			case('register_fail'):$ret=$login.' '.self::registerBtn($user); break;
+			case('bad_password'):$ret=$login.self::recoverBtn($user); break;
+			case('unknown_user'):$ret=$login.self::registerBtn($user); break;
+			case('register_fail'):$ret=$login.self::registerBtn($user); break;
 			case('register_error'):$ret=self::registerBtn($user); break;
 			case('register_fail_mail'):$ret=self::registerBtn($user); break;
 			case('register_fail_aex'):$ret=self::registerBtn($user); break;
 			case('recovery_mailsent'):$ret=help('recovery_mailsent'); break;
 			case('recovery_set'):$ret=self::recoverValidation($user); break;
-			default:$ret=div($alert,'small'); break;
+			default:$ret=span($alert,'small'); break;
 		}
 		if($alert && $state!='loged' && $state!='loged_ok' && $state!='loged_out')
-			$ret=div($alert,'alert').$ret;
+			$ret=span($alert,'alert').$ret;
 		//if($state=='loged_ok')reload('/');
 		return $ret;}
+	
+	//content
+	static function com($p){$ret=''; $user='';
+		$auth=val($p,'auth');
+		if(val($p,'o'))self::$css='btn abbt';
+		ses('authlevel',$auth?$auth:self::$authlevel);
+		$state=Auth::login('','');
+		if($state=='ip_found')$user=Auth::getUserByUid(ses('uid'));
+		elseif($state=='cookie_found')$user=cookie('user');
+		elseif($state=='loged')$user=ses('user');
+		$ret.=self::reaction($state,$user);
+	return div($ret,'','cbklg');}
 	
 	//content
 	static function content($p){$ret='';

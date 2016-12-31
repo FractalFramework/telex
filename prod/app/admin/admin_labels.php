@@ -2,7 +2,6 @@
 
 class admin_labels{
 	static $private='6';
-	static $langs=array('en','fr');
 
 	static function headers(){
 		Head::add('csscode','');

@@ -4,7 +4,7 @@ class Trans{
 	static $conn=['h1'=>'h1','h2'=>'h2','h3'=>'h3','b'=>'b','i'=>'i','u'=>'u','blockquote'=>'q','em'=>'b','sup'=>'e','strike'=>'k','small'=>'s','sup'=>'sup','sub'=>'sub','ul'=>'list','ol'=>'numlist'];
 
 	static function tags($tag,$atb,$txt){switch($tag){
-	case('a'): $u=segment($atb,'href="','"'); return '['.$u.'*'.$txt.':a]'; break;
+	case('a'): $u=segment($atb,'href="','"'); return '['.$u.'*'.$txt.':url]'; break;
 	case('img'): $u=segment($atb,'src="','"'); return '['.$u.':img]'; break;
 	case('table'): return '['.$txt.':table]';break;
 	case('tr'): return $txt.'¬'; break;

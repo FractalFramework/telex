@@ -35,7 +35,8 @@ class Menu{
 	static function subub($btn,$dir,$app,$mth){
 		$id=randid('bub');
 		$mode=strpos($dir,'/')===false?'1':'';//vertical bubble for the first level
-		if(Icon::ex($btn))$ico=pico($btn); else $ico=pic('chevron-right');
+		if($btn==ses('user'))$ico=pic('user-circle-o');
+		elseif(Icon::ex($btn))$ico=pico($btn); else $ico=pic('chevron-right');
 		if(Lang::ex($btn))$btn=lang($btn);
 		if($mode)$btn=span($btn,'react');
 		if(!$mode)$ico=span($ico,'ico'); else $ico=$ico.' ';

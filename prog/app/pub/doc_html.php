@@ -48,12 +48,12 @@ $ret=href(\'//ph1.fr\',\'ph1.fr\',\'btn\');'));
 		#img
 		$ret.=tag('h2','','img()');
 		//test
-		$ret.=img('icon/account-login-2x.png');
+		$ret.=img('usr/telex/account-login-2x.png');
 		//code
 		$ret.=tag('div','class=console',Build::Code('
 //4th param close tag with />
-$ret=tag(\'img\',array(\'src\'=>\'icon/account-login-2x.png\'),\'\',1);
-$ret=img(\'icon/account-login-2x.png\');'));
+$ret=tag(\'img\',array(\'src\'=>\'usr/telex/account-login-2x.png\'),\'\',1);
+$ret=img(\'usr/telex/account-login-2x.png\');'));
 		$ret.=br();
 		
 		#input
@@ -78,13 +78,11 @@ $ret.=textarea(\'inp2\',\'\',20,4,\'hello\');'));
 		$ret.=tag('h2','','select()');
 		//test
 		$options=array(1=>'one','two','three','four','five');
-		$attributs=array('id'=>'inp4','style'=>'');
-		$ret.=select($options,$attributs,'two','v');
+		$ret.=select('inp4',$options,'two','v');
 		//code
 		$ret.=tag('div','class=console',Build::Code('
 $options=array(1=>\'one\',\'two\',\'three\',\'four\',\'five\');
-$attributs=array(\'id\'=>\'inp4\',\'style\'=>\'\');
-$ret.=select($options,$attributs,\'two\',\'v\');'));
+$ret.=select(\'inp4\',$options,\'two\',\'v\');'));
 		$ret.=br();
 		
 		#checkbox

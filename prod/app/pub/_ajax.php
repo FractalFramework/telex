@@ -67,8 +67,7 @@ class _ajax{
 		$ret.=textarea('inp3','',20,4,'hello');
 		
 		$options=array(1=>'one','two','three','four','five');
-		$attributs=array('id'=>'inp4','style'=>'');
-		$ret.=select($options,$attributs,'two','v');
+		$ret.=select('inp4',$options,'two','v');
 			
 		$params=array(
 			'com'=>'div,callback,y',

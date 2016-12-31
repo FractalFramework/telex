@@ -35,7 +35,7 @@ class petition{
 		if($pid){$r=Sql::read('id,ptit,ptxt,pcl,dateup','petition_lead','ra','where id='.$pid);
 			$n=Sql::read('count(id)','petition_vals','v','where pid='.$pid);}
 		$ret=div($r['ptit'],'tit').div($r['ptxt'],'txt');
-		if($n)$nb=' '.span($n.' '.lang('signature'.plurial($n)),'btok');
+		if($n)$nb=' '.span($n.' '.plurial('signature',$n),'btok');
 		if(self::already($pid))$ret.=help('petition_filled','valid').$nb;
 		else $ret.=div(aj('fcbk|petition,sav|pid='.$pid.',rid='.$rid,langp('sign'),'btsav').$nb);//send
 		return div($ret,'paneb','fcbk');}

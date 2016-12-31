@@ -4,10 +4,10 @@ class unit{
 	static $private='6';
 	
 	static function locate($d){
-		$r=sesfunc('scandir','app');
-		if($r)foreach($r as $k=>$v)
-			if(file_exists('core/'.$v.'/'.$d.'.php'))return 'core/'.$v.'/'.$d.'.php';
-			elseif(file_exists('app/'.$v.'/'.$d.'.php'))return 'app/'.$v.'/'.$d.'.php';}
+		$r=sesfunc('scandir','app'); $dr=ses('dev').'/';
+		if($r)foreach($r as $k=>$v){$f=$v.'/'.$d.'.php';
+			if(file_exists($dr.'core/'.$f))return $dr.'core/'.$f;
+			elseif(file_exists($dr.'app/'.$f))return $dr.'app/'.$f;}}
 	
 	static function view($app,$mth){
 		$f=self::locate($app);

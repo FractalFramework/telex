@@ -12,12 +12,12 @@ static $usr='';
 
 //install
 static function install(){
-Sql::create(self::$db,['uid'=>'int','txt'=>'var','lbl'=>'int','ib'=>'int','no'=>'int'],'1');
-Sql::create('telex_ab',['usr'=>'var','ab'=>'var','list'=>'var','no'=>'int'],'');
+Sql::create(self::$db,['uid'=>'int','txt'=>'var','lbl'=>'int','ib'=>'int','no'=>'int']);
+Sql::create('telex_ab',['usr'=>'var','ab'=>'var','list'=>'var','wait'=>'int'],1);
 Sql::create('telex_web',['url'=>'var','tit'=>'var','txt'=>'var','img'=>'var']);
 Sql::create('telex_lik',['luid'=>'int','lik'=>'int']);
-Sql::create('telex_rpt',['rpuid'=>'int','tlxid'=>'int'],1);
-//typntf:1=quote,2=reply,3=like,4=subsc,5=chat
+Sql::create('telex_rpt',['rpuid'=>'int','tlxid'=>'int']);
+//typntf:1=quote,2=reply,3=like,4=subsc,5=chat,6=subsc-approve
 Sql::create('telex_ntf',['4usr'=>'var','byusr'=>'var','typntf'=>'int','txid'=>'var','state'=>'int']);}
 
 static function titles($p){
@@ -49,11 +49,12 @@ Head::add('jscode',self::injectJs());}
 
 #ajax
 static function refresh($p){$own=ses('user');
-$p['count']=1; $recents=self::api($p);
-$notifs=Sql::read('count(id)','telex_ntf','v','where 4usr="'.$own.'" and (typntf=1 or typntf=2 or typntf=3) and state=1');//typntf:1=quote,2=reply,3=like,4=subsc,5=chat
-$subscr=Sql::read('count(id)','telex_ntf','v','where 4usr="'.$own.'" and typntf=4 and state=1');
-$chat=Sql::read('count(id)','telex_ntf','v','where 4usr="'.$own.'" and typntf=5 and state=1');
-return $recents.'-'.$notifs.'-'.$subscr.'-'.$chat;}
+$p['count']=1; $recents=self::api($p); $w='where 4usr="'.$own.'" and state=1';
+$notifs=Sql::read('count(id)','telex_ntf','v',$w.' and typntf in (1,2,3)');//quote,reply,like
+$subscr=Sql::read('count(id)','telex_ntf','v',$w.' and typntf=4');//subscr
+$approv=Sql::read('count(id)','telex_ntf','v',$w.' and typntf=6');//approve
+$chat=Sql::read('count(id)','telex_ntf','v',$w.' and typntf=5');//chat
+return $recents.'-'.$notifs.'-'.$subscr.'-'.$approv.'-'.$chat;}
 
 #saves
 static function savemetas($d){
@@ -106,6 +107,7 @@ if($txt){$txt=self::build_conn($txt,1);
 	if(isset($_POST['ntf']))self::saventf($id,1,'ntf');
 	if(isset($_POST['ntf-r']))self::saventf($id,2,'ntf-r');}
 if(val($p,'apicom'))return isset($id)?$id:'error';
+//if($ib=val($p,'ib'))$p['usr']=;
 return self::read($p);}
 
 #editor	
@@ -136,6 +138,7 @@ $ret.=tag('textarea',$r,$msg);//form
 $count=span('255','btxt small','strcnt'.$rid).' ';
 $ja='div,tlxbck,resetform|telex,save|ibs='.$ib.',ids='.$rid.'|'.$rid.',lbl';
 $prm['onclick']='closediv(\'tlxapps\'); closediv(\'lbcbk\');'; $prm['id']='edtbt';
+$prm['data-prmtm']='tm='.ses('user');//'current';//return to current prmtm
 $sav=span($count.aj($ja,langp('publish'),'btsav',$prm),'right').' ';//save
 if(!$ib && !$qo && !$to && !$id){
 	$tg=dropdown('tlxcall,menuapps|rid='.$rid,langph('applications'),'btn');
@@ -155,7 +158,12 @@ return $ret;}
 #players
 static function playmetas($d){
 return Sql::read('tit,txt,img','telex_web','rw','where url="'.$d.'"');}
-	
+
+static function playlink($d){
+$d=http($d); $r=self::playmetas($d); $t=domain($d);
+$r=array('href'=>$d,'title'=>$r[1],'class'=>'btlk','target'=>'_blank');
+return tag('a',$r,$t);}
+
 static function playweb($d,$o=''){
 $d=http($d); $r=self::playmetas($d); //$r=self::savemetas($d);
 if($o){$p=Video::provider($d); if($p)$id=Video::extractid($d,$p);}
@@ -165,8 +173,8 @@ if(!$r)return $lk;
 if(substr($r[2],0,4)=='http'){$f=$r[2];
 	if($r[2])$imx=@getimagesize($r[2]); else $imx[0]='x';
 	if(is_numeric($imx[0]))$img=img($r[2],'590'); else $img='';}
-elseif($r[2])$f=self::thumb($r[2],'medium'); else $f='';
-if(is_file($f))$img=img('/'.$f,'590'); else $img='';
+elseif($r[2])$f=self::thumb($r[2],'full'); else $f='';
+if(filesize($f)>33334)$img=img('/'.$f,'590'); else $img='';
 if($img && isset($id))$ban=pagup('Video,call|p='.$p.',id='.$id,$img,'');
 elseif($img)$ban=pagup('telex,objplayer|popwidth=550px,obj=playweb,p1='.nohttp($d),$img,'');
 else $ban=$img;
@@ -217,12 +225,15 @@ switch($c){
 	case('list'):return Conn::mklist($p); break;
 	case('id'):if(is_numeric($p))return self::playquote($p); break;
 	case('url'):return self::url($p,$o,''); break;
-	case('img'):$ret=''; if(Conn::$one!=1)$ret=self::playthumb($p,'full');
+	case('link'):return self::playlink($p); break;
+	case('img'):if(Conn::$one!=1)$ret=self::playthumb($p,'full'); else $ret='';
 		self::$objects[$c][]=[$p,$o]; Conn::$one=1; return $ret; break;
-	case('web'):self::$objects[$c][]=[$p,$o]; return self::playweb($p); break;
+	case('web'):if(Conn::$one!=1)$ret=self::playweb($p); else $ret=self::playlink($p);
+		self::$objects[$c][]=[$p,$o]; Conn::$one=1; return $ret; break;
+	case('video'):if(Conn::$one!=1)$ret=self::playweb($p,1); else $ret='';
+		self::$objects[$c][]=[$p,$o]; Conn::$one=1; return $ret; break;
 	case('audio'):return audio($p); break;
 	case('mp4'):return video($p); break;
-	case('video'):self::$objects[$c][]=[$p,$o]; return self::playweb($p,1); break;
 	case('art'):return href('/art/'.$p,article::tit(['id'=>$p]),'btlk'); break;
 	case('article'):self::$objects[$c][]=[$p,$o]; return; break;
 	case('chat'):self::$objects[$c][]=[$p,$o]; return; break;
@@ -285,70 +296,38 @@ $ret=aj($rid.'|telex,savelike|id='.$id.',lid='.$mylik.',name='.$p['name'],$bt);
 return span($ret,'',$rid);}
 
 #follow
-static function follow($p){
-$usr=val($p,'usr'); $list=val($p,'follow',val($p,'subschan'));
-$unf=val($p,'unfollow'); $rid=val($p,'rid');
-if($list){
-	$id=Sql::read('id','telex_ab','v','where usr="'.ses('user').'" and ab="'.$usr.'"');
-	if($id)Sql::update('telex_ab','list',$list,$id);
-	else{Sql::insert('telex_ab',[ses('user'),$usr,$list]);
-		$_POST['ntf-ab'][$usr]=1; self::saventf(ses('user'),4,'ntf-ab');}
-	return self::followbt($p);}
-elseif($unf){Sql::delete('telex_ab',$unf);
-	$ntf=Sql::read('id','telex_ntf','v','where 4usr="'.$usr.'" and typntf=4');
-	Sql::delete('telex_ntf',$ntf); return self::followbt($p);}
-elseif(val($p,'chan')){$r=Sql::read('distinct(list)','telex_ab','k','where usr="'.$usr.'"');
-	$act=Sql::read('list','telex_ab','v','where usr="'.ses('user').'" and ab="'.$usr.'"');
-	$r=merge($r,['mainstream'=>1,'local'=>1,'global'=>1,'passion'=>1,'extra'=>1]);
-	$ret=div(lang('subscribe_list'),'btit'); $bt='';
-	$ret.=input('subschan','').' ';
-	$ret.=aj($rid.'|telex,follow|usr='.$usr.',rid='.$rid.'|subschan',lang('ok',1),'btsav');
-	foreach($r as $k=>$v){$c=$k==$act?'active':'';
-		$bt.=aj($rid.'|telex,follow|usr='.$usr.',rid='.$rid.',follow='.$k,$k,$c);}
-	return div($ret.div($bt,'list'),'pane',$rid);}}
-
-static function followbt($p){$usr=val($p,'usr'); $sm=val($p,'small'); $rid=val($p,'rid',randid('flw'));
-$id=Sql::read('id','telex_ab','v','where usr="'.ses('user').'" and ab="'.$usr.'"');
-if($id){$bt=$sm?pico('unfollow'):langph('unfollow');
-	$ret=dropdown('telex,follow|chan=1,usr='.$usr.',rid='.$rid,pico('menu'),'');
-	$ret.=aj($rid.'|telex,follow|usr='.$usr.',unfollow='.$id.',rid='.$rid,$bt,'btdel');}
+static function followbt($p){$rid=val($p,'rid',randid('flw'));
+$usr=val($p,'usr'); $sm=val($p,'small'); //$wait=val($p,'wait');//vcu
+$w='where usr="'.ses('user').'" and ab="'.$usr.'"';
+$id=Sql::read('id','telex_ab','v',$w);
+$wait=Sql::read('wait','telex_ab','v',$w);//contexts:user see visitor (ucv),
+if($id){
+	$flag=$wait?'pending':'unfollow'; $bt=$sm?pico($flag):langph($flag);
+	$ret=dropdown('tlxcall,follow|chan=1,usr='.$usr.',rid='.$rid,pico('menu'),'');
+	$ret.=aj($rid.'|tlxcall,follow|usr='.$usr.',unfollow='.$id.',rid='.$rid,$bt,'btdel');}
 else{$bt=$sm?pico('follow'):langph('follow');
-	$ret=dropdown('telex,follow|chan=1,usr='.$usr.',rid='.$rid,$bt,'btsav');}
+	$ret=dropdown('tlxcall,follow|chan=1,usr='.$usr.',rid='.$rid,$bt,'btsav');}
 $c=val($p,'rid')?'':'followbt';
 return span($ret,$c,$rid);}
 
 #subscriptions
-static function subscrptn($p){$type=val($p,'type'); $usr=val($p,'usr'); $ret='';
-if($type=='ber')$r=Sql::read('usr','telex_ab','k','where ab="'.$usr.'"');
-elseif($type=='ption')$r=Sql::read('ab','telex_ab','k','where usr="'.$usr.'"');
-$n=isset($r)?count($r):'';
-$tit=div($n.' '.lang('subscri'.$type.plurial($n)),'btit');
-//new
-if($type=='ber'){
-	$rb=Sql::read('txid,id','telex_ntf','kv','where 4usr="'.$usr.'" and typntf=4 and state=1');
-	if($n=count($rb)){$newabs=implode(', ',array_keys($rb));
-		$tit.=tag('h3','',$n.' '.lang('new subscriber'.plurial($n)).': '.$newabs);}
-	if($rb)foreach($rb as $k=>$v){$ret.=self::profile(['usr'=>$k,'small'=>1]);
-		unset($r[$k]); Sql::update('telex_ntf','state','0',$v);}}
-if($r)foreach($r as $k=>$v)$ret.=self::profile(['usr'=>$k,'small'=>1]);
-return $tit.div($ret,'cols');}
-
 static function subscribt($usr,$uid){
 if(!$uid)$uid=Sql::read('id','login','v','where name="'.$usr.'"');
 $n0=Sql::read('count(id)',self::$db,'v','where uid="'.$uid.'"');
 $n1=Sql::read('count(id)','telex_ab','v','where usr="'.$usr.'"');
 $n2=Sql::read('count(id)','telex_ab','v','where ab="'.$usr.'"');
 $bt=div(div(lang('published telex'),'subscrxt').div($n0,'subscrnb'),'subscrbt');
-$ret=self::loadtm('tm='.$usr.',noab=1',$bt);
-$bt=div(div(lang('subscriptions'),'subscrxt').div($n1,'subscrnb'),'subscrbt');
-$ret.=aj('tlxbck|telex,subscrptn|type=ption,usr='.$usr,$bt);
+$ret=self::loadtm('tm='.$usr.',noab=1',$bt,'');//timbck
+$bt=div(div(lang('subscriptions'),'subscrxt').div(span($n1,'','tlxabs'),'subscrnb'),'subscrbt');
+$ret.=aj('tlxbck|tlxcall,subscrptn|type=ption,usr='.$usr.'|tlxabs',$bt);
 $bt=div(div(lang('subscribers'),'subscrxt').div(span($n2,'','tlxsub'),'subscrnb'),'subscrbt');
-$ret.=aj('tlxbck|telex,subscrptn|type=ber,usr='.$usr.'|tlxsub',$bt);
-$ret.=hidden('tlxsubnb',$n2).div('','clear');
-return $ret;}
+$ret.=aj('tlxbck|tlxcall,subscrptn|type=ber,usr='.$usr.'|tlxsub',$bt);
+$ret.=hidden('tlxsubnb',$n2).hidden('tlxabsnb',$n1).div('','clear');
+return div($ret,'subscrstats');}
 
 #profile	
-static function profile($p){$usr=val($p,'usr'); $uid=val($p,'uid'); $sm=val($p,'small'); $ret='';
+static function profile($p){$ret='';
+$usr=val($p,'usr'); $uid=val($p,'uid'); $sm=val($p,'small');
 if($usr){$ret=div(profile::read($p),'','prfl');
 	//if(ses('user')!=$usr)$ret.=div(self::followbt(['usr'=>$usr]),'subscrbt');
 	if(ses('user')==$usr && !$sm)$ret.=div(self::subscribt($usr,$uid),'subscrban');}
@@ -369,7 +348,7 @@ static function readntf($v){$n=$v['typntf']; $by='@'.$v['byusr']; $ret='';
 if($v['state']==1)Sql::update('telex_ntf','state','0',$v['ntid']);
 if($n==1 && $v['ib'])$ret=$by.' '.lang('has_reply',1); 
 elseif($n==1)$ret=$by.' '.lang('has_sent',1);
-elseif($n==2)$ret=$by.' '.lang('has_repost',1); 
+elseif($n==2)$ret=$by.' '.lang('has_repost',1);
 elseif($n==3)$ret=$by.' '.lang('has_liked',1);
 return div($ret,'ntftit');}
 
@@ -377,7 +356,8 @@ return div($ret,'ntftit');}
 static function chanread($usr){
 return Sql::read('distinct(list)','telex_ab','rv','where usr="'.$usr.'"');}
 static function chanbt(){$ret=self::loadtm('tm='.ses('user'),lang('all'));
-$r=sesclass('telex','chanread',ses('user'));//$r=self::chanread(ses('user'));
+//$r=sesclass('telex','chanread',ses('user'));//todo reactive after subscr
+$r=self::chanread(ses('user'));
 if($r)foreach($r as $v)$ret.=self::loadtm('tm='.ses('user').',list='.$v,$v);
 return div($ret,'list');}
 
@@ -396,7 +376,7 @@ static function desktop($p){$css=val($p,'mode','licon');
 //$bt=aj('dsk|telex,desktop|mode=licon',pic('list'),'btxt');
 //$bt.=aj('dsk|telex,desktop|mode=cicon',pic('th-large'),'btxt');
 $bt=href('/desktop/'.ses('user'),pic('link'),'btxt');
-$bt.=ses('user').ses('uid');
+//$bt.=ses('user').ses('uid');
 $ret=div($bt,'right');
 $r=Sql::read('id,dir,type,com,picto,bt,auth','desktop','id','where uid="'.ses('uid').'" and auth<="'.ses('auth').'" and dir="/documents" order by id desc limit 10');
 //$j=Ajax::js(array('com'=>'popup','app'=>'tlxcall,deskedt','prm'=>'id='.$r[0].',dir='.$r[1]));
@@ -420,8 +400,6 @@ elseif($time>3600)$ret.=floor($time/3600).'h ';
 elseif($time>60)$ret.=floor($time/60).'min ';
 else $ret.=$time.'s';
 return span($ret,'small');}
-
-static function clr(){$d='mintcream thistle olivedrab lightyellow lightsteelblue lightblue lavender greenyellow darkseagreen darkkhaki cornflowerblue cadetblue blanchedalmond ThreeDLightShadow scrollbar';}
 
 //thread
 static function thread_parents($id,$ret=''){
@@ -460,7 +438,7 @@ $id=$v['id']; $idv=$v['idv']; $pr='pn'.$idv; $usr=$v['name']; $ret='';
 $ret.=toggle($pr.'|telex,editor|idv='.$idv.',to='.$v['name'].',ib='.$id,picit('reply','to reply'));
 $ret.=toggle($pr.'|telex,editor|idv='.$idv.',quote='.$id,picit('retweet','quote'));
 $ret.=self::likebt($v);
-$ret.=toggle($pr.'|tlxcall,share|id='.$id.',txt='.$v['txt'],picit('share-alt','share'));
+$ret.=toggle($pr.'|tlxcall,share|id='.$id,picit('share-alt','share'));
 if($usr==ses('user'))
 	$ret.=toggle($pr.'|tlxcall,del|idv='.$idv.',did='.$id,picit('bolt','delete','del'));
 if(self::$objects)
@@ -469,7 +447,6 @@ $ret.=toggle($pr.'|tlxcall,report|idv='.$idv.',id='.$id.',cusr='.$usr,picit('war
 return $ret;}
 
 static function pane($v,$current=''){$id=$v['id']; $usr=$v['name'];
-//if($v['privacy'] && $usr!=ses('user'))return;//ne discerne pas les droits individuels
 if($current){$v['idv']='plx'.$id; $tg='popup,,x';}
 else{$v['idv']='tlx'.$id; $tg='popup';}
 $avatar=bubble('telex,profile|usr='.$usr.',small=1',self::avatar($v),'btxt',1);
@@ -492,6 +469,11 @@ if($current==$id){self::$title='telex.fr/'.$id.' by @'.$usr; self::$description=
 	self::$image='http://tlex.fr/img/mini/'.$v['avatar'];}
 return $ret;}
 
+static function readusr($p){$usr=$p['usr'];
+$prv=Sql::read_inner('privacy','profile','login','puid','v','where name="'.$usr.'"');
+if($prv)return div(pic('lock').hlpxt('private account'),'pane');
+else return self::read($p);}
+
 static function read($p){$ret=''; $id='';//$id will be in popup
 $last=val($p,'from'); $th=val($p,'th'); $id=val($p,'id');
 $rs=val($p,'rs'); $ib=val($p,'ib'); 
@@ -508,7 +490,7 @@ return $ret;}
 #api
 static function sql_timeline($usr,$from,$list,$noab,$since,$labl,$count){$sq='';
 if(!$noab && !$labl){$sqa=$list?' and list="'.$list.'"':'';
-	$r=Sql::read('ab','telex_ab','rv','where usr="'.$usr.'"'.$sqa,0);
+	$r=Sql::read('ab','telex_ab','rv','where usr="'.$usr.'"'.$sqa.' and wait=0',0);
 	if($r)$sq=' or name="'.implode('" or name="',$r).'"';}
 if($labl)$ret='where labels.id="'.$labl.'"';
 elseif($list && !$noab)$ret='where ('.substr($sq,4).')';
@@ -522,7 +504,7 @@ return $ret.' '.$from.' '.$limit;}//and no!=1
 static function api($p){
 $p=vals($p,['tm','th','id','ib','srh','ntf','from','list','noab','since','labl','count']);
 if($p['count']){$cols='count('.self::$db.'.id)'; $vmode='v';}
-else{$cols=''.self::$db.'.id,uid,name,txt,unix_timestamp('.self::$db.'.up) as now,ib,telex_lik.id as lid,pname,avatar,clr,ref,icon,privacy,no'; $vmode='rr';}
+else{$cols=self::$db.'.id,uid,name,txt,unix_timestamp('.self::$db.'.up) as now,ib,telex_lik.id as lid,pname,avatar,clr,ref,icon,privacy,no'; $vmode='rr';}
 $inn='left join login on login.id=uid left join profile on puid=uid left join telex_lik on '.self::$db.'.id=lik left join labels on lbl=labels.id ';
 if($p['since'])$since=' and '.self::$db.'.id>'.$p['since']; else $since='';
 if($p['id'])$where='where '.self::$db.'.id='.$p['id'].$since;
@@ -546,11 +528,11 @@ foreach($r as $k=>$v){self::$objects='';
 return json_r($r);}
 
 //load button
-static function loadtm($p,$t,$c=''){
-if($c)$r['class']=$c;
+static function loadtm($p,$t,$c='',$tg=''){
+if($c)$r['class']=$c; if(!$tg)$tg='tlxbck';
 $r['onclick']='refresh();';
 $r['data-prmtm']=$p; $r['onmousedown']='ajbt(this)';
-$r['data-j']='div,tlxbck,,resetscroll|telex,read|'.($p=='current'?'':$p);
+$r['data-j']='div,'.$tg.',,resetscroll|telex,read|'.($p=='current'?'':$p);
 return tag('a',$r,$t);}
 	
 static function vrfusr($d){return Sql::read('id','login','v','where name="'.$d.'"');}
@@ -558,12 +540,11 @@ static function vrfid($d){return Sql::read_inner('name',self::$db,'login','uid',
 
 #content
 static function content($p){$badusr=''; $badid=''; $dsk='';
-$own=ses('user'); $desk=val($p,'desk'); $chat=val($p,'chat'); $ntf=val($p,'ntf'); $art=val($p,'art');
+$own=ses('user'); $desk=val($p,'desk'); $chat=val($p,'chat'); 
+$ntf=val($p,'ntf'); $art=val($p,'art');
 //self::install();
 //if(ses('dev')=='prog')self::$db='telex_xt';
-sesif('lng',Lang::$lang);
-if(!$own)$login=Auth::logbt('0');//,span('bub')
-//else $login=ajtime('telex,profilemenu','',pic('user').' '.$own,'btn abbt');
+if(!$own)$login=login::com(['auth'=>2]);
 else $login=Menu::call(array('app'=>'tlxcall','method'=>'profilemenu'));
 //usr
 $usr=val($p,'usr'); $id=val($p,'id',val($p,'th')); if(is_numeric($usr)){$id=$usr; $usr='';}
@@ -573,9 +554,8 @@ if(!$usr && $own)$p['usr']=$own;
 if($id){$okid=self::vrfid($id); if(!$okid){$badid=1; $id='';} else{$p['id']=$id; $usr=$okid;}}
 //nav
 $nav=span($login,'right');
-$nav.=span(href('/',pic('comments-o').ses('user'),'btn abbt'),'');
-//$nav.=self::loadtm('tm='.$usr,langph('home'),'btn abbt');
-//$nav.=pagup('Help,com|ref=telex_nfo',pic('info'),'btn').' ';
+$nav.=span(href('/',langph('telex'),'btn abbt'),'');
+//$nav.=self::loadtm('tm='.$usr,langph('telex'),'btn abbt');
 if(ses('uid')){
 	$bt=langph('notifications').span('','nbntf','tlxntf');
 	//$nav.=aj('tlxbck|telex,read|ntf=1|tlxntf',$bt,'btn abbt');
@@ -610,6 +590,7 @@ elseif($art)$stream=App::open('article',['id'=>$art,'appFrom'=>'telex']);
 elseif(!$usr && !$own && !$id)$stream=App::open('article',['id'=>6]);
 elseif($desk)$stream=Desk::load('desktop','com',val($p,'dir','/documents'));
 elseif($chat)$stream=App::open('chat','');
+elseif($usr && $usr!=$own)$stream=self::readusr($p);
 else $stream=self::read($p);
 $stream=div($stream,'','tlxbck');
 //render
@@ -622,7 +603,9 @@ $cnt=div($profile.$dsk.$credits,'dashboard'.$hdash,'',$rs[1]);
 $cnt.=div($publish.$refresh.$stream,'timeline'.$htime,'timbck',$rs[1]);
 //prmtm
 if(val($p,'th'))$pmtm='th='.$usr; elseif($ntf)$pmtm='ntf=1,usr='.$usr; 
-elseif(!$id && !$desk && !$chat && !$art)$pmtm='tm='.($usr?$usr:$own); else $pmtm='';
+elseif(!$id && !$desk && !$chat && !$art){
+	if($usr)$pmtm='noab=1,tm='.$usr; else $pmtm='tm='.$own;}
+else $pmtm='';
 $cnt.=hidden('prmtm',$pmtm);
 self::$usr=$usr;
 //$cnt.=Head::jscode('alert(getbyid(\'prmtm\').value);');

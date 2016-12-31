@@ -16,8 +16,7 @@ class doc_ajax{
 		$ret.=tag('label','for=checkbox,class=small','checkbox','');
 		$ret.=textarea('textarea','',20,4,'hello');
 		$options=array(1=>'one','two','three','four','five');
-		$attributs=array('id'=>'select','style'=>'');
-		$ret.=select($options,$attributs,'two','v');
+		$ret.=select('select',$options,'two','v');
 			
 		$params=array(
 			'com'=>'div,callback2,y',
@@ -148,8 +147,7 @@ $ret.=textarea(\'textarea\',\'\',20,4,\'hello\');
 
 //select
 $options=array(1=>\'one\',\'two\',\'three\',\'four\',\'five\');
-$attributs=array(\'id\'=>\'select\',\'style\'=>\'\');
-$ret.=select($options,$attributs,\'two\',\'v\');
+$ret.=select(\'select\',$options,\'two\',\'v\');
 
 //send button
 $params=array(

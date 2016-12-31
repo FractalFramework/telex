@@ -14,7 +14,7 @@ class article{
 		function fontsize(n){var txt=document.getSelection(); alert(txt);}';}
 	
 	static function headers(){
-		Head::add('csscode','');
+		Head::add('csscode','.wrapper{max-width:600px; margin:0 auto;}');
 		Head::add('jscode',self::injectJs());}
 	
 	static function wysiwyg($id){$ret='';//'insertHTML'=>'conn'
@@ -22,7 +22,7 @@ class article{
 		//$ret.=tag('button',array('onclick'=>'format(\'FontSize\',\'22\');'),pic('font'));
 		$r=array('bold'=>'bold','italic'=>'italic','underline'=>'underline','insertUnorderedList'=>'list-ul','insertOrderedList'=>'list-ol','Indent'=>'indent','Outdent'=>'outdent','JustifyLeft'=>'align-left','JustifyCenter'=>'align-center','createLink'=>'link','delete'=>'ban','inserthorizontalrule'=>'minus');
 		foreach($r as $k=>$v)
-			$ret.=tag('button',array('onclick'=>'format(\''.$k.'\');'),pic($v,12));
+			$ret.=tag('button',array('onclick'=>'format(\''.$k.'\');'),pic($v,14));
 		//$ret.=tag('button',array('onclick'=>'format(\'foreColor\',\'#ff0000\');'),pic('paint-brush'));
 		//$ret.=tag('button',array('onclick'=>'format(\'foreColor\',\'#000000\');'),pic('paint-brush'));
 	return $ret;}
@@ -58,7 +58,7 @@ class article{
 				$com='pagup|article,read|headers=1,tlx=1,id='.$id;//desk
 			$nid=Sql::insert('desktop',[ses('uid'),'/documents','j',$com,'file',$tit,2]);}
 		else Sql::updates('articles',$savr,$id);
-		if($tlx)return self::edit_telex($p);
+		if($tlx)return self::read_telex($p);
 		else return self::read(['id'=>$id]);}
 
 	//telex
@@ -81,7 +81,7 @@ class article{
 		$mnu=dropdown('article,menux|rid='.$rid,langpi('open'),'btn');
 		$bt=langp($id?'modif':'save');
 		$sav=aj('tlxart|article,save|tlx=1,id='.$id.',rid='.$rid.'|tit,txt',$bt,$id?'btn':'btsav');
-		$ret.=span($mnu.$sav.$ok,'right');
+		$ret.=$mnu.$sav.$ok;
 		$ret.=self::wysiwyg($id);
 		$txt=Conn::load(['msg'=>val($p,'txt'),'ptag'=>1]);
 		$ret.=tag('div',['contenteditable'=>'true','id'=>'txt','class'=>'txth'],$txt);
@@ -91,13 +91,12 @@ class article{
 	static function edit($p){
 		$id=val($p,'id'); $name=val($p,'name'); $date=val($p,'date'); $pub=val($p,'pub');
 		$ret=div(input('tit',val($p,'tit'),28,'','tit'));
-		$right=aj('art'.$id.',,y|article,save|id='.$id.'|tit,txt',langp('save'),'btsav');
+		$ret.=aj('art'.$id.',,y|article,save|id='.$id.'|tit,txt',langp('save'),'btsav');
 		if($id && auth(2) && $name==ses('user')){
-			$right.=aj('art'.$id.'|article,del|id='.$id,langpi('delete'),'btdel');
-			$right.=aj('art'.$id.'|article,mkpub|id='.$id,langpi('make public'),'btn');
-			if($pub)$right.=aj('art'.$id.'|article,mkico|id='.$id.',pub=0',langpi('hide icon'),'btn');
-			else $right.=aj('art'.$id.'|article,mkico|id='.$id.',pub=1',langpi('make icon'),'btn');}
-		$ret.=span($right,'right');
+			$ret.=aj('art'.$id.'|article,del|id='.$id,langpi('delete'),'btdel');
+			$ret.=aj('art'.$id.'|article,mkpub|id='.$id,langpi('make public'),'btn');
+			if($pub)$ret.=aj('art'.$id.'|article,mkico|id='.$id.',pub=0',langpi('hide icon'),'btn');
+			else $ret.=aj('art'.$id.'|article,mkico|id='.$id.',pub=1',langpi('make icon'),'btn');}
 		$ret.=self::wysiwyg($id);
 		return $ret;}
 	
@@ -105,27 +104,30 @@ class article{
 		list($tit,$txt)=Sql::read('tit,txt','articles','rw','where id='.$id);
 		$ret=aj('art'.$id.',,y|article,read|id='.$id.',edit=1',pico('back'),'btn').' ';
 		$ret.=aj('art'.$id.',,y|article,save|brut=1,id='.$id.'|tit,txt',langp('save'),'btsav').br();
+		$ret.=connectors::edit('txt');
 		$ret.=textarea('txt',$txt,64,24).hidden('tit',$tit);
 		return $ret;}
 	
 	//read
-	static function art($p){$right=''; $edition='';
+	static function art($p){$mnu=''; $edition='';
 		$id=val($p,'id'); $name=val($p,'name'); 
 		$date=val($p,'date'); $priv=val($p,'private');
 		$title=val($p,'tit'); $txt=val($p,'txt'); $edit=val($p,'edit');
-		if(ses('uid'))$right=aj('art'.$id.',,y|article,read|id='.$id,pico('refresh'),'btn').' ';
+		if(ses('uid'))$mnu=aj('art'.$id.',,y|article,read|id='.$id,pico('refresh'),'btn').' ';
 		if(ses('user')==$name or !$name){
 			if($edit)$edition=self::edit($p);
-			else $right.=aj('art'.$id.',,y|article,read|id='.$id.',edit=1',langp('edit'),'btn').' ';
+			else $mnu.=aj('art'.$id.',,y|article,read|id='.$id.',edit=1',langp('edit'),'btn').' ';
 			if($edit)$prm=array('contenteditable'=>'true','id'=>'txt','class'=>'txt');
 			else $prm=array('class'=>'article');}
 		else $prm=array('class'=>'article');
-		if($edit)$right.=aj('art'.$id.',,y|article,editconn|id='.$id.',edit=1',pico('edit'),'btn').' ';
-		if(ses('uid'))$right.=aj('popup|article',langpi('folder'),'btn').' ';
-		//$right.=href('/app/article',langp('new'),'btn');
-		//$right.=dropdown('article,menu|id='.$id,langpi('open'),'btn').' ';
-		if(ses('uid'))$right.=href('/app/article'.($id?'/'.$id:''),langpi('url'),'btn');
-		$ret['mnu']=span($right,'right');
+		if($edit)$mnu.=aj('art'.$id.',,y|article,editconn|id='.$id.',edit=1',pico('edit'),'btn').' ';
+		if(ses('uid'))$mnu.=aj('popup|article',langpi('folder'),'btn').' ';
+		//$mnu.=href('/app/article',langp('new'),'btn');
+		//$mnu.=dropdown('article,menu|id='.$id,langpi('open'),'btn').' ';
+		if(ses('index')=='telex' && $id)$url='art/'.$id; 
+		else $url='app/article'.($id?'/'.$id:'');
+		if(ses('uid'))$mnu.=href('/'.$url,langpi('url'),'btn');
+		$ret['mnu']=span($mnu,'right');
 		if($title && !$edit)$ret['t']=tag('h1','',$title);
 		if($name && ses('uid'))$ret['by']=span(tag('h4','',lang('by').' '.$name.', '.$date),'small');
 		$ret['edit']=$edition;
@@ -160,7 +162,7 @@ class article{
 		$p['id']=val($p,'id');
 		if(!$p['id'])$p['edit']=1;
 		$ret=self::read($p);
-	return div($ret,'','art'.$p['id']);}
+	return div($ret,'wrapper','art'.$p['id']);}
 	
 	#content
 	static function content($p){$ret='';

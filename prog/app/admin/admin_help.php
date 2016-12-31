@@ -2,7 +2,6 @@
 
 class admin_help{
 	static $private='6';
-	static $langs=array('en','fr');
 
 	static function headers(){
 		Head::add('csscode','');
@@ -60,7 +59,7 @@ class admin_help{
 	static function select($lang){
 		$ret=hidden('lang',$lang);
 		//$r=Sql::read('distinct(lang)','help','rv','');
-		$r=self::$langs;
+		$r=Lang::$langs;
 		foreach($r as $v){$c=$v==$lang?' active':'';
 			$rc[]=aj('admhlp|admin_help,com|lang='.$v,$v,'btn'.$c);}
 		$ret.=div(implode('',$rc),'pane').br();

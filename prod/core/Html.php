@@ -12,15 +12,18 @@ class Html{
 		$enc=segment($ds,'charset=','"'); if(!$enc)$enc=mb_detect_encoding($d);
 		if(strtolower($enc)=='utf-8')$d=mb_convert_encoding($d,'HTML-ENTITIES','UTF-8');
 		$tit=segment($d,'<meta property="og:title" content="','"');
+		if(!$tit)$tit=segment($d,"<meta property='og:title' content='","'");
 		if(!$tit)$tit=segment($d,'<meta property="title" content="','"');
 		if(!$tit)$tit=segment($d,'<meta itemprop="name" content="','"');
 		if(!$tit)$tit=segment($d,'<title>','</title>');
 		$txt=segment($d,'<meta property="og:description" content="','"');
+		if(!$txt)$txt=segment($d,"<meta property='og:description' content='","'");
 		if(!$txt)$txt=segment($d,'<meta property="description" content="','"');
 		if(!$txt)$txt=segment($d,'<meta itemprop="description" content="','"');
-		if(!$txt)$txt=segment($d,'<meta name="Description" content="','"');
+		if(!$txt)$txt=segment($d,'<meta name="description" content="','"');
 		$img=segment($d,'<meta property="og:image" content="','"');
-		if(!$img)$img=segment($d,'<meta property="og:image" content="','"');
+		if(!$img)$img=segment($d,"<meta property='og:image' content='","'");
+		if(!$img)$img=segment($d,'<meta property="image" content="','"');
 		if(!$img)$img=segment($d,'<link itemprop="thumbnailUrl" href="','"');
 		if(strpos($tit,'<'))$tit='';if(strpos($txt,'<'))$txt='';if(strpos($img,'<'))$img='';
 		return array($tit,$txt,$img);}

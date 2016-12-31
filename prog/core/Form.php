@@ -8,7 +8,7 @@ class Form{
 			switch($v['type']){
 				case('input'):$d=input($k,'',20,'','100p'); break;//$v['value']
 				case('textarea'):$d=textarea($k,'',40,10,'','100p'); break;
-				case('select'):$d=select($v['opts'],['id'=>$k],'',''); break;
+				case('select'):$d=select($k,$v['opts'],'',''); break;
 				case('checkbox'):$d=checkbox($k,$v['opts']); break;
 				case('radio'):$d=radio($v['opts'],$k,''); break;
 				case('hidden'):$d=hidden($k,$v['value']); break;

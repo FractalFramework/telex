@@ -5,8 +5,16 @@ class Conn{
 
 	static function mklist($d,$o=''){
 	$r=explode("\n",$d); $b=$o?'ol':'ul';
-	foreach($r as $v)$ret[]=tag('li','',$v);
+	foreach($r as $v)if(substr($v,0,1)=='<')$ret[]=$v; else $ret[]=tag('li','',$v);
 	return tag($b,'',implode('',$ret));}
+	
+	static function mktable($p,$o=''){
+	if(strpos($p,'¬')===false && strpos($p,'|') && strpos($p,"\n"))$p=str_replace("\n",'¬',$p);
+	$p=str_replace(array('|¬',"¬\n",' ¬'),'¬',$p);
+	if(substr(trim($p),-1)=='¬')$p=substr(trim($p),0,-1);
+	$tr=explode('¬',$p);
+	foreach($tr as $k=>$row)$ret[]=explode('|',$row);
+	return Build::table($ret,'','');}
 	
 	static function url($u,$t='',$c='',$o=''){$t=$t?$t:domain($u);
 	if(substr($u,0,4)=='http'){$t=pic('external-link',12).$t; $o=1;}
@@ -32,6 +40,7 @@ class Conn{
 		case('lang'):return lang($p,$o); break;
 		case('list'):return self::mklist($p); break;
 		case('numlist'):return self::mklist($p,1); break;
+		case('table'):return self::mktable($p,$o); break;
 		case('art'):return href('/art/'.$p,article::tit(['id'=>$p]),'btlk'); break;
 		//case('form'):return Form::com($p); break;
 		case('apj'):$js='ajaxCall("div,cn'.$c.',,1|'.$p.','.$o.'","headers=1");';
@@ -43,7 +52,7 @@ class Conn{
 		//default:return '['.$d.']'; break;
 	}
 	if(is_img($d))return img($d,'','',$o);
-	if($p=='http')return self::url($p,$o,'btxt');
+	if($d=='http')return self::url($d,'','btxt');
 	if($c){//app as connector
 		if($o==1)return aj('popup|'.$c.','.$o.'|param='.$p,langp('open').' '.$c.':'.$p,'btn');
 		else return App::open($c,['appMethod'=>$o,'param'=>$p,'headers'=>1]);}

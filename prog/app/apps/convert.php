@@ -50,8 +50,8 @@ class convert{
 		switch($p){
 			case('connectors'):$d=Trans::convert($d); break;
 			case('clean_mail'):$d=self::clean_mail($d); break;
-			case('url-decode'):$d=urldecode($d); break;
-			case('url-encode'):$d=urlencode($d); break;
+			case('url-decode'):$d=rawurldecode($d); break;
+			case('url-encode'):$d=rawurlencode($d); break;
 			case('utf8-decode'):$d=utf8_decode($d); break;
 			//case('utf8-decode'):$d=mb_convert_encoding($d,'HTML-ENTITIES','UTF-8'); break;
 			case('utf8-encode'):$d=utf8_encode($d); break;

@@ -19,7 +19,7 @@ class apisql{
 		$p=val($p,'app','');
 		$f='http://'.self::$server.'/api.php?app=apisql&mth=render&p='.$p;
 		$d=File::get($f);
-		//$d=utf8_decode($d);
+		//if(!ses('enc'))$d=utf8_decode($d);//json do it
 		if($d)$r=json_decode($d,true); //pr($r);
 		if($_SERVER['HTTP_HOST']!=self::$server)
 		if(isset($r) && is_array($r)){Sql::insert2($p,$r,1,0); return 'merge '.$p.' ok';}
@@ -27,22 +27,21 @@ class apisql{
 	}
 	
 	static function render($table){
-		$keys=Sql::columns($table,3); //echo $keys;
-		$r=Sql::read($keys,$table,'rr','',0); //pr($r);
-		//$r=utf8_r($r);//pr($r);
+		$keys=Sql::columns($table,3);
+		if($table=='login')return;
+		elseif($table=='desktop')$wh='where auth=0 or auth=6';
+		else $wh='';
+		$r=Sql::read($keys,$table,'rr',$wh,0); //pr($r);
 		//$ret=json_encode($r);//,JSON_FORCE_OBJECT|JSON_UNESCAPED_UNICODE
 		//echo Json::error();
-		$ret=json_r($r);//if(auth(6))
-		//$ret=urlencode($ret);
+		$ret=json_r($r);
 		return $ret;
 	}
 	
 	static function menu($p){//system tables
-		$r=array('lang'=>'admin_lang','icons'=>'admin_icons','help'=>'admin_help','labels'=>'labels');//,'desktop'=>'desktop'
-		foreach($r as $k=>$v){
-			$app=!is_numeric($k)?$k:$v;
-			if($k!='login')$ret[]=aj($p['rid'].'|apisql,call|app='.$app,$app,'btn');
-		}
+		$r=array('lang','icons','help','labels','desktop','sys');
+		foreach($r as $k=>$v)
+			if($v!='login')$ret[]=aj($p['rid'].'|apisql,call|app='.$v,$v,'btn');
 		return implode('',$ret);
 	}
 	

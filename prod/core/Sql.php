@@ -26,12 +26,12 @@ if($p=='rw')return self::qfrw($rq);
 if($p=='v'){$r=self::qfrw($rq); return $r[0];}
 if($p=='rr'){while($r=mysqli_fetch_assoc($rq))$ret[]=$r; return $ret;}
 while($r=mysqli_fetch_row($rq))if($r[0])switch($p){
-	case('k'):$ret[$r[0]]=isset($ret[$r[0]])?$ret[$r[0]]+1:1; break;
+	case('k'):$ret[$r[0]]=1; break;
 	case('rv'):$ret[]=$r[0]; break;
 	case('kv'):$ret[$r[0]]=$r[1]; break;
 	case('kr'):$ret[$r[0]][]=$r[1]; break;
 	case('kk'):$ret[$r[0]][$r[1]]=1; break;
-	case('kkc'):@$ret[$r[0]][$r[1]]+=1; break;
+	case('kkc'):$ret[$r[0]][$r[1]]=1; break;
 	case('vv'):$ret[]=array($r[0],$r[1]); break;
 	case('kkv'):$ret[$r[0]][$r[1]]=$r[2]; break;
 	case('kkr'):$ret[$r[0]][$r[1]][]=$r[2]; break;

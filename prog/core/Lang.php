@@ -1,6 +1,7 @@
 <?php
 class Lang{
 	static $lang='fr';
+	static $langs=array('en','fr');
 	static $app='';
 	
 	static function set($p){

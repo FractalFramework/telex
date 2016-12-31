@@ -2,12 +2,12 @@
 error_reporting(E_ALL);
 ini_set('display_errors',1);
 setlocale(LC_TIME,'fr_FR');
-if(!isset($_SESSION['enc']) or !isset($_SESSION['index']) or isset($_GET['reload'])){
-	$f='cnfg/'.str_replace('www.','',$_SERVER['HTTP_HOST']).'.txt'; $d='';
-	if(is_file($f))$d=file_get_contents($f);
-	if($d)$r=explode(',',$d);
-	$_SESSION['enc']=isset($r[0])?$r[0]:1;//encoding
-	$_SESSION['index']=isset($r[1])?$r[1]:'index';}
+if(!isset($_SESSION['enc']) or !isset($_SESSION['connect']) or isset($_GET['reload'])){
+	$f='cnfg/'.str_replace('www.','',$_SERVER['HTTP_HOST']).'.php'; include($f);
+	$_SESSION['connect']=$f;
+	$_SESSION['enc']=$utf8;//encoding
+	$_SESSION['index']=$index;
+	$_SESSION['lng']=$lang;}
 //lib
 if(isset($_GET['dev']))$_SESSION['dev']=$_GET['dev']=='='?'prog':'prod';
 if(!isset($_SESSION['dev']))$_SESSION['dev']='prod';

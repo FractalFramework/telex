@@ -3,7 +3,7 @@
 class keygen{
 
 	static function build($p=''){
-		$p=val($p,'length',8); $o=val($p,'cmpx',0); 
+		$p=val($p,'length',10); $o=val($p,'cmpx',0); 
 		$a='abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMONPQRSTUVWXYZ0123456789';
 		if($o==1)$a.='$£%*µ,?;.:/!&#{[-|_)]=} ';
 		$r=str_split($a); $n=count($r)-1; $ret='';

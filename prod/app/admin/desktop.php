@@ -170,7 +170,7 @@ class desktop{
 	static function com(){
 		//$r=Sql::columns('desktop',1); unset($r['uid']); $keys=implode(',',array_keys($r));
 		$keys='id,dir,type,com,picto,bt,auth';
-		return Sql::read($keys,'desktop','id','where uid="'.ses('uid').'" or  auth="0" order by dir');
+		return Sql::read($keys,'desktop','id','where uid="'.ses('uid').'" or auth="0" order by dir');
 	}
 	
 	//content

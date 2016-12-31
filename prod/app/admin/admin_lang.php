@@ -2,7 +2,6 @@
 
 class admin_lang{
 	static $private='6';
-	static $langs=array('en','fr');
 
 	static function headers(){
 		Head::add('csscode','');
@@ -74,6 +73,7 @@ class admin_lang{
 		$bt=implode(' ',$rc).' :: ';
 		//apps
 		$r=Sql::read('distinct(app)','lang','rv','order by app');
+		if(!$r)$r=Lang::$langs;
 		$c=$app=='all'?' active':'';
 		$rb[]=aj('admlng,,y|admin_lang,com|app=all|lang','all','btn'.$c);
 		foreach($r as $v){$c=$v==$app?' active':'';

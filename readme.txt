@@ -18,11 +18,12 @@ INSTALLATION
 
 - copy files on your server
 - chmod -R 777 /var/www (or other dir)
-- param files of /cnfg (mysql access) ; rename site.com.txt -> [your domaine].txt and set it;
+- set the config : rename /cnfg/site.com.php to [your domaine].php and fill it.
+- if you have it, you can set /cnfg/twitter_oAuth.php (delete the "_" before)
 - rename htaccess.txt -> .htaccess
-- /app/install will create all needed mysql tables (temporaly change var private=6 -> private=0)
-- /app/apisql will fill some needed tables (lang, help, icons)
-- create first account, set it's auth to 6 on mysql table 'login' (as superadmin)
+- /app/install will create all needed mysql tables (!! temporaly change var private=6 -> private=0 to access while you are not again registered !!)
+- /app/apisql will import some needed datas (lang, help, icons, desktop)
+- create first account, it will have the column 'auth' of mysql table 'login' set to 6 (as superadmin)
 
 DEV MODE
 --------

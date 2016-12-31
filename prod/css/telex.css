@@ -20,7 +20,7 @@ hr{border:1px solid #e1e8ed;}
 .refreshbt:hover{background-color:#bedfef;}
 .publishbt{background-color:#e5f2f7;}
 /*#tlxapps{margin-top:10px;}*/
-.nbntf{background:#0084b4; border-radius:2px; color:white; font-size:14px; margin-right:3px;}
+.nbntf{background:#0084b4; border-radius:2px; color:white; font-size:14px; margin:0 3px;}
 a .nbntf{color:white;}
 .ntftit{color:#777; margin:0 1px 6px; font-weight:bold;}
 /*publish*/
@@ -78,17 +78,19 @@ a .nbntf{color:white;}
 .objects a{margin:1px 5px 0 0; display:inline-block;}
 .objects img{filter:grayscale(100%); transition: all 0.2s linear 0s; border:1px solid black;}
 .objects img:hover{background:#3b88c3; filter:grayscale(0%);}
+.objects .licon{background:#f5f8fa; padding:2px 8px; border-radius:4px; box-shadow:1px 1px 4px #adadad;}
+.objects .licon:hover{background:#ffffff;}
 .ob{height:60px; color:#ffffff; background:#7ba8fd; border-radius:3px; margin:1px; padding:3px 16px 2px 1px; transition:all 0.2s linear 0s;}
 .ob:hover{background:#3030b0;}
 .ob .pic{background:white; width:60px; height:54px; text-align:center; padding:10px; font-size:2em;}
 .ob:hover .pic{color:#3030b0;}
 .ob div{display:inline-block; padding:0 10px; text-shadow:0 0 2px #777;}
-.hlight{box-shadow:0 0 13px 4px rgba(0,0,0,0.2) inset;}
+.hlight{box-shadow:0 0 10px 4px rgba(0,0,0,0.2) inset;}
 img.left{margin-right:10px;}
 /*profile*/
 .profile{background-color:white; color:#424242; border-radius:5px; margin:0; min-width:280px;}
 .profileb{border:1px solid #e1e8ed; border-radius:6px;  box-shadow:0 0 13px rgba(0,0,0,0.1);}
-.cols .profile{min-width:300px; margin-bottom:10px;}
+.cols .profile{min-width:290px; margin-bottom:10px;}
 .banner{margin:0px 0 0 0; height:90px; border-radius:4px 4px 0 0; background-image:linear-gradient(#7ba8fd,#97c2ff); background-size:100% auto; background-position:0 50%; background-size:cover;}
 .avatar,.avatarsmall,.avatarbig{background-color:#7ba8fd; display:inline-block; width:90px; height:90px; border:2px solid #fff; border-radius:6px; background-size:100% auto; background-position:center; background-size:cover;}
 .avatar{float:left; margin:-34px 10px 10px 10px;}
@@ -104,7 +106,8 @@ img.left{margin-right:10px;}
 .status{clear:both; color:#444; margin:10px; padding:0 0px;}
 .statustxt,.statusdiv{margin:4px 0; font-size:14px;}
 .cols .statustxt{height:110px; overflow-x:visible; overflow-y:auto;}
-.subscrban{clear:both; padding:7px; text-align:center; margin-bottom:10px; background:white;}
+.subscrban{clear:both; padding:7px; margin-bottom:10px; background:white;}
+.subscrstats{text-align:center; margin-left:0px;}
 .subscrbt{display:table-cell; padding:0 8px;}
 .subscrxt{font-variant:small-caps; font-size:12px; color:#9d9d9d;}
 .followbt{float:right; margin:10px;}

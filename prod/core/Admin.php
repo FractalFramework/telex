@@ -32,7 +32,7 @@ class Admin{
 	
 	static function com(){
 		$keys='id,dir,type,com,picto,bt';
-		$r=Sql::read($keys,'desktop','id','where auth<="'.ses('auth').'" order by dir');
+		$r=Sql::read($keys,'desktop','id','where uid="'.ses('uid').'" or auth=0 order by dir');
 		if(is_array($r))foreach($r as $k=>$v)$r[$k][0]='Apps'.$r[$k][0];//add root
 		return $r;
 	}
@@ -53,11 +53,11 @@ class Admin{
 		if(auth(4) && $app)$r[]=array('','j','pagup|Admin,seeCode|appSee='.$app,'code','Code');
 		if($app && method_exists($app,'admin')){$rb=$app::admin(); if($rb)$r=array_merge($r,$rb);}
 		if(auth(6)){
-			$r[]=array(ses('dev').'/dev','lk','/?app='.$app.'&dev=prog','wrench','prog');
+			$r[]=array(ses('dev').'/dev','lk','/?app='.$app.'&dev==','wrench','dev');
 			$r[]=array(ses('dev').'/dev','lk','/?app='.$app.'&dev=prod','wrench','prod');
 			$r[]=array(ses('dev'),'j','popup|dev2prod','cloud-upload','publish');
 			$r[]=array('','t','','timer',chrono('load'));}
-		elseif(ses('dev')=='prog')$r[]=array('','lk','/?app='.$app.'&dev=prod','wrench','prog');
+		elseif(ses('dev')=='prog')$r[]=array('','lk','/?app='.$app.'&dev=prod','wrench','prod');
 		return $r;
 	}
 	

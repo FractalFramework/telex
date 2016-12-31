@@ -46,10 +46,10 @@ _old
 _bckp
 _dev
 _notes
-cnfg/connect_phi.php
-cnfg/connect_tlex.php
+cnfg/ph1.fr.php
+cnfg/tlex.fr.php
+cnfg/telx.fr.php
 cnfg/twitter_oAuth.php
 app/tlex
-fonts
+fonts/_old
 img
-cnfg

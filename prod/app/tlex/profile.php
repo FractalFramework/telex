@@ -40,7 +40,7 @@ class profile{
 	
 	//avatar
 	static function avatar_im($im,$sz){//mini,full
-		if(!$im)return 'icon/person-8x.png'; else return 'img/'.$sz.'/'.$im;}
+		if($im)return 'img/'.$sz.'/'.$im;}
 		
 	static function avatar_save($p){$f=val($p,'urlim');
 		if(substr($f,0,4)=='http')$f=File::saveimg($f,'prf','140','140');
@@ -61,8 +61,8 @@ class profile{
 
 	static function avatar($usr,$im,$big){
 		$f=self::avatar_im($im,$big?'full':'mini');
-		$ret=self::divim($f,$big?'avatarbig':'avatar',ses('clr'));
-		$ret=imgup(self::avatar_im($im,'full'),$ret);
+		$bt=self::divim($f,$big?'avatarbig':'avatar',ses('clr'));
+		$ret=imgup(self::avatar_im($im,'full'),$bt);
 		return $ret;}
 	
 	static function divim($f,$c,$clr){
@@ -167,15 +167,23 @@ class profile{
 	//read
 	static function read($p){
 		$subscribe=''; $follow=''; $map='';
-		$usr=val($p,'usr'); $uid=val($p,'uid'); $big=val($p,'big'); $sm=val($p,'small'); $fc=val($p,'face');
+		$usr=val($p,'usr'); $uid=val($p,'uid'); $wait=val($p,'wait');
+		$big=val($p,'big'); $sm=val($p,'small'); $fc=val($p,'face');
 		$cols='puid,pname,status,clr,avatar,banner,web,gps,location,privacy';
 		$r=Sql::read_inner($cols,'profile','login','puid','ra','where name="'.$usr.'"');
+		//$wait=Sql::read('wait','telex_ab','v','where ab="'.$usr.'"');//pending
 		if(!$r && $usr && $usr==ses('user'))$r=self::create($usr);
 		if(!$r)$r=['usr'=>$usr,'status'=>'','clr'=>ses('clr'),'avatar'=>'','banner'=>'','web'=>'','gps'=>'','location'=>'','privacy'=>'','oAuth'=>'']; else $r['usr']=$usr;
-		if(!$clr=val($r,'clr'))$r['clr']=sesif('clr'.$usr,'7ba8fd'); else ses('clr'.$usr,$clr);//clr
+		if(!$clr=val($r,'clr'))$r['clr']=sesif('clr'.$usr,'7ba8fd'); 
+		else ses('clr'.$usr,$clr);//clr
 		$banner=div(self::banner($r,$big),'banr');//banner
 		$avatar=span(self::avatar($usr,$r['avatar'],$big),'','avt');//avatar
-		if(ses('user') && ses('user')!=$usr)$follow=telex::followbt(['usr'=>$usr,'small'=>$sm]);//follow
+		if(ses('user') && ses('user')!=$usr){//follow
+			if(val($p,'approve')){
+				$bt=aj('tlxbck|tlxcall,follow|approve='.$usr,langp('approve'),'btsav');
+				$bt.=aj('tlxbck|tlxcall,follow|refuse='.$usr,langp('refuse'),'btdel');
+				$follow=div($bt,'followbt');}
+			else $follow=telex::followbt(['usr'=>$usr,'small'=>$sm,'wait'=>$wait]);}
 		$subscribe=div($follow.telex::subscribt($usr,$uid),'subscrban');//subscribe
 		$username=div(self::username($r),'username');
 		if(!$fc)$status=div(self::status($r),'status'); else $status='';

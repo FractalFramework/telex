@@ -19,11 +19,9 @@ class Json{
 	
 	static function content($p){
 		$app=val($p,'app'); ses('app',$app);
-		//$r=utf8_r($r);//pr($r);
 		//echo json_encode($r);//JSON_FORCE_OBJECT|//,JSON_UNESCAPED_UNICODE
 		//echo self::error();
-		return json_r($r);//if(auth(6))//urlencode()
-		return $ret;
+		return json_r($r);
 	}
 	
 }

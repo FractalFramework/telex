@@ -2,7 +2,7 @@
 
 class update{
 	//used by system
-	static $private='1';
+	static $private='6';
 	static $servr='tlex.fr';
 	
 	static function echo_r($r,$o=''){$ret=[];

@@ -13,7 +13,7 @@ class connectors{
 	//editor
 	static function edit($id){
 		$ret=btj('[]','embed_slct(\'[\',\']\',\''.$id.'\')','btn');
-		$r=array('h','b','i','u','q','s','list','pub','art','web');
+		$r=array('h','b','i','u','q','s','list','a','url','web','img','tag','pic','art');
 		foreach($r as $k=>$v)
 			$ret.=btj($v,'embed_slct(\'[\',\':'.$v.']\',\''.$id.'\')','btn');
 	return $ret;}

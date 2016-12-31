@@ -1,5 +1,4 @@
-<?php 
-
+<?php
 class Ajax{
 	static function js($p){
 		$call=$p['com'].'|'.$p['app'];
@@ -30,7 +29,8 @@ class Ajax{
 		$js=atjr('ajaxCall',array($call,$prm,$inp));
 		if($css)$attr['class']=$css;
 		if($r[0][0]=='bubble' or $r[0][0]=='menu')$attr['id']=$r[0][1];
-		if(isset($attr['onclick']))$attr['onclick']=$js.$attr['onclick']; else $attr['onclick']=$js;
+		if(isset($attr['onclick']))$attr['onclick']=$js.$attr['onclick']; 
+		else $attr['onclick']=$js;
 		return tag('a',$attr,$btn);
 	}
 }
