@@ -103,7 +103,7 @@ class profile{
 	static function gpsav($p){$gps=val($p,'gps');
 		$id=Sql::read('id',self::$db,'v','where puid='.ses('uid'));
 		Sql::update(self::$db,'gps',$gps,$id);
-		$loc=Gps::com(['coords'=>$gps]);
+		if($gps)$loc=Gps::com(['coords'=>$gps]); else $loc='';
 		Sql::update(self::$db,'location',$loc,$id);
 		return $loc;}
 	
@@ -175,7 +175,7 @@ class profile{
 		$r=Sql::read($cols,self::$db,'ra','where pusr="'.$usr.'"');
 		//$wait=Sql::read('wait','telex_ab','v','where ab="'.$usr.'"');//pending
 		if(!$r && $usr && $usr==ses('user'))$r=self::create($usr);
-		if(!$r)$r=['pusr'=>$usr,'pname'=>$usr,'status'=>'','clr'=>ses('clr'),'avatar'=>'','banner'=>'','web'=>'','gps'=>'','location'=>'','privacy'=>'','oAuth'=>''];
+		if(!$r)$r=['puid'=>'','pusr'=>$usr,'pname'=>$usr,'status'=>'','clr'=>ses('clr'),'avatar'=>'','banner'=>'','web'=>'','gps'=>'','location'=>'','privacy'=>'','oAuth'=>''];
 		if(!$clr=val($r,'clr'))$r['clr']=sesif('clr'.$usr,'7ba8fd'); 
 		else ses('clr'.$usr,$clr);//clr
 		$banner=div(self::banner($r,$big),'banr');//banner

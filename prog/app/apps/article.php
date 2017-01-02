@@ -104,7 +104,7 @@ class article{
 		$ret=aj('art'.$id.',,y|article,read|id='.$id.',edit=1',pico('back'),'btn').' ';
 		$ret.=aj('art'.$id.',,y|article,save|brut=1,id='.$id.'|tit,txt',langp('save'),'btsav').br();
 		$ret.=connectors::edit('txt');
-		$ret.=textarea('txt',$txt,64,24).hidden('tit',$tit);
+		$ret.=textarea('txt',$txt,70,24,'','console').hidden('tit',$tit);
 		return $ret;}
 	
 	//read
@@ -123,7 +123,7 @@ class article{
 		if(ses('uid'))$mnu.=aj('popup|article',langpi('folder'),'btn').' ';
 		//$mnu.=href('/app/article',langp('new'),'btn');
 		//$mnu.=dropdown('article,menu|id='.$id,langpi('open'),'btn').' ';
-		if(ses('index')=='telex' && $id)$url='art/'.$id; 
+		if(val($p,'rid') && $id)$url='art/'.$id; 
 		else $url='app/article'.($id?'/'.$id:'');
 		if(ses('uid'))$mnu.=href('/'.$url,langpi('url'),'btn');
 		$ret['mnu']=span($mnu,'right');
@@ -160,7 +160,7 @@ class article{
 	static function call($p){
 		$id=val($p,'id');
 		if($id)$p['id']=Sql::read('id','articles','v','where id='.$id);
-		if(!$p['id'])$p['edit']=1;
+		if(!isset($p['id']))$p['edit']=1;
 		$ret=self::read($p);
 	return div($ret,'wrapper','art'.val($p,'id'));}
 	
@@ -173,7 +173,7 @@ class article{
 		$r=Sql::read('id,tit','articles','kv','where uid=0 or uid="'.ses('uid').'" or pub="1"');
 		if($r)foreach($r as $k=>$v)if($v){
 			$bt=pic('file',32).div($v);
-			$ret.=aj('popup,,,1|article,call|id='.$k,$bt,'bicon');}
+			$ret.=aj('pagup,,,1|article,call|id='.$k,$bt,'bicon');}
 		return $ret;}
 }
 ?>

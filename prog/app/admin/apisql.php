@@ -22,7 +22,8 @@ class apisql{
 		//if(!ses('enc'))$d=utf8_decode($d);//json do it
 		if($d)$r=json_decode($d,true); //pr($r);
 		if($_SERVER['HTTP_HOST']!=self::$server)
-		if(isset($r) && is_array($r)){Sql::insert2($p,$r,1,0); return 'merge '.$p.' ok';}
+		if(isset($r) && is_array($r)){
+			Sql::insert2($p,$r,1,0); return 'renove '.$p.' ok';}
 		else return 'nothing'.Json::error();
 	}
 	

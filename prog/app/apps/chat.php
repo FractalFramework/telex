@@ -36,19 +36,20 @@ static function headers(){
 	Head::add('jscode',self::injectJs());}
 
 //read
-static function attime($sec){$ret=lang('there_was').' ';
-	if($sec>84600){$nj=floor($sec/84600); return $ret.$nj.' days';}
-	if($sec>3600){$hr=floor($sec/3600); return $ret.$hr.'h ';}
-	elseif($sec>60){$min=floor($sec/60); return $ret.$min.'min ';}
-	else return $ret.$sec.'s';}
+static function attime($sec){$ret=lang('there_was').' '; $sec=time()-$sec;
+	if($sec>84600*3){$n=floor($sec/84600/30); return $ret.$n.' '.plurial('month',$n,1);}
+	elseif($sec>84600){$n=floor($sec/84600); return $ret.$n.' '.plurial('day',$n,1);}
+	elseif($sec>3600){$n=floor($sec/3600); return $ret.$n.' '.plurial('hour',$n,1);}
+	elseif($sec>60){$n=floor($sec/60); return $ret.$n.' '.plurial('minute',$n,1);}
+	else return $ret.$sec.' s';}
 
 static function pane($r){$ret='';
 	if($r)foreach($r as $k=>$v){$del='';
 		$user=tag('li',['class'=>'chatprofile'],$v[0]);
 		$txt=tag('li',['class'=>'chatpane'],nl2br($v[1]));
-		$date=tag('div',['class'=>'chatdate'],self::attime($v[2]));
+		$date=tag('div',['class'=>'chatdate'],self::attime($v[3]));
 		if($v[0]==ses('user')){
-			$bt=aj('popup|chat,del|id='.$v[3],pic('bolt'));
+			$bt=aj('popup|chat,del|id='.$v[2],pic('bolt'));
 			$del=tag('li',['class'=>'chatdate'],$bt);}
 		if($v[0]==ses('user'))$css='row-reverse'; else $css='row ';
 		$ret.=div($user.$txt.$date.$del,'flex-container '.$css);}
@@ -60,7 +61,7 @@ static function clearntf($room){
 
 static function read($p){$id=val($p,'id'); $room=val($p,'room',ses('room'));
 	if(!val($p,'appName'))self::clearntf($room);
-	$cols='name,txt,now()-chat.up as now, chat.id as id';
+	$cols='name,txt,chat.id as id,timeup';
 	if($id)$where='where chat.id='.$id;//and chat.up>now()-86400 
 	else $where='where room="'.$room.'" order by chat.id asc limit 100';
 	$r=Sql::read_inner($cols,'chat','login','cuid','',$where);

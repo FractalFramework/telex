@@ -1,18 +1,29 @@
 <?php
 
-class _model{	
-	#set this App reserved to loged users
-	//0=public,1:page open, menu closed,2:closed,3,4,5,6,7:needed auth level
-	static $private='0';
+/*
+To open an App :
+- on window, use the url /app/model
+- in code, use App::open('model',['method'=>'com','prm1'=>1]);
+- using Ajax, use aj(). ex: aj('popup|model,com|prm1=1,prm2=2','click!');
+*/
 
-	#js to append to the header of the parent page (who call this App in a popup)
-	//add param 4 'injectJs' of the callbacks params, to overload that in the headers
+class _model{	
+	#set this auth level required to acceed to this App
+	#0=public,1:no edition,2:loged user,3,4,5,6:admin,7:superadmin
+	static $private='0';
+	#name of mysql table
+	static $db='model';
+
+	#js to append to the header of the parent page (who call this App by Ajax)
+	//to do that, add the 4th indicator ,,,1 in aj()
+	//aj('popup,,,1|model,com|prm1=1','click!');
 	static function injectJs(){
 		return '';
 	}
 	
 	#header to display with the App
-	//add param headers=1 when call by ajax a method who use css
+	//to do that, add param headers=1
+	//aj('popup|model,com|headers=1,prm1=1','click!');
 	static function headers(){
 		Head::add('csscode','.board{
 		color:#424242; background-color:#dbdbdb; border:1px solid #aaa;
@@ -22,45 +33,55 @@ class _model{
 		Head::add('meta',array('attr'=>'property','prop'=>'description','content'=>'object _model for Ph1'));
 	}
 	
-	#menus to add to the admin
-	static function admin(){
-		//see Menus
+	#menus to add to the admin of /app or of popup
+	static function admin(){//see core/Menus
 		$r[]=array('','j','popup|_model,content','plus',lang('open'));
 		return $r;
 	}
 	
-	#install db
+	#install table
+	//you can update your table here while development
 	static function install(){
-		Sql::create('model',array('mid'=>'int','mname'=>'var'),0);}//1=update
+		Sql::create(self::$db,array('mid'=>'int','mname'=>'var'),0);}//1=update
 	
 	#titles to display in popup for each method
 	static function titles($d){
 		$d=val($p,'appMethod');
 		$r['content']='welcome';
 		$r['build']='model';
-		if(isset($r[$d]))return lang($r[$d]);//lang()=vocable
+		if(isset($r[$d]))return lang($r[$d]);//vocable
 	}
 	
-	#called by ajax
-	static function call($prm){
-		return $prm['msg'].': '.$prm['inp1'];
+	#here is the real code of your app
+	static function read(){
+		#Sql called with methode 'v' (simple value)
+		#note ses('uid') is the loged user.
+		$r=Sql::read('mname',self::$db,'v','where mid='.ses('uid'));
+		return $r;
+	}
+	
+	#called by telex
+	static function call($p){
+		$ret=self::read($p);
+		return $ret;
 	}
 	
 	#interface with other Apps
 	static function com(){
+		return $p['msg'].': '.$p['inp1'];
 	}
 	
 	#content
-	//url: '/_model:p1=val1,p2=val2';
-	static function content($prm){$ret='';
+	//url: 'app/_model/p1=val1,p2=val2
+	static function content($p){$ret='';
 		//self::install();
-		$p1=val($prm,'p1');
-		$p2=val($prm,'p2');
+		$p1=val($p,'p1');
+		$p2=val($p,'p2');
 		$p['rid']=randid('md');
 		$p['p1']=val($p,'param',val($p,'p1'));//unamed param
 		//$ret=hlpbt('underbuilding');
 		$ret=input('inp1','value1','','1');
-		$ret.=aj('popup|_model,call|msg=text|inp1',lang('send'),'btn');
+		$ret.=aj('popup|_model,com|msg=text|inp1',lang('send'),'btn');
 		$ret=div($ret,'board');
 	return $ret;}
 }

@@ -7,7 +7,7 @@ elseif($app=='login')$admin='';
 else $admin=App::open('Admin',$params);
 #headers
 Head::add('code','<base'.atb('href',$_SERVER['HTTP_HOST']).' />');
-Head::add('meta',array('attr'=>'http-equiv','prop'=>'Content-Type','content'=>'text/html; charset=utf-8'));//iso-8859-1
+Head::add('meta',array('attr'=>'http-equiv','prop'=>'Content-Type','content'=>'text/html; charset=utf-8'));//iso-8859-1//according to cfng
 Head::add('tag',array('title','',lang('Telex_title')));
 Head::add('rel',array('name'=>'shortcut icon','value'=>'/favicon.ico'));
 /*Head::add('meta',array('attr'=>'property','prop'=>'og:title','content'=>$title));

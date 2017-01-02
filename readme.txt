@@ -1,5 +1,11 @@
-@fractalFrameWork 2016
+@fractalFrameWork 2015-2017
 Free License GNU/GPL
+====================
+
+Thank you to download and use TELEX !
+Telex is a Twitter-Like open source
+It works under this fractalFrameWork environment
+
 ====================
 
 **AJAX MVC FRAMEWORK**
@@ -7,29 +13,31 @@ Free License GNU/GPL
 This is a platform to build web applications.
 The architecture is based on the the Ajax process.
 
-STRUCTURE
+REQUIREMENTS
 ----------
-2 folders :
-/app: create your Apps here
-/core: classes of the System
+Server Apache PHP MYSQL and mailing ability
 
 INSTALLATION
 -------------
-
 - copy files on your server
-- chmod -R 777 /var/www (or other dir)
-- set the config : rename /cnfg/site.com.php to [your domaine].php and fill it.
+- chmod -R 777 /var/www (to ALL)
+- set the config : rename /cnfg/site.com.php to [your domaine].php and fill the variables.
 - if you have it, you can set /cnfg/twitter_oAuth.php (delete the "_" before)
 - rename htaccess.txt -> .htaccess
 - /app/install will create all needed mysql tables (!! temporaly change var private=6 -> private=0 to access while you are not again registered !!)
 - /app/apisql will import some needed datas (lang, help, icons, desktop)
-- create first account, it will have the column 'auth' of mysql table 'login' set to 6 (as superadmin)
+- create first account, it will have the column 'auth' of mysql table 'login' set to 6 (as superadmin). Others accounts will have auth=2.
+
+STRUCTURE
+----------
+2 folders (in /prod and /prog):
+/app: create your Apps here
+/core: classes of the System
 
 DEV MODE
 --------
-
-/?dev== will switch to dev mode, a new dropmenu apperar, you can dev offline, and push to prod
-
+/?dev== will switch to dev mode, a new dropmenu apperar
+you can dev offline, using files of /prog, and push them to /prod
 
 HOW IT'S WORKS
 ---------------
@@ -145,14 +153,15 @@ You can build hierarchical ajax/html actions using a simple array and a loader.
 
 //this will display a link to open pictos inside a submenus:
 public static function menus(){
-	$r[]=array('menu1/menu2','j','popup|pictos','map','pictos');
+	$r[]=array('menu1/submenu1','j','popup|pictos','map','pictos');
+	$r[]=array('menu1/submenu2','j','popup|pictos','map','pictos');
 	return $r;}
 public static function content(){
 	return Menu::call(array('app'=>'demo_menu','method'=>'menus'));}
 
 DESKTOP
 -------
-Like Menus, but using folders.
+Works like Menus, but using folders.
 
 //this will display a link to open pictos inside a submenus:
 public static function structure(){
@@ -161,16 +170,11 @@ public static function structure(){
 public static function content(){
 	return Desk::load('desktop','structure');}
 
-BOOT
-------
-in cfng/site.com.txt :
-- param 1 enable utf8 (1/0)
-- param 2 select app used on boot (index/telex)
-
 SAMPLES
 ------
 See more examples in /app/pub
+Decline new Aps from /app/model.php
 
 ================
-Credits Dav 2016
-http://ph1.fr
+Credits FractalFramework 2017
+http://tlex.fr

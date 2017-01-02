@@ -22,8 +22,8 @@ class Conn{
 	
 	static function reader($d,$b){
 	list($p,$o,$c)=readconn($d); $atb=array('class'=>$o);//echo $p.'*'.$o.':'.$c.br();
-	$b='b,i,u,h1,h2,h3,h4,sup,sub,span,div,small,big';
-	if(strpos($b,$c.',')!==false)return tag($c,$atb,$p);
+	$r=['b','i','u','h1','h2','h3','h4','sup','sub','span','div','small','big'];//,'code'
+	if(in_array($c,$r))return tag($c,$atb,$p.($o?'*'.$o:''));
 	switch($c){
 		case('br'):return br(); break;
 		case('h'):return tag('h3',$atb,$p); break;
@@ -41,6 +41,8 @@ class Conn{
 		case('list'):return self::mklist($p); break;
 		case('numlist'):return self::mklist($p,1); break;
 		case('table'):return self::mktable($p,$o); break;
+		case('css'):return span($p,$o); break;
+		case('code'):return tag('pre','',tag('code','',$p.($o?'*'.$o:''))); break;
 		case('art'):return href('/art/'.$p,article::tit(['id'=>$p]),'btlk'); break;
 		//case('form'):return Form::com($p); break;
 		case('apj'):$js='ajaxCall("div,cn'.$c.',,1|'.$p.','.$o.'","headers=1");';
@@ -53,10 +55,10 @@ class Conn{
 	}
 	if(is_img($d))return img($d,'','',$o);
 	if($d=='http')return self::url($d,'','btxt');
-	if($c){//app as connector
+	if($c && method_exists($c,'content')){//app as connector
 		if($o==1)return aj('popup|'.$c.','.$o.'|param='.$p,langp('open').' '.$c.':'.$p,'btn');
 		else return App::open($c,['appMethod'=>$o,'param'=>$p,'headers'=>1]);}
-	return $d;}//'['..']'
+	return '['.$d.']';}
 	
 	static function read($d,$app,$mth,$p=''){
 	$st='['; $nd=']'; $deb=''; $mid=''; $end='';

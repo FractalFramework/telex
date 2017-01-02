@@ -185,30 +185,37 @@ $usr=val($p,'usr'); $list=val($p,'subschan',val($p,'follow')); $rid=val($p,'rid'
 if($list){//save
 	$id=Sql::read('id','telex_ab','v','where usr="'.ses('user').'" and ab="'.$usr.'"');
 	if($id)Sql::update('telex_ab','list',$list,$id);
-	else{
-		$private=Sql::read('privacy','profile','v','where pusr="'.$usr.'"');
-		Sql::insert('telex_ab',[ses('user'),$usr,$list,$private]);
-			$_POST['ntf-ab'][$usr]=1; telex::saventf(ses('user'),4,'ntf-ab');}
+	else{$private=Sql::read('privacy','profile','v','where pusr="'.$usr.'"');
+		Sql::insert('telex_ab',[ses('user'),$usr,$list,$private,0]);
+		telex::saventf1($usr,ses('user'),4);}
+	return telex::followbt($p);}
+elseif($block=val($p,'block')){
+	$id=Sql::read('id','telex_ab','v','where usr="'.ses('user').'" and ab="'.$usr.'"');
+	if($block==2)Sql::update('telex_ab','block',0,$id);
+	elseif($id)Sql::update('telex_ab','block',1,$id);
+	else Sql::insert('telex_ab',[ses('user'),$usr,'','',1]);
 	return telex::followbt($p);}
 elseif($apr=val($p,'refuse')){
 	Sql::query('delete from telex_ab where usr="'.$apr.'" and ab="'.ses('user').'"');
 	return self::subscrptn(['usr'=>ses('user'),'type'=>'ber']);}
 elseif($apr=val($p,'approve')){
 	Sql::query('update telex_ab set wait=0 where usr="'.$apr.'" and ab="'.ses('user').'"');
-	$_POST['ntf-abok'][$apr]=1; telex::saventf(ses('user'),6,'ntf-abok');
+	telex::saventf($apr,ses('user'),6);
 	return self::subscrptn(['usr'=>ses('user'),'type'=>'ber']);}
 elseif($unf=val($p,'unfollow')){Sql::delete('telex_ab',$unf);//unfollow
 	$ntf=Sql::read('id','telex_ntf','v','where 4usr="'.$usr.'" and typntf=4');
 	Sql::delete('telex_ntf',$ntf); return telex::followbt($p);}
 elseif(val($p,'chan')){//display
-	$r=Sql::read('distinct(list)','telex_ab','k','where usr="'.ses('user').'"');
-	$act=Sql::read('list','telex_ab','v','where usr="'.ses('user').'" and ab="'.$usr.'"');
+	$r=Sql::read('distinct(list)','telex_ab','k','where usr="'.ses('user').'" and block=0');
+	$act=Sql::read('list,block','telex_ab','rw','where usr="'.ses('user').'" and ab="'.$usr.'"');
 	$r=merge($r,['mainstream'=>1,'local'=>1,'global'=>1,'passion'=>1,'extra'=>1]);
 	$ret=div(lang('subscribe_list'),'btit'); $bt='';
 	$ret.=input('subschan','',18).' ';
 	$ret.=aj($rid.'|tlxcall,follow|usr='.$usr.',rid='.$rid.'|subschan',lang('ok',1),'btsav');
-	foreach($r as $k=>$v){$c=$k==$act?'active':'';
+	foreach($r as $k=>$v){$c=$k==$act[0]?'active':'';
 		$bt.=aj($rid.'|tlxcall,follow|usr='.$usr.',rid='.$rid.',follow='.$k,$k,$c);}
+	if($act[1])$bt.=aj($rid.'|tlxcall,follow|usr='.$usr.',rid='.$rid.',block=2',lang('blocked'),'active');
+	else $bt.=aj($rid.'|tlxcall,follow|usr='.$usr.',rid='.$rid.',block=1',lang('block'),'del');
 	return div($ret.div($bt,'list'),'pane',$rid,'width:240px;');}}
 
 //profilemenu
