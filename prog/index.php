@@ -25,6 +25,7 @@ Head::add('csslink','/css/fa.css');
 //if(method_exists($app,'headers'))$app::headers();
 #content
 $content=App::open($app,$params);
+stats::save($app,$params);
 #render
 $ret=Head::generate();
 $ret.='<body onmousemove="popslide(event)" onmousedown="closebub(event)">'."\n";//

@@ -44,7 +44,7 @@ static function read($p){$rid=val($p,'rid');
 	
 	//interface
 	static function content($p){
-	self::install();
+	//self::install();
 	$rid=randid('md');
 	$ret=tag('h1','',lang('contact'));
 	if(auth(6))$ret.=aj($rid.'|contact,read|rid='.$rid,langp('view'),'btn').br();

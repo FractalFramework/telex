@@ -88,7 +88,8 @@ static function create($p){$r=explode('-',val($p,'users')); $prv=val($p,'private
 	$room=Sql::insert('chatroom',[ses('uid'),$prv,0]);
 	if($room){
 		foreach($r as $v){
-			Sql::insert('telex_ntf',[$v,ses('user'),5,'','1']);
+			//Sql::insert('telex_ntf',[$v,ses('user'),5,'','1']);
+			telex::saventf1($v,ses('user'),5);
 			$ok=Sql::insert('chatlist',[$room,$v]);}
 		$bt=lang('room created').' #'.$room;
 		if($rid=val($p,'rid'))$ret=insertbt($bt,$room.':chat',$rid);

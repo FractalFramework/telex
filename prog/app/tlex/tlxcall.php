@@ -5,17 +5,17 @@ static $private='0';
 static function clr(){$d='mintcream thistle olivedrab lightyellow lightsteelblue lightblue lavender greenyellow darkseagreen darkkhaki cornflowerblue cadetblue blanchedalmond ThreeDLightShadow scrollbar';}
 
 //menu apps
-static function menuapps($p){$ret='';$rid=val($p,'rid'); $css='cicon';
-$rb=array('article','chat','gps','tabler','poll','slide','petition','forms','vote','ballot');//'telex',
-$tg='tlxapps,,,1';//'vote',
+static function menuapps($p){$ret=''; $rid=val($p,'rid'); $css='cicon';
+//$rb=array('article','chat','gps','tabler','poll','slide','petition','forms','vote','ballot');
+$rb=Sql::read('com','desktop','rv',['dir'=>'/apps/telex']);
 $prm['onclick']='closebub(event);';
-foreach($rb as $k=>$v){$ico=pico($v,32);
-if($v=='article')$com='|article,edit_telex|headers=1,';
-elseif($v=='chat')$com='|chat,comtlx|';
-elseif($v=='gps')$com='|map,gps|';
-//elseif($v=='telex')$com='|telex,publish|';
-else $com='|'.$v.',com|headers=1,';
-$ret.=aj($tg.$com.'rid='.$rid,$ico.div(hlpxt($v)),$css,$prm);}
+foreach($rb as $k=>$v){$ico=pico($v,32); $com='';
+	if($v=='article')$com='|article,edit_telex|headers=1,';
+	elseif($v=='chat')$com='|chat,comtlx|';
+	elseif($v=='gps')$com='|map,gps|';
+	//elseif($v=='telex')$com='|telex,publish|';
+	elseif(method_exists($v,'com'))$com='|'.$v.',com|headers=1,';
+	if($com)$ret.=aj('tlxapps,,,1'.$com.'rid='.$rid,$ico.div(hlpxt($v)),$css,$prm);}
 return $ret;}
 
 //$ok=insertbt(langp('use'),$id.':article',$rid);
@@ -74,26 +74,41 @@ if(!$dir){
 return div(lang('add2desktop'),'grey').div($ret,'bloc_content objects');}
 
 //share
-static function share($p){$id=val($p,'id'); $root=host().'/'.$id;
-$txt=Sql::read('txt','telex_xt','v','where id='.$id); telex::$objects='';
-$txt=Conn::load(['msg'=>$txt,'app'=>'telex','mth'=>'reader','ptag'=>0]);
-$txt=rawurlencode($txt);
-$obj=telex::objects(); if($obj)$txt.=trim(strip_tags($obj));
-$tw='http://twitter.com/intent/tweet?original_referer='.$root.'&url='.$root.'&text='.utf8_encode($txt).' #telex'.'&title=Telex:'.$id; $fb='http://www.facebook.com/sharer.php?u='.$root;
-$gp='https://plusone.google.com/_/+1/confirm?hl=fr-FR&url='.$root;
-$st='http://wd.sharethis.com/api/sharer.php?destination=stumbleupon&url='.$root;
-$ptw=pic('twitter-square','24','twitter'); $pfb=pic('facebook-official','24','facebook'); 
-$pgp=pic('google-plus-official','24','gplus'); $pst=pic('stumbleupon-circle','24','stumble');
-$ret=href($tw,$ptw,'','',1).href($fb,$pfb,'','',1);
-$ret.=href($gp,$pgp,'','',1).href($st,$pst,'','',1);
-$ret.=aj('sndml'.$id.'|tlxcall,sendmail|id='.$id,pic('envelope-o',24)).span('','','sndml'.$id);
-return $ret;}
-
 static function sendmail($p){$id=val($p,'id');
 $ret=input('to','','20',lang('to'));
 $ret.=hidden('subject',ses('user').' '.lang('send you',1).' '.lang('a',1).' '.lang('telex'));
 $ret.=hidden('message','http://'.$_SERVER['HTTP_HOST'].'/'.$id);
 $ret.=aj('sndml'.$id.'|sendmail,send|mode=text|subject,message,to',lang('send'),'btsav');
+return $ret;}
+
+static function twit($p){
+	$twid=val($p,'twid'); $txt=val($p,'txt');
+	$cols='consumer_key,consumer_secret,token_key,token_secret';
+	$r=Sql::read($cols,'admin_twitter','rv',['id'=>$twid]);
+	$t=new Twit($twid);
+	$txt='http://tlex.fr/'.val($p,'id');
+	if($t)$q=$t->update($txt);
+	if(array_key_exists('errors',$q))$er=$q['errors'][0]['message']; //pr($q);
+	if(isset($er))return help('error','alert').$er;
+	return help('twit sent','valid');}
+
+static function share($p){$id=val($p,'id'); $root=host().'/'.$id;
+$txt=Sql::read('txt','telex_xt','v','where id='.$id); telex::$objects='';
+$txt=Conn::load(['msg'=>$txt,'app'=>'Conn','mth'=>'noconn','ptag'=>0]);
+$txt=rawurlencode(utf8_encode(strip_tags($txt)));
+//$obj=telex::objects(); if($obj)$txt.=trim(strip_tags($obj));
+$tw='http://twitter.com/intent/tweet?original_referer='.$root.'&url='.$root.'&text='.utf8_encode($txt).' #telex'.'&title=Telex:'.$id; $fb='http://www.facebook.com/sharer.php?u='.$root;
+$gp='https://plusone.google.com/_/+1/confirm?hl=fr-FR&url='.$root;
+$st='http://wd.sharethis.com/api/sharer.php?destination=stumbleupon&url='.$root;
+$ptw=pic('twitter-square','24','twitter'); $pfb=pic('facebook-official','24','facebook'); 
+$pgp=pic('google-plus-official','24','gplus'); $pst=pic('stumbleupon-circle','24','stumble');
+$ret=href($tw,$ptw,'',1).href($fb,$pfb,'',1);
+$ret.=href($gp,$pgp,'',1).href($st,$pst,'',1);
+$ret.=aj('sndml'.$id.'|tlxcall,sendmail|id='.$id,pic('envelope-o',24)).span('','','sndml'.$id);
+$r=Sql::read('id,owner','admin_twitter','kv',['uid'=>ses('uid')]);
+foreach($r as $k=>$v)
+	$twapi[]=aj('sndtw'.$id.'|tlxcall,twit|txt='.$txt.',twid='.$k,pic('twitter',24).$v);
+$ret.=span(implode('',$twapi),'','sndtw'.$id);
 return $ret;}
 
 //del
@@ -127,6 +142,11 @@ else{$ja='div,tlxbck,x|tlxcall,report|'.$prm.',confirm=1'; $prb=['data-prmtm'=>'
 	return aj($ja,langp('confirm reporting'),'btdel',$prb).' '.span($ret,'alert');}
 return telex::read($p);}
 
+static function translate($p){$id=val($p,'id');
+$txt=Sql::read('txt','telex_xt','v',['id'=>$id]);
+$txt=Conn::load(['msg'=>$txt,'app'=>'Conn','mth'=>'noconn','ptag'=>0]);
+return yandex::read(['txt'=>$txt]);}
+
 //labels		
 static function labels_in($p){$id=val($p,'lbl'); if(!$id)return;
 list($ico,$ref)=Sql::read('icon,ref','labels','rw','where id="'.$id.'"');
@@ -149,6 +169,17 @@ $id=val($p,'rid'); $all=val($p,'all'); $ret='';
 $r=explode(' ',ascii::vars());
 foreach($r as $v)$ret.=btj($v,'insert(\''.$v.'\',\''.$id.'\');','btn').' ';
 return $ret;}
+
+//make_notification
+static function saventf1($tousr,$id,$type){
+//$ex=Sql::read('id','telex_ntf','v',['4usr'=>$tousr,'byusr'=>ses('user'),'typntf'=>$type,'txid'=>$id]);
+Sql::insert('telex_ntf',[$tousr,ses('user'),$type,$id,'1']);
+$mail=Sql::read('mail','login','v',['name'=>$tousr]);
+$subject=lang('notification');
+if($type==3)$msg=ses('user').' '.hlpxt('notif_like');
+if($type==4)$msg=ses('user').' '.hlpxt('notif_follow');
+//Mail::send($mail,$subject,$msg,'bot@tlex.fr','text');
+}
 
 #subscrip-bers-tions
 static function subscrptn($p){$type=val($p,'type'); $usr=val($p,'usr'); $ret='';
@@ -187,7 +218,7 @@ if($list){//save
 	if($id)Sql::update('telex_ab','list',$list,$id);
 	else{$private=Sql::read('privacy','profile','v','where pusr="'.$usr.'"');
 		Sql::insert('telex_ab',[ses('user'),$usr,$list,$private,0]);
-		telex::saventf1($usr,ses('user'),4);}
+		self::saventf1($usr,ses('user'),4);}
 	return telex::followbt($p);}
 elseif($block=val($p,'block')){
 	$id=Sql::read('id','telex_ab','v','where usr="'.ses('user').'" and ab="'.$usr.'"');
@@ -219,15 +250,35 @@ elseif(val($p,'chan')){//display
 	return div($ret.div($bt,'list'),'pane',$rid,'width:240px;');}}
 
 //profilemenu
+static function badger($p){
+//$mail=Sql::read('name','login','v','where name="'.ses('user').'"');
+$r=Sql::read('name','login','rv','where ip="'.ip().'"'); //p($r);
+foreach($r as $v){//$rb[]=aj('bdg|tlxcall,badger_switch|usr='.$v,$v,'');
+	$rb[]=aj('reload,bdg,loged_ok|login,authentificate|user='.$v,$v,'');}
+$ret=div(implode('',$rb),'list');
+if($usr=val($p,'usr'))$ret.=password('psw','').aj('|login',lang('login'),'btsav');
+$ret.=div('','','bdg');
+return $ret;}
+
 static function profilemenu(){
 $root=ses('user')?ses('user'):'profile';
 $r[]=array($root,'j','tlxbck,,,1|profile,edit','user','edit profile');
 $r[]=array($root.'/lang','j','returnVar,lng,reload|Lang,set|lang=fr','flag','fr');
 $r[]=array($root.'/lang','j','returnVar,lng,reload|Lang,set|lang=en','flag','en');
 if(auth(6) or ses('dev')=='prog'){
-$r[]=array(ses('dev').'/mode','j','ses,,reload||k=dev,v=prog','dev','prog');
-$r[]=array(ses('dev').'/mode','j','ses,,reload||k=dev,v=prod','prod','prod');
-if(auth(6))$r[]=array(ses('dev').'','j','popup,,xx|dev2prod','update','publish');}
+	$r[]=array(ses('dev').'/mode','j','ses,,reload||k=dev,v=prog','dev','prog');
+	$r[]=array(ses('dev').'/mode','j','ses,,reload||k=dev,v=prod','prod','prod');}
+$n=Sql::read('count(id)','login','v','where ip="'.ip().'"');// and priv=0
+if($n>1)$r[]=array($root.'/'.lang('badger'),'in','tlxcall,badger','user-circle','badger');
+$r[]=array($root.'/'.lang('utils'),'','txt','file-text-o',lang('notes'));
+//$r[]=array($root.'/'.lang('utils'),'','convert','file-text-o',lang('convert'));
+if(auth(6)){
+	$r[]=array(ses('dev').'/admin','j','popup|admin_lang','update','lang');
+	$r[]=array(ses('dev').'/admin','j','popup|admin_help','update','help');
+	$r[]=array(ses('dev').'/admin','j','popup|admin_icons','update','pictos');
+	$r[]=array(ses('dev').'/admin','j','popup|admin_sys','update','functions');
+	$r[]=array(ses('dev').'/admin','j','popup|devnote','update','devnotes');
+	$r[]=array(ses('dev').'','j','popup,,xx|dev2prod','update','publish');}
 $r[]=array($root,'j',',,reload|login,disconnect','power-off','logout');
 return $r;}
 
@@ -241,6 +292,7 @@ return $ret;}
 //http://tlex.fr/api.php?app=tlxcall&mth=apicom&msg=hello&prm=oAuth:XXX
 static function post($p){
 $p['msg']=get('msg');
+$p['lbl']=get('label');
 $p['ids']='msg';
 $p['apicom']=1;
 $p['lbl']='';

@@ -18,7 +18,7 @@ class Mail{
 		$head.='X-Mailer: PHP/' . phpversion();
 		$head.='Content-Type:multipart/alternative; charset="'.ses('enc').'" boundary="-----='.md5(rand()).'"';
 		$subject=html_entity_decode($subject); $msg=html_entity_decode($msg);
-		//$subject=encode($subject); $msg=encode($msg);
+		$subject=decode($subject); $msg=decode($msg);
 		$ok=mail($to,$subject,$msg,$head);
 		if($ok)return 'mail_sent'; else return 'mail_fail';}
 		
@@ -27,7 +27,7 @@ class Mail{
 		$head='From: '.$from."\n";
 		$msg="\n\n".$msg."\n\n";
 		$subject=html_entity_decode($subject); $msg=html_entity_decode($msg);
-		//$subject=encode($subject); $msg=encode($msg);
+		$subject=decode($subject); $msg=decode($msg);
 		$ok=mail($to,$subject,$msg,$head);
 		if($ok)return 'mail_sent'; else return 'mail_fail';}
 		

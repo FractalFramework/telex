@@ -84,7 +84,7 @@ class petition{
 	
 	//interface
 	static function content($p){
-		self::install();
+		//self::install();
 		$p['rid']=randid('fr');
 		$p['pid']=val($p,'param',val($p,'pid'));
 		$ret=hlpbt('petition');

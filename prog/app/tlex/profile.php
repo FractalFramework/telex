@@ -95,9 +95,10 @@ class profile{
 	
 	static function status($r){
 		$ret=div(nl2br(val($r,'status')),'statusdiv');
-		if($web=val($r,'web'))$ret.=div(pic('link',12).' '.href(http($web),$web,'grey','',1),'statusdiv');
+		if($web=val($r,'web'))
+			$ret.=div(href(http($web),pic('link',12).$web,'grey',1),'statusdiv');
 		$ret.=div(self::gps($r),'statusdiv');
-		return div($ret,'statustxt');}
+		return div($ret,'');}//statustxt
 	
 	//gps
 	static function gpsav($p){$gps=val($p,'gps');
@@ -108,10 +109,9 @@ class profile{
 		return $loc;}
 	
 	static function gps($r){$ret='';
-		$loc=$r['location']?$r['location']:lang('location');
-		if($r['gps'])$ret.=popup('map,com|coords='.$r['gps'],pico('location'),'grey');
-		if($r['puid']==ses('uid'))$ret.=btj(span($loc,'','gpsloc'),'geo()','grey');
-		elseif($r['location'])$ret.=span($r['location'],'grey');
+		if($r['gps'] && $r['location'])
+			$ret=popup('map,com|coords='.$r['gps'],pico('location').$r['location'],'grey');
+		//if($r['puid']==ses('uid'))$ret=btj(span($r['location'],'','gpsloc'),'geo()','grey');
 		return $ret;}
 	
 	//privacy
@@ -132,12 +132,23 @@ class profile{
 		$ret=span($p['oAuth'],'grey','oath').' ';
 		$ret.=aj('oath|profile,oAuthsav|id='.$p['id'],langp('gen oAuth'),'btn').' ';
 		$ret.=tag('h4','',lang('call timeline'));
-		$ret.=div('http://tlex.fr/api/call/tm:'.ses('user'),'valid');
+		$ret.=div('http://tlex.fr/api/call/tm:'.ses('user'),'console');
 		$ret.=tag('h4','',lang('call id'));
-		$ret.=div('http://tlex.fr/api/call/id:312','valid');
+		$ret.=div('http://tlex.fr/api/call/id:312','console');
 		$ret.=tag('h4','',lang('post telex'));
-		$ret.=div('http://tlex.fr/api.php?oAuth='.$p['oAuth'].'&msg=hello','valid');
+		$ret.=div('http://tlex.fr/api.php?oAuth='.$p['oAuth'].'&msg=hello','console');
 		return $ret;}
+	
+	static function deleteaccount($p){$ret='';
+		$prm='rmprf|profile,deleteaccount|id='.$p['id'].',del=1';
+		if(val($p,'confirm')){
+			Sql::update('login','priv',1,ses('uid'));
+			return help('account disactivated');}
+		elseif(val($p,'del')){$prm.=',confirm=1';
+			$ret.=help('telex_remove_account','alert').br();
+			$ret.=aj($prm,langp('confirm deleting'),'btdel');}
+		else $ret.=aj($prm,langp('remove account'),'btdel');
+		return div($ret,'','rmprf');}
 	
 	//com
 	static function com($usr,$o=''){
@@ -164,13 +175,17 @@ class profile{
 		$ret.=div(self::privbt($r),'','prvc');
 		$ret.=tag('h2','','Api');
 		$ret.=self::oAuth($r);
+		$ret.=tag('h2','',lang('Twitter Api')).hlpbt('twitterApi');
+		$ret.=App::open('admin_twitter');
+		$ret.=tag('h2','',lang('remove account'));
+		$ret.=self::deleteaccount($r);
 		return div($ret,'board');}
 	
 	//read
 	static function read($p){
 		$subscribe=''; $follow=''; $map='';
 		$usr=val($p,'usr'); $uid=val($p,'uid'); $wait=val($p,'wait');
-		$big=val($p,'big'); $sm=val($p,'small'); $fc=val($p,'face');
+		$big=val($p,'big'); $sm=val($p,'small'); $fc=val($p,'face');//modes
 		$cols='puid,pusr,pname,status,clr,avatar,banner,web,gps,location,privacy';
 		$r=Sql::read($cols,self::$db,'ra','where pusr="'.$usr.'"');
 		//$wait=Sql::read('wait','telex_ab','v','where ab="'.$usr.'"');//pending
