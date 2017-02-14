@@ -31,8 +31,9 @@ Sql::update(self::$db,'txt',$txt,$id);
 return self::modif($id,$txt,$rid);}
 
 static function modif($id,$txt,$rid){
-$ret=textarea('tx'.$id,$txt,40,4);
-$ret.=aj($rid.'|admin_sys,update|id='.$id.'|tx'.$id,pico('save'));
+if(auth(6))$ret=textarea('tx'.$id,$txt,40,4);
+else $ret=div($txt,'pane');
+if(auth(6))$ret.=aj($rid.'|admin_sys,update|id='.$id.'|tx'.$id,pico('save'));
 $ret.=aj('popup|admin_sys,seecode|id='.$id,pico('view'));
 return $ret;}
 
@@ -107,8 +108,9 @@ $rid=randid('dcl');
 $bt=self::menu();
 //$bt.=input('app','','10',1);
 $bt.=aj($rid.'|admin_sys,read|rid='.$rid.'|app',langp('view'),'btn');
-$bt.=aj($rid.'|admin_sys,reflush|rid='.$rid.'|app',langp('update'),'btn');
-$bt.=aj($rid.'|admin_sys,pushall|dir=app,rid='.$rid,langp('update all'),'btn');
+if(auth(6)){
+	$bt.=aj($rid.'|admin_sys,reflush|rid='.$rid.'|app',langp('update'),'btn');
+	$bt.=aj($rid.'|admin_sys,pushall|dir=app,rid='.$rid,langp('update all'),'btn');}
 return $bt.div('','board',$rid);}
 }
 ?>

@@ -39,6 +39,7 @@ blockquote{
 /*additions*/
 .btn, .btsav, .btdel{
 	font-family: Arial;
+	/*background-color:white;*/
 	/*background-image:linear-gradient(#f5f8fa,#f5f8fa);*/
     color: black;
     border-color:#dfdfdf;

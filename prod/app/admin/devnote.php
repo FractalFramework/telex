@@ -13,10 +13,7 @@ class devnote{
 	static function install(){
 	Sql::create(self::$db,array('duid'=>'int','tit'=>'var','txt'=>'text'),1);}
 	
-	#operations
-	/*static function sysedit($p){//default editor
-	return Form::com(['table'=>self::$db,'id'=>val($p,'id')]);}*/
-	
+	#operations	
 	static function save($p){$tit=val($p,'tit'); $txt=val($p,'txt');
 	$p['id']=Sql::insert(self::$db,[ses('uid'),$tit,$txt]);
 	return self::edit($p);}
@@ -48,29 +45,28 @@ class devnote{
 	$ret.=aj($rid.',,load|devnote,modif|rid='.$rid.',xid='.$xid.',id='.$id.'|tit,txt',langp('modif'),'btsav');
 	$ret.=aj($rid.'|devnote,del|rid='.$rid.',xid='.$xid.',id='.$id,langp('delete'),'btdel');
 	$ret.=aj('popup|devnote,call|rid='.$rid.',xid='.$xid.',id='.$id,langp('view'),'btn');
-	//$ret.=aj('popup|devnote,sysedit|id='.$id,langp('edit'),'btsav');//default editor
 	if($xid)$ret.=insertbt(lang('use'),$id.':devnote',$xid);
 	$ret.=div(input('tit',$r['tit']),'tit');
-	$ret.=div(textarea('txt',$r['txt'],'',7),'txt');
+	$ret.=div(textarea('txt',$r['txt'],'60',7),'txt');
 	return $ret;}
 	
 	#reader
-	static function read($p){$id=val($p,'id');
+	static function read($p){$id=val($p,'id'); $rid=val($p,'rid');
 	$r=Sql::read('tit,txt',self::$db,'ra',['id'=>$id]);
-	$ret=div($r['tit'],'stit');
+	$ret=aj($rid.'|devnote,menu|rid='.$rid,langp('back'),'btn');
+	$ret.=div($r['tit'],'stit');
 	if(val($p,'brut'))$ret.=div($r['txt'],'stxt');
-	//connectors can use personalised connectors from app::method
 	else $ret.=Conn::load(['msg'=>$r['txt'],'app'=>'','mth'=>'','ptag'=>1]);
 	return $ret;}
 	
-	static function menu($p){$ret='';
+	static function menu($p){$ret=''; $bt='';
 	$rid=val($p,'rid'); $xid=val($p,'xid');
-	//$dt=val($p,'dt',0); $date=time()-$dt;
 	$r=Sql::read('id,tit,dateup',self::$db,'rr','order by id desc limit 20');
-	$bt=hlpbt('model');
-	$bt.=aj($p['rid'].'|devnote,add|rid='.$p['rid'],langp('add'),'btn');
-	if($r)foreach($r as $k=>$v){$btn=$v['tit']?$v['tit']:$v['id'];//.$v['date']
-		$ret[]=aj($rid.'|devnote,edit|rid='.$rid.',xid='.$xid.',id='.$v['id'],$btn);}
+	if(auth(6)){$bt=hlpbt('devnote');
+		$bt.=aj($p['rid'].'|devnote,add|rid='.$p['rid'],langp('add'),'btn');
+		$app='edit';} else $app='read';
+	if($r)foreach($r as $k=>$v){$btn=$v['tit']?$v['tit']:$v['id'];
+		$ret[]=aj($rid.'|devnote,'.$app.'|rid='.$rid.',xid='.$xid.',id='.$v['id'],$btn);}
 	if($r)$ret=implode('',$ret);
 	return $bt.div($ret,'list');}
 	
@@ -90,9 +86,8 @@ class devnote{
 	
 	//com (apps)
 	static function com($p){$id=val($p,'id');
-	//rid (will focus on telex editor), rid (used for load onplace)
 	$p['xid']=val($p,'rid');
-	$p['edit']=1;//objects used for edition don't appear to public
+	$p['edit']=1;
 	return self::content($p);}
 	
 	//interface

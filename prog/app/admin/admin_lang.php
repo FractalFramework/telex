@@ -4,8 +4,7 @@ class admin_lang{
 	static $private='6';
 
 	static function headers(){
-		Head::add('csscode','');
-	}
+		Head::add('csscode','');}
 	static function admin(){
 		$r[]=array('manage/admin','','admin_lang','monitor','admin_lang');
 		$r[]=array('manage/admin','','admin_help','monitor','admin_help');
@@ -14,54 +13,47 @@ class admin_lang{
 	
 	//install
 	static function install(){
-		Sql::create('lang',array('ref'=>'var','voc'=>'var','app'=>'var','lang'=>'var'));
-	}
+		Sql::create('lang',array('ref'=>'var','voc'=>'var','app'=>'var','lang'=>'var'));}
 	
-	static function equilibrium($prm){
-		$r=Sql::read('ref,lang,voc','lang','kkv','where app="'.$prm['app'].'"');
+	static function equilibrium($p){
+		$r=Sql::read('ref,lang,voc','lang','kkv','where app="'.$p['app'].'"');
 		$rb=array_keys($r);
 		foreach($rb as $k=>$v)
-			if(!isset($r[$v][$prm['lang']]))
-				Sql::insert('lang',array($v,isset($r[$v]['en'])?$r[$v]['en']:'',$prm['app'],$prm['lang']));
-		return self::com($prm);
-	}
+			if(!isset($r[$v][$p['lang']]))
+				Sql::insert('lang',array($v,isset($r[$v]['en'])?$r[$v]['en']:'',$p['app'],$p['lang']));
+		return self::com($p);}
 	
 	//save
-	static function update($prm){$rid=$prm['rid'];
-		Sql::update('lang','voc',$prm[$rid],$prm['id']);
-		Sql::update('lang','app',$prm['app'.$rid],$prm['id']);
-		sesclass('Lang','com',$prm['lang'],1);//update session
-		return self::com($prm);
-	}
+	static function update($p){$rid=$p['rid'];
+		Sql::update('lang','voc',$p[$rid],$p['id']);
+		Sql::update('lang','app',$p['app'.$rid],$p['id']);
+		sesclass('Lang','com',$p['lang'],1);//update session
+		return self::com($p);}
 	
-	static function del($prm){
-		$nid=Sql::delete('lang',$prm['id']);
-		sesclass('Lang','com',$prm['id'],1);//update session
-		return self::add($prm).br().self::com($prm);
-	}
+	static function del($p){
+		$nid=Sql::delete('lang',$p['id']);
+		sesclass('Lang','com',$p['id'],1);//update session
+		return self::add($p).br().self::com($p);}
 	
-	static function save($prm){
-		$nid=Sql::insert('lang',array($prm['ref'],$prm['voc'],$prm['app'],$prm['lang']));
-		sesclass('Lang','com',$prm['lang'],1);//update session
-		return self::add($prm).br().self::com($prm);
-	}
+	static function save($p){
+		$nid=Sql::insert('lang',array($p['ref'],$p['voc'],$p['app'],$p['lang']));
+		sesclass('Lang','com',$p['lang'],1);//update session
+		return self::add($p).br().self::com($p);}
 	
-	static function edit($prm){$rid=randid('voc');//id
-		$r=Sql::read('ref,voc,lang,app','lang','ra','where id='.$prm['id']);
+	static function edit($p){$rid=randid('voc');//id
+		$r=Sql::read('ref,voc,lang,app','lang','ra','where id='.$p['id']);
 		$ret=label($rid,$r['ref'].' ('.$r['lang'].')').input($rid,$r['voc'],16);
 		$ro=Sql::read('distinct(app)','lang','rv','');
 		$ret.=datalist($ro,'app'.$rid,$r['app'],8,'app');
-		$ret.=aj('admlng,,x|admin_lang,update|id='.$prm['id'].',rid='.$rid.',lang='.$r['lang'].',app='.$r['app'].'|'.$rid.',app'.$rid,langp('save'),'btsav');
-		$ret.=aj('admlng,,x|admin_lang,del|id='.$prm['id'].',lang='.$r['lang'].',app='.$r['app'],langp('del'),'btdel');
-		return $ret;
-	}
+		$ret.=aj('admlng,,x|admin_lang,update|id='.$p['id'].',rid='.$rid.',lang='.$r['lang'].',app='.$r['app'].'|'.$rid.',app'.$rid,langp('save'),'btsav');
+		$ret.=aj('admlng,,x|admin_lang,del|id='.$p['id'].',lang='.$r['lang'].',app='.$r['app'],langp('del'),'btdel');
+		return $ret;}
 	
-	static function add($prm){//ref,voc
-		$ref=val($prm,'ref'); $voc=val($prm,'voc');
+	static function add($p){//ref,voc
+		$ref=val($p,'ref'); $voc=val($p,'voc');
 		$ret=input('ref',$ref?$ref:'',16,'ref').input('voc',$voc?$voc:'',16,'icon');
 		$ret.=aj('admlng,,x|admin_lang,save||app,lang,ref,voc',langp('save'),'btn');
-		return $ret;
-	}
+		return $ret;}
 	
 	//table
 	static function select($app,$lang){
@@ -87,11 +79,10 @@ class admin_lang{
 			if(Sql::exists('lang_bak'))
 			$ret.=aj('popup|Sql,rsbcp|b=lang',langp('restore'),'btdel');}
 			$ret.=aj('admlng|admin_lang',langp('reload'),'btn').br();
-		return $ret;
-	}
+		return $ret;}
 	
-	static function com($prm){$rb=array();
-		$app=val($prm,'app','all'); $lang=val($prm,'lang');
+	static function com($p){$rb=array();
+		$app=val($p,'app','all'); $lang=val($p,'lang');
 		$bt=self::select($app,$lang).br();
 		if($app!='all')$wh=' and app="'.$app.'" '; else $wh='';
 		$r=Sql::read('id,ref,voc','lang','','where lang="'.$lang.'"'.$wh.' order by ref');
@@ -102,16 +93,14 @@ class admin_lang{
 			else $rc[$k]=array($ref,$v[2]);}
 		if(isset($rc))$rb=array_merge($rc,$rb);
 		array_unshift($rb,array('ref',$lang));
-		return $bt.Build::table($rb,'bkg');
-	}
+		return $bt.Build::table($rb,'bkg');}
 	
 	//content
-	static function content($prm){$ret='';
+	static function content($p){$ret='';
 		//self::install();
-		$app=val($prm,'app',''); $lang=val($prm,'lang',Lang::$lang);
+		$app=val($p,'app',''); $lang=val($p,'lang',Lang::$lang);
 		$ret=self::com(array('app'=>$app,'lang'=>$lang));
-		return div($ret,'','admlng');
-	}
+		return div($ret,'','admlng');}
 
 }
 

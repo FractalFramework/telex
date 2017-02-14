@@ -93,6 +93,7 @@ class Auth {
 				elseif($uid)$state='bad_password';
 				else $state='unknown_user';}
 			else $state='unknown_user';}
+		elseif($uid)$state='loged';
 		return $state;}
 	
 	static function autolog(){

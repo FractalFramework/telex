@@ -273,12 +273,12 @@ if($n>1)$r[]=array($root.'/'.lang('badger'),'in','tlxcall,badger','user-circle',
 $r[]=array($root.'/'.lang('utils'),'','txt','file-text-o',lang('notes'));
 //$r[]=array($root.'/'.lang('utils'),'','convert','file-text-o',lang('convert'));
 if(auth(6)){
-	$r[]=array(ses('dev').'/admin','j','popup|admin_lang','update','lang');
-	$r[]=array(ses('dev').'/admin','j','popup|admin_help','update','help');
-	$r[]=array(ses('dev').'/admin','j','popup|admin_icons','update','pictos');
-	$r[]=array(ses('dev').'/admin','j','popup|admin_sys','update','functions');
-	$r[]=array(ses('dev').'/admin','j','popup|devnote','update','devnotes');
-	$r[]=array(ses('dev').'','j','popup,,xx|dev2prod','update','publish');}
+	$r[]=array(ses('dev').'/admin','j','popup|admin_lang',ics('language'),'lang');
+	$r[]=array(ses('dev').'/admin','j','popup|admin_help',ics('help'),'help');
+	$r[]=array(ses('dev').'/admin','j','popup|admin_icons',ics('pictos'),'pictos');
+	$r[]=array(ses('dev').'/admin','j','popup|desktop',ics('desktop'),'desktop');
+	$r[]=array(ses('dev').'/admin','j','popup|devnote',ics('devnotes'),'devnotes');
+	$r[]=array(ses('dev').'','j','popup,,xx|dev2prod',ics('update'),'publish');}
 $r[]=array($root,'j',',,reload|login,disconnect','power-off','logout');
 return $r;}
 

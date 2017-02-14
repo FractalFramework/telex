@@ -159,6 +159,12 @@ class profile{
 		if(!$o)$ret.=href('/'.$usr,$r[0],'btxt');
 		return $ret;}
 	
+	static function name($usr,$o=''){
+		$ret=Sql::read('pname',self::$db,'v','where pusr="'.$usr.'"');
+		if(!$ret)$ret=$usr;
+		if($o)$ret=href('/'.$usr,$ret,'btxt');
+		return $ret;}
+	
 	//edit
 	static function edit($p){
 		$cols='id,puid,pusr,pname,status,clr,avatar,banner,web,gps,location,privacy,oAuth';
@@ -170,7 +176,7 @@ class profile{
 		$ret.=tag('h2','',lang('banner'));
 		$ret.=self::banner_edit($r,val($p,'big'));
 		$ret.=tag('h2','',lang('location'));
-		$ret.=div(self::gps($r).aj('prfloc|profile,gpsav|gps=,location=',pico('delete')),'','prfloc');
+		$ret.=div(self::gps($r).aj('prfloc|profile,gpsav',pico('delete')),'','prfloc');
 		$ret.=tag('h2','',lang('privacy'));
 		$ret.=div(self::privbt($r),'','prvc');
 		$ret.=tag('h2','','Api');

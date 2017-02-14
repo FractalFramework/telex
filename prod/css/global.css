@@ -148,7 +148,7 @@ a.grey:hover{color:#000;}
 .imgshadow{filter:drop-shadow(2px 2px 1px rgba(0,0,0,.4));}
 .imgshadow_white{filter:drop-shadow(0 0 2px rgba(255,255,255,1));}
 .invert{filter:invert(1);}
-.pane{padding:10px; margin-bottom:20px; border-radius:3px; border:1px solid #aaa; background-color:#ededed; box-shadow:1px 1px 4px #777;}
+.pane{padding:10px; margin-bottom:20px; border-radius:3px; border:1px solid #f5f8fa; background-color:#ededed; box-shadow:1px 1px 4px #777;}
 .pagup .pane{width:660px;}
 .smtitle{overflow:hidden; text-overflow:ellipsis; white-space:nowrap;}
 .help{border:1px solid #dfdfdf; padding:0px 2px; border-radius:12px;

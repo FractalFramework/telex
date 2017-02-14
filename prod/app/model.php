@@ -105,7 +105,11 @@ static function call($p){
 	return $ret;}
 	
 //com (apps)
+/*set the icon to display in Telex in the Desktop folder /app/telex
+the displayed title is form admin_help
+the icon displayed is from admin_icons*/
 static function com($p){$id=val($p,'id');
+	//$bt=hlpbt('model');//agremented title, used by icons in telex
 	//rid (will focus on telex editor), rid (used for load onplace)
 	$p['xid']=val($p,'rid');
 	$p['edit']=1;//objects used for edition don't appear to public
@@ -115,6 +119,7 @@ static function com($p){$id=val($p,'id');
 static function content($p){
 	self::install();
 	$p['rid']=randid('md');
+	$bt=hlpbt('model_help');//describtion
 	$id=val($p,'id',val($p,'param'));
 	if($id && val($p,'edit'))$ret=self::edit($p);
 	elseif($id)$ret=self::call(['id'=>$id]);

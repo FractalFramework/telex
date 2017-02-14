@@ -20,7 +20,7 @@ class login{
 		return self::reaction($state,$user);}
 	
 	static function recoverForm($p){
-		$user=val($p,lang('user'));
+		$user=val($p,lang('nickname'));
 		$ret=input('mail','',26,lang('mail'));
 		$btn=lang('recover_pswd');
 		$ret.=aj('cbklg|login,recover|user='.$p['user'].',time='.time().'|mail',$btn,'btdel');
@@ -67,9 +67,9 @@ class login{
 		if(!$ex)return 6; else return ses('authlevel');}
 	
 	static function registerForm($p){$ret='';
-		$user=val($p,lang('user')); $sz='28';
+		$user=val($p,''); $sz='28';
 		//$cntx=val($p,'cntx');
-		$ret=tag('input',['id'=>'user','placeholder'=>$user?$user:lang('user',1),'size'=>$sz,'maxlength'=>20,'onkeyup'=>'verifchars(this); verifusr(this);'],'',1).span(lang('user used'),'alert hide','usrexs').br();
+		$ret=tag('input',['id'=>'user','placeholder'=>$user?$user:lang('nickname',1),'size'=>$sz,'maxlength'=>20,'onkeyup'=>'verifchars(this); verifusr(this);'],'',1).span(lang('user used'),'alert hide','usrexs').br();
 		$ret.=password('pass',lang('password',1),$sz,1);
 		$ret.=aj('lgkg|keygen,build',pic('key')).div('','','lgkg');
 		$ret.=div(input('mail','',$sz,lang('mail',1)));

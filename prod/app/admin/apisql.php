@@ -41,7 +41,7 @@ class apisql{
 	}
 	
 	static function menu($p){//system tables
-		$r=array('lang','icons','help','labels','desktop','articles','sys');
+		$r=array('lang','icons','help','labels','desktop','articles','sys','lib');
 		foreach($r as $k=>$v)
 			if($v!='login')$ret[]=aj($p['rid'].'|apisql,call|app='.$v,$v,'btn');
 		return implode('',$ret);

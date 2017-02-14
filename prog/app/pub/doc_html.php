@@ -48,11 +48,11 @@ $ret=href(\'//ph1.fr\',\'ph1.fr\',\'btn\');'));
 		#img
 		$ret.=tag('h2','','img()');
 		//test
-		$ret.=img('usr/telex/account-login-2x.png');
+		$ret.=img('/usr/telex/img/home.jpg');
 		//code
 		$ret.=tag('div','class=console',Build::Code('
 //4th param close tag with />
-$ret=tag(\'img\',array(\'src\'=>\'usr/telex/account-login-2x.png\'),\'\',1);
+$ret=tag(\'img\',array(\'src\'=>\'/usr/telex/img/home.jpg\'),\'\',1);
 $ret=img(\'usr/telex/account-login-2x.png\');'));
 		$ret.=br();
 		

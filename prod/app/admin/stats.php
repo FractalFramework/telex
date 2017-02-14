@@ -43,7 +43,7 @@ static function graph($page){
 	return Build::table($r);}
 
 static function live($p){$rid=val($p,'rid');
-	$r=Sql::read('uid,app,prm,ip,date_format(up,"%H:%i %d/%m")',self::$db,'','order by id desc limit 100');
+	$r=Sql::read('uid,app,prm,ip,date_format(up,"%H:%i %d/%m")',self::$db,'','order by id desc limit 200');
 	$bt=aj($rid.'|stats,live|ip='.$rid,pico('refresh'));
 	return $bt.Build::table($r);}
 	

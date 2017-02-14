@@ -98,7 +98,9 @@ static function read($d,$app,$mth,$p=''){
 	return $deb.$mid.$end;}
 	
 static function load($p){
-	$d=val($p,'msg',val($p,'params')); $opt=val($p,'opt'); $ptag=val($p,'ptag'); 
+	$d=val($p,'msg',val($p,'params')); $opt=val($p,'opt'); $ptag=val($p,'ptag');
+	$d=str_replace("<br />\n","\n",$d);
+	$d=str_replace('<br />','',$d);
 	$app=val($p,'app','Conn'); $mth=val($p,'mth','reader'); self::$one=0;
 	$ret=self::read($d,$app,$mth,$opt);
 	if($ptag){$ret=ptag($ret);
