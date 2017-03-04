@@ -17,7 +17,7 @@ static function mktable($p,$o=''){
 	return Build::table($ret,'','');}
 	
 static function url($u,$t='',$c='',$o=''){$t=$t?$t:domain($u);
-	if(substr($u,0,4)=='http'){$t=pic('external-link',12).$t; $o=1;}
+	if(substr($u,0,4)=='http'){$t=ico('external-link',12).$t; $o=1;}
 	return href($u,$t,$c,$o);}
 
 static function noconn($d,$b){
@@ -45,7 +45,7 @@ static function reader($d,$b){
 		case('web'):return telex::playweb($p); break;
 		case('img'):return img($p,$o); break;
 		case('tag'):return tag($c,$o,$p); break;
-		case('pic'):return pico($p,$o); break;
+		case('pic'):return pic($p,$o); break;
 		case('picto'):return picto($p,$o); break;
 		case('lang'):return lang($p,$o); break;
 		case('list'):return self::mklist($p); break;
@@ -54,6 +54,7 @@ static function reader($d,$b){
 		case('css'):return span($p,$o); break;
 		case('code'):return tag('pre','',tag('code','',$p.($o?'*'.$o:''))); break;
 		case('art'):return href('/art/'.$p,article::tit(['id'=>$p]),'btlk'); break;
+		case('article'):return div(article::call(['id'=>$p]),''); break;
 		//case('form'):return Form::com($p); break;
 		case('apj'):$js='ajaxCall("div,cn'.$c.',,1|'.$p.','.$o.'","headers=1");';
 			return div(Head::jsCode($js),'','cn'.$c); break;

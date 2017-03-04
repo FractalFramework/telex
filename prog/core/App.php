@@ -20,12 +20,7 @@ class App{
 				if(!array_key_exists($app,self::$alx))
 					if(!get('appName') or isset($p['headers']))
 						$app::headers();
-				self::$alx[$app]=1;
-			}
-		}
-		return $ret;
-	}
-
+				self::$alx[$app]=1;}}
+		return $ret;}
 }
-
 ?>

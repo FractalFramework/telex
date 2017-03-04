@@ -7,9 +7,9 @@ static function clr(){$d='mintcream thistle olivedrab lightyellow lightsteelblue
 //menu apps
 static function menuapps($p){$ret=''; $rid=val($p,'rid'); $css='cicon';
 //$rb=array('article','chat','gps','tabler','poll','slide','petition','forms','vote','ballot');
-$rb=Sql::read('com','desktop','rv',['dir'=>'/apps/telex']);
+$rb=Sql::read('com','desktop','rv','where dir="/apps/telex" and auth<="'.ses('auth').'"');
 $prm['onclick']='closebub(event);';
-foreach($rb as $k=>$v){$ico=pico($v,32); $com='';
+foreach($rb as $k=>$v){$ico=pic($v,32); $com='';
 	if($v=='article')$com='|article,edit_telex|headers=1,';
 	elseif($v=='chat')$com='|chat,comtlx|';
 	elseif($v=='gps')$com='|map,gps|';
@@ -17,8 +17,6 @@ foreach($rb as $k=>$v){$ico=pico($v,32); $com='';
 	elseif(method_exists($v,'com'))$com='|'.$v.',com|headers=1,';
 	if($com)$ret.=aj('tlxapps,,,1'.$com.'rid='.$rid,$ico.div(hlpxt($v)),$css,$prm);}
 return $ret;}
-
-//$ok=insertbt(langp('use'),$id.':article',$rid);
 
 //keep
 static function keepsave($p){//dir,type,com,picto,bt
@@ -35,10 +33,9 @@ elseif($com=='slide'){$ncom='slide,call|tid='.$d;}
 elseif($com=='tabler'){$ncom='tabler,call|id='.$d;}
 else{$ncom=$com.',call|id='.$d;}
 $ic=$ic?$ic:$ic=ics($com); $ty=$com=='img'?$com:'pag';
-$nid=Sql::insert('desktop',[ses('uid'),'/documents',$ty,$ncom,$ic,$t,2]);
-$bt=div(lang('added to desktop'),'valid').div(pic($ic).' '.$t,'tit');
-return aj('dsk|telex,desktop',$bt,'',['onclick'=>'Close(\'popup\')']);
-}
+$nid=Sql::insert('desktop',[ses('uid'),'/documents/'.$com,$ty,$ncom,$ic,$t,2]);
+$bt=div(lang('added to desktop'),'valid').div(ico($ic).' '.$t,'tit');
+return aj('dsk|telex,desktop',$bt,'',['onclick'=>'Close(\'popup\')']);}
 
 static function keep($p){
 $id=val($p,'id'); $idv=val($p,'idv'); $com=val($p,'conn'); $ret=''; $ex=''; $txt='';
@@ -65,11 +62,10 @@ if(!$dir){
 	//case('slide'):$t=slide::tit(['id'=>$p]); $pic=ics('slide'); break;
 	default: $pic=ics($kr);
 		if(method_exists($kr,'tit'))$t=$kr::tit(['id'=>$p]); else $t=$p; break;}
-	if($pic)$pic=pic($pic,24); if($im)$im=img('/'.$im,45); $rid=randid('imk');
-	$logo=($im?$im:$pic).' '.input($rid,$t,'40').' '; $bt=pic('save',24).' ';
+	if($pic)$pic=ico($pic,24); if($im)$im=img('/'.$im,45); $rid=randid('imk');
+	$logo=($im?$im:$pic).' '.input($rid,$t,'40').' '; $bt=ico('save',24).' ';
 	$bt=pagup('tlxcall,keepsave|com='.$kr.',p1='.nohttp($p).',p2='.$o.',ict='.$rid.',tit='.$t.'|'.$rid,$bt,'');
 	$ret.=div($logo.$bt);}
-	//p(telex::$objects);
 }
 return div(lang('add2desktop'),'grey').div($ret,'bloc_content objects');}
 
@@ -100,14 +96,14 @@ $txt=rawurlencode(utf8_encode(strip_tags($txt)));
 $tw='http://twitter.com/intent/tweet?original_referer='.$root.'&url='.$root.'&text='.utf8_encode($txt).' #telex'.'&title=Telex:'.$id; $fb='http://www.facebook.com/sharer.php?u='.$root;
 $gp='https://plusone.google.com/_/+1/confirm?hl=fr-FR&url='.$root;
 $st='http://wd.sharethis.com/api/sharer.php?destination=stumbleupon&url='.$root;
-$ptw=pic('twitter-square','24','twitter'); $pfb=pic('facebook-official','24','facebook'); 
-$pgp=pic('google-plus-official','24','gplus'); $pst=pic('stumbleupon-circle','24','stumble');
+$ptw=ico('twitter-square','24','twitter'); $pfb=ico('facebook-official','24','facebook'); 
+$pgp=ico('google-plus-official','24','gplus'); $pst=ico('stumbleupon-circle','24','stumble');
 $ret=href($tw,$ptw,'',1).href($fb,$pfb,'',1);
 $ret.=href($gp,$pgp,'',1).href($st,$pst,'',1);
-$ret.=aj('sndml'.$id.'|tlxcall,sendmail|id='.$id,pic('envelope-o',24)).span('','','sndml'.$id);
+$ret.=aj('sndml'.$id.'|tlxcall,sendmail|id='.$id,ico('envelope-o',24)).span('','','sndml'.$id);
 $r=Sql::read('id,owner','admin_twitter','kv',['uid'=>ses('uid')]);
 foreach($r as $k=>$v)
-	$twapi[]=aj('sndtw'.$id.'|tlxcall,twit|txt='.$txt.',twid='.$k,pic('twitter',24).$v);
+	$twapi[]=aj('sndtw'.$id.'|tlxcall,twit|txt='.$txt.',twid='.$k,ico('twitter',24).$v);
 $ret.=span(implode('',$twapi),'','sndtw'.$id);
 return $ret;}
 
@@ -142,15 +138,27 @@ else{$ja='div,tlxbck,x|tlxcall,report|'.$prm.',confirm=1'; $prb=['data-prmtm'=>'
 	return aj($ja,langp('confirm reporting'),'btdel',$prb).' '.span($ret,'alert');}
 return telex::read($p);}
 
+//translate
 static function translate($p){$id=val($p,'id');
 $txt=Sql::read('txt','telex_xt','v',['id'=>$id]);
 $txt=Conn::load(['msg'=>$txt,'app'=>'Conn','mth'=>'noconn','ptag'=>0]);
-return yandex::read(['txt'=>$txt]);}
+return Yandex::read(['txt'=>$txt]);}
+
+#actions
+static function actions($p){
+$id=$p['id']; $uid=$p['uid']; $idv=$p['idv']; $pr='pn'.$idv; $usr=$p['usr']; $ret='';
+if($usr==ses('user'))
+	$ret.=aj($pr.'|tlxcall,del|idv='.$idv.',did='.$id,langp('delete'));
+else $ret.=aj($pr.'|tlxcall,report|idv='.$idv.',id='.$id.',cusr='.$usr,langp('report'));
+$ret.=aj($pr.'|tlxcall,translate|id='.$id,langp('translate'));
+if($usr!=ses('user'))
+	$ret.=aj($pr.'|chat,discussion|uid='.$uid,langp('private discussion'));
+return div($ret,'actions');}
 
 //labels		
 static function labels_in($p){$id=val($p,'lbl'); if(!$id)return;
 list($ico,$ref)=Sql::read('icon,ref','labels','rw','where id="'.$id.'"');
-return span(pic($ico).$ref,'','lblxt').hidden('lbl',$id);}
+return span(ico($ico).$ref,'','lblxt').hidden('lbl',$id);}
 
 static function labels($p){$rid=val($p,'rid');
 //$ret=input('lbladd','',28);
@@ -160,7 +168,7 @@ $prm='';//['onclick'=>'toggle_close(\'tlxapps\');'];
 $ret=aj($call.'lbl=0',lang('none'),'',$prm);
 $r=Sql::read('id,ref,icon','labels','','order by icon desc');
 foreach($r as $k=>$v)$rb[$v[2]][]=aj($call.'lbl='.$v[0],ucfirst($v[1]),'',$prm);
-foreach($rb as $k=>$v)$ret.=pic($k,'36').implode('',$v);
+foreach($rb as $k=>$v)$ret.=ico($k,'36').implode('',$v);
 return div($ret,'list');}
 
 //ascii
@@ -170,16 +178,24 @@ $r=explode(' ',ascii::vars());
 foreach($r as $v)$ret.=btj($v,'insert(\''.$v.'\',\''.$id.'\');','btn').' ';
 return $ret;}
 
-//make_notification
+//notification (likes,follow)
 static function saventf1($tousr,$id,$type){
 //$ex=Sql::read('id','telex_ntf','v',['4usr'=>$tousr,'byusr'=>ses('user'),'typntf'=>$type,'txid'=>$id]);
 Sql::insert('telex_ntf',[$tousr,ses('user'),$type,$id,'1']);
-$mail=Sql::read('mail','login','v',['name'=>$tousr]);
-$subject=lang('notification');
-if($type==3)$msg=ses('user').' '.hlpxt('notif_like');
-if($type==4)$msg=ses('user').' '.hlpxt('notif_follow');
-//Mail::send($mail,$subject,$msg,'bot@tlex.fr','text');
-}
+$send=Sql::read('ntf','profile','v',['pusr'=>$tousr]);
+if($send!=1){
+	$mail=Sql::read('mail','login','v',['name'=>$tousr]);
+	$subject=lang('tlex');
+	if($type==1)$hlp='notif_quote';
+	if($type==2)$hlp='notif_reply';
+	if($type==3)$hlp='notif_like';
+	if($type==4)$hlp='notif_follow';
+	if($type==5)$hlp='notif_chat';
+	if($type==6)$hlp='notif_subscr';
+	$url='http://'.$_SERVER['HTTP_HOST'].'/'.$id;
+	$msg=ses('user').' '.hlpxt($hlp)."\n".$url;
+	Mail::send($mail,$subject,$msg,'bot@tlex.fr','text');
+}}
 
 #subscrip-bers-tions
 static function subscrptn($p){$type=val($p,'type'); $usr=val($p,'usr'); $ret='';
@@ -251,34 +267,46 @@ elseif(val($p,'chan')){//display
 
 //profilemenu
 static function badger($p){
-//$mail=Sql::read('name','login','v','where name="'.ses('user').'"');
-$r=Sql::read('name','login','rv','where ip="'.ip().'"'); //p($r);
+//$mail=Sql::read('mail','login','v','where name="'.ses('user').'"');
+$r=Sql::read('name','login','rv','where ip="'.ip().'" and auth>0 order by name'); //p($r);
 foreach($r as $v){//$rb[]=aj('bdg|tlxcall,badger_switch|usr='.$v,$v,'');
-	$rb[]=aj('reload,bdg,loged_ok|login,authentificate|user='.$v,$v,'');}
+	$rb[]=aj('reload,bdg,loged_ok|login,authentificate|prf=1,user='.$v,$v,'');}
 $ret=div(implode('',$rb),'list');
 if($usr=val($p,'usr'))$ret.=password('psw','').aj('|login',lang('login'),'btsav');
 $ret.=div('','','bdg');
 return $ret;}
 
+static function profilelogin(){
+//login::com(['auth'=>2]);
+$r[]=array('login','in','login,com','user','login');
+$r[]=array('lang','j','returnVar,lng,reload|Lang,set|lang=fr','flag','fr');
+$r[]=array('lang','j','returnVar,lng,reload|Lang,set|lang=en','flag','en');
+$r[]=array('lang','j','returnVar,lng,reload|Lang,set|lang=es','flag','es');
+return $r;}
+
 static function profilemenu(){
-$root=ses('user')?ses('user'):'profile';
+$root=ses('user')?ses('user'):'profile'; $dev=ses('dev');
 $r[]=array($root,'j','tlxbck,,,1|profile,edit','user','edit profile');
 $r[]=array($root.'/lang','j','returnVar,lng,reload|Lang,set|lang=fr','flag','fr');
 $r[]=array($root.'/lang','j','returnVar,lng,reload|Lang,set|lang=en','flag','en');
-if(auth(6) or ses('dev')=='prog'){
-	$r[]=array(ses('dev').'/mode','j','ses,,reload||k=dev,v=prog','dev','prog');
-	$r[]=array(ses('dev').'/mode','j','ses,,reload||k=dev,v=prod','prod','prod');}
+$r[]=array($root.'/lang','j','returnVar,lng,reload|Lang,set|lang=es','flag','es');
+if(auth(6) or $dev=='prog'){
+	$r[]=array($dev.'/mode','j','ses,,reload||k=dev,v=prog','dev','prog');
+	$r[]=array($dev.'/mode','j','ses,,reload||k=dev,v=prod','prod','prod');}
 $n=Sql::read('count(id)','login','v','where ip="'.ip().'"');// and priv=0
 if($n>1)$r[]=array($root.'/'.lang('badger'),'in','tlxcall,badger','user-circle','badger');
-$r[]=array($root.'/'.lang('utils'),'','txt','file-text-o',lang('notes'));
+$r[]=array($root,'j','popup|desktop|dir=/documents',ics('desktop'),'desktop');
+$r[]=array($root.'/'.lang('utils'),'','pad','file-text-o',lang('notes'));
 //$r[]=array($root.'/'.lang('utils'),'','convert','file-text-o',lang('convert'));
 if(auth(6)){
-	$r[]=array(ses('dev').'/admin','j','popup|admin_lang',ics('language'),'lang');
-	$r[]=array(ses('dev').'/admin','j','popup|admin_help',ics('help'),'help');
-	$r[]=array(ses('dev').'/admin','j','popup|admin_icons',ics('pictos'),'pictos');
-	$r[]=array(ses('dev').'/admin','j','popup|desktop',ics('desktop'),'desktop');
-	$r[]=array(ses('dev').'/admin','j','popup|devnote',ics('devnotes'),'devnotes');
-	$r[]=array(ses('dev').'','j','popup,,xx|dev2prod',ics('update'),'publish');}
+	$r[]=array($dev.'/admin','j','popup|admin_lang',ics('language'),'lang');
+	$r[]=array($dev.'/admin','j','popup|admin_icons',ics('pictos'),'pictos');
+	$r[]=array($dev.'/admin','j','popup|admin_help',ics('help'),'helps');
+	$r[]=array($dev.'/admin','j','popup|update,loaddl',ics('update'),'update');
+	$r[]=array($dev.'/doc','j','popup|admin_sys',ics('dev'),'sys');
+	$r[]=array($dev.'/doc','j','popup|admin_lib',ics('dev'),'lib');
+	$r[]=array($dev.'/doc','j','popup|devnote',ics('devnotes'),'devnote');
+	$r[]=array($dev.'','j','popup,,xx|dev2prod',ics('push'),'push');}
 $r[]=array($root,'j',',,reload|login,disconnect','power-off','logout');
 return $r;}
 

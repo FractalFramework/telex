@@ -46,18 +46,24 @@ class Admin{
 		$r=self::com();
 		if(!$r)$r=self::comdir();
 		$r=array_merge($ra,$r);
-		$app=ses('app');
+		$app=ses('app'); $dev=ses('dev');
 		$r[]=array('','t','','-',$login);
 		//if(!class_exists($app))return $r;
 		//$r[]=array('','lk','/app/'.$app,'',$app);
 		if(auth(4) && $app)$r[]=array('','j','pagup|Admin,seeCode|appSee='.$app,'code','Code');
 		if($app && method_exists($app,'admin')){$rb=$app::admin(); if($rb)$r=array_merge($r,$rb);}
 		if(auth(6)){
-			$r[]=array(ses('dev').'/dev','lk','/?app='.$app.'&dev==','wrench','dev');
-			$r[]=array(ses('dev').'/dev','lk','/?app='.$app.'&dev=prod','wrench','prod');
-			$r[]=array(ses('dev'),'j','popup|dev2prod','cloud-upload','publish');
+			$r[]=array($dev.'/dev','j','ses,,reload||k=dev,v=prog','dev','dev');
+			$r[]=array($dev.'/dev','j','ses,,reload||k=dev,v=prod','prod','prod');
+			$r[]=array($dev.'/dev','j','popup|update,loaddl','download','update');
+			$r[]=array($dev.'/dev','j','popup|apisql','download','apisql');
+			$r[]=array($dev.'/admin','j','popup|admin_lang',ics('language'),'lang');
+			$r[]=array($dev.'/admin','j','popup|admin_icons',ics('pictos'),'pictos');
+			$r[]=array($dev.'/admin','j','popup|admin_help',ics('help'),'helps');
+			$r[]=array($dev.'/admin','j','popup|devnote','connectdevelop','devnote');
+			$r[]=array($dev,'j','popup|dev2prod','cloud-upload','publish');
 			$r[]=array('','t','','timer',chrono('load'));}
-		elseif(ses('dev')=='prog')$r[]=array('','lk','/?app='.$app.'&dev=prod','wrench','prod');
+		elseif($dev=='prog')$r[]=array('','lk','/?app='.$app.'&dev=prod','prod','prod');
 		return $r;
 	}
 	

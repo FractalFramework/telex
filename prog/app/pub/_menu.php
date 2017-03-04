@@ -14,7 +14,7 @@ class _menu{
 	//root before the first "/" load vertical bubble instead of horizontal menu
 	static function menus(){
 		$r[]=array('','lk','/','home','');
-		$call_1='popup|File,fdate|fileRoot=app/demo/demo_ajax.php';//Ajax::j()
+		$call_1='popup|File,fdate|fileRoot=app/demo/demo_ajax.php';
 		$r[]=array('menu1','j',$call_1,'file','fdate');
 		$r[]=array('menu1','j','popup|txt','text','textpad');
 		$r[]=array('menu1/menu12','lk','/txt','','link to textpad');

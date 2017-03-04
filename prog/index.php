@@ -22,6 +22,7 @@ Head::add('csslink','/css/global.css');
 Head::add('csslink','/css/pictos.css');
 Head::add('csslink','/css/main.css');
 Head::add('csslink','/css/fa.css');
+if(!ses('updated') && auth(6))App::open('upgrade','');
 //if(method_exists($app,'headers'))$app::headers();
 #content
 $content=App::open($app,$params);

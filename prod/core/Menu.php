@@ -17,29 +17,28 @@ class Menu{
 		elseif($type=='lk')$pic='link-intact'; 
 		elseif($type=='j')$pic='check';
 		else $pic='browser';
-		$ico=$pic!='-'?pic($pic):'';//&&$dir
+		$ico=$pic!='-'?ico($pic):'';//&&$dir
 		$btn=span($ico,$dir?'ico':'').$btn;
 		$attr['onclick']='bubClose();';
 		$attr['onmouseover']='bubCloseOthers(this.parentNode);';
 		if($type=='')$ret=aj('popup,,,1|'.$call.'|headers=1',$btn,'',$attr);
 		elseif($type=='j')$ret=aj($call,$btn,'',$attr);
-		elseif($type=='in'){
+		elseif($type=='in'){$prm['headers']=1;
 			if(strpos($call,','))list($call,$mth)=explode(',',$call);
 			if(isset($mth))$prm['appMethod']=$mth;
-			$prm['headers']=1; $ret=tag('div','',App::open($call,$prm));}
+			$ret=tag('div','',App::open($call,$prm));}
 		elseif($type=='lk'){$attr['href']=$call; $ret=tag('a',$attr,$btn);}
 		elseif($type=='lkt')$ret=href($call,$btn,'',1);
 		elseif($type=='t')$ret=tag('span','',$btn);
 		else $ret='';
-		return $ret;
-	}
+		return $ret;}
 	
 	#build auto-button for sub-folders
 	static function subub($btn,$dir,$app,$mth){
 		$id=randid('bub');
 		$mode=strpos($dir,'/')===false?'1':'';//vertical bubble for the first level
-		if($btn==ses('user'))$ico=pic('user-circle-o');
-		elseif(Icon::ex($btn))$ico=pico($btn); else $ico=pic('chevron-right');
+		if($btn==ses('user'))$ico=ico('user-circle-o');
+		elseif(Icon::ex($btn))$ico=pic($btn); else $ico=ico('chevron-right');
 		if(Lang::ex($btn))$btn=lang($btn);
 		if($mode)$btn=span($btn,'react');
 		if(!$mode)$ico=span($ico,'ico'); else $ico=$ico.' ';
@@ -50,8 +49,7 @@ class Menu{
 		$attr['onmouseover']='ajaxTimer(\''.$call.'\',\''.$prm.'\'); zindex(\''.$id.'\');';
 		$attr['onmouseout']='clearTimeout(xc);';//clearTimeout(xb);
 		$ret=Ajax::j($call.'|'.$prm,$btn,'',$attr);
-		return $ret;
-	}
+		return $ret;}
 	
 	#displayed part of the master array $r
 	//root begin without '/' mean first level, mean vertical drop
@@ -79,14 +77,12 @@ class Menu{
 			elseif($active_level==$current_level && $next_level)
 				$ret[$next_level]=self::subub($next_level,$first_levels.'/'.$next_level,$app,$mth);
 			//display next level (first iteration)
-			elseif(substr($v[0],0,strlen($dir))==$dir && $depht>$current_depht){
+			elseif(substr($v[0],0,strlen($dir))==$dir && $depht>=$current_depht){
 				$next=$next_level?$first_levels.'/'.$next_level:$active_level;
 				$next=$active_level;
-				$ret[$active_level]=self::subub($active_level,$next,$app,$mth);
-			}
+				$ret[$active_level]=self::subub($active_level,$next,$app,$mth);}
 		}
-		if(isset($ret))return implode('',$ret);
-	}
+		if(isset($ret))return implode('',$ret);}
 	
 	#call
 	static function call($prm){

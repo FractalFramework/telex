@@ -7,7 +7,7 @@ static $objects=0;
 static $db='telex_xt';
 static $title='Telex';
 static $description='Telex is an objects social network';
-static $image='http://tlex.fr/usr/telex/telex.png';
+static $image='http://tlex.fr/usr/telex/tlex.png';
 static $usr='';
 
 //install
@@ -43,7 +43,7 @@ Head::add('meta',array('attr'=>'property','prop'=>'og:title','content'=>self::$t
 Head::add('meta',array('attr'=>'property','prop'=>'og:description','content'=>self::$description));
 Head::add('meta',array('attr'=>'property','prop'=>'og:image','content'=>self::$image));
 Head::add('csslink','/css/telex.css');
-Head::add('csscode','body{background:#'.ses('clr'.self::$usr).';}');
+Head::add('csscode','body{background:#'.ses('clr'.ses('user')).';}');
 Head::add('jslink','/js/telex.js');
 Head::add('jscode',self::injectJs());}
 
@@ -121,7 +121,7 @@ return $id;}
 static function upload($rid){
 return '<form id="upl" action="" method="POST" onchange="upload(\''.$rid.'\')">
 <label class="uplabel btn"><input type="file" id="upfile" name="upfile" multiple />
-'.pic('image').'</label></form>';}
+'.ico('image').'</label></form>';}
 
 //publish
 static function editor($p){
@@ -143,17 +143,17 @@ $prm['onclick']='closediv(\'tlxapps\'); closediv(\'lbcbk\');'; $prm['id']='edtbt
 $prm['data-prmtm']='tm='.ses('user');//'current';//return to current prmtm
 $sav=span($count.aj($ja,langp('publish'),'btsav',$prm),'right').' ';//save
 if(!$ib && !$qo && !$to && !$id){
-	$tg=dropdown('tlxcall,menuapps|rid='.$rid,langph('applications'),'btn');
+	$tg=toggle('tlxapps|tlxcall,menuapps|rid='.$rid,langph('applications'),'btn');
 	$tg.=self::upload($rid);
-	$tg.=dropdown('tlxcall,ascii|rid='.$rid,pic('smile-o'),'btn');//'&#128522;'
-	//if(auth(4))$tg.=toggle('tlxapps|fontawesome,com|id='.$rid,pic('fort-awesome'),'btn');
+	$tg.=dropdown('tlxcall,ascii|rid='.$rid,ico('smile-o'),'btn');//'&#128522;'
+	//if(auth(4))$tg.=toggle('tlxapps|fontawesome,com|id='.$rid,ico('fort-awesome'),'btn');
 	$tg.=dropdown('tlxcall,labels',langph('labels'),'btn');
 	$tg.=span(span('','','lblxt'),'','lbcbk').hidden('lbl',0);
 	$sav.=div($tg,'edtbt');//embed used to close others
 	$sav.=div('','','tlxapps','');//put editor here if use object mode
 	$ret.=div($sav,'','edtsv');}//,'display:none;'
 else{$ret.=div($sav,'','edtsv');}
-	//$ret.=btj(pic('close'),'closediv(\'pn'.$idv.'\')');
+	//$ret.=btj(ico('close'),'closediv(\'pn'.$idv.'\')');
 $ret.=div('','clear');
 return $ret;}
 
@@ -195,7 +195,7 @@ $j='telex,objplayer|popwidth=550px,obj='.$apc.',p1='.nohttp($d);
 if($img && isset($id))$ban=pagup('Video,call|p='.$p.',id='.$id,$img,'');
 elseif($img)$ban=pagup($j,$img,''); else $ban=$img;
 if($dom=='1nfo.net')$bt=' '.pagup($j,langp('read'),'grey').' '; else $bt='';
-$url=href($d,pico('url').$dom,'grey');
+$url=href($d,pic('url').$dom,'grey');
 $ret=div($t,'bold').div($r[1],'stxt').div($url.$bt).div('','clear');
 $ret=div($ret,'pncxt');
 return div($ban.$ret,'panec');}
@@ -233,7 +233,7 @@ if($f)return imgup('img/full/'.$f,img('/'.$fb,$sz),$c);}
 
 static function url($p,$o,$e=''){$t=$o?$o:domain($p);
 //$pop=popup('telex,objplayer|obj=playweb,p='.$p.',o='.$o,$t,'btlk');
-return href($p,$t.' '.pic('external-link'),'',$e);}
+return href($p,$t.' '.ico('external-link'),'',$e);}
 
 static function objplayer($p){$func=$p['obj'];
 return self::$func(val($p,'p1'),val($p,'p2'));}
@@ -263,14 +263,15 @@ switch($c){
 	case('mp4'):return video($p); break;
 	case('philum'):if(Conn::$one!=1)$ret=self::playphilum($p); else $ret='';
 		self::$objects[$c][]=[$p,$o]; Conn::$one=1; return $ret; break;
-	case('art'):return href('/art/'.$p,article::tit(['id'=>$p]),'btlk'); break;
+	case('art'):if(Conn::$one!=1)$ret=href('/art/'.$p,article::tit(['id'=>$p]),'btlk');
+		else $ret=''; self::$objects[$c][]=[$p,$o]; Conn::$one=1; return $ret; break;
 	case('article'):self::$objects[$c][]=[$p,$o]; return; break;
 	case('chat'):self::$objects[$c][]=[$p,$o]; return; break;
 	case('gps'):self::$objects[$c][]=[$p,$o]; return; break;
-	case('app'):return aj('popup|'.$p.'|param='.$o,pico($p,32),'btn'); break;
+	case('app'):return aj('popup|'.$p.'|param='.$o,pic($p,32),'btn'); break;
 	case('open'):if(method_exists($p,$o))return $p::$o; break;
 	case('picto'):return picto($p,$o?$o:24); break;
-	case('pic'):return pic($p,$o?$o:24); break;
+	case('pic'):return ico($p,$o?$o:24); break;
 	case('ascii'):return '&#'.$p.';'; break;
 	default:if(method_exists($c,'call')){self::$objects[$c][]=[$p,$o];
 		return App::open($c,['appMethod'=>'call','brut'=>1,'id'=>$p]);} break;
@@ -284,14 +285,14 @@ foreach($vr as $k=>$v){$fc=''; $ic=''; list($p,$o)=$v;
 switch($kr){
 case('img'):if($imok)$ret.=self::playthumb($p,'micro'); $imok=1; break;
 case('article'): $t=Sql::read('tit','articles','v','where id='.$p);
-	$ret.=pagup('article,read|popwidth:550px,tlx=1,id='.$p,pic('file-text-o',$sz).span($t),$css);
+	$ret.=pagup('article,read|popwidth:550px,tlx=1,id='.$p,ico('file-text-o',$sz).span($t),$css);
 	break;
 case('chat'):$rb=Sql::read_inner('name','chatlist','login','ruid','rv','where roid='.$p);
 	if($rb)$with=lang('with').' '.implode(', ',$rb); else $with='';
-	$ret.=aj('pagup,,,1|chat|param='.$p.',headers=1',pic('comments',$sz).span($with),$css); break;
+	$ret.=aj('pagup,,,1|chat|param='.$p.',headers=1',ico('comments',$sz).span($with),$css); break;
 case('gps'):$t=Gps::com(['coords'=>$p]);
-	$ret.=pagup('map,com|coords='.$p,pic('map-marker',$sz).span($t),$css); break;}
-if($ic)$t=pic($ic,$sz).span($t);//when called method need an interface
+	$ret.=pagup('map,com|coords='.$p,ico('map-marker',$sz).span($t),$css); break;}
+if($ic)$t=ico($ic,$sz).span($t);//when called method need an interface
 if($fc)$ret.=pagup('telex,objplayer|obj='.$fc.',p1='.$p.',p2='.$o,$t,$css);}}
 if($ret)return div($ret,'');}//panec
 
@@ -319,7 +320,7 @@ if($lid){
 	$nlik=Sql::read('count(id)','telex_lik','v','where lik='.$id);
 	$mylik=Sql::read('id','telex_lik','v','where lik='.$id.' and luid='.ses('uid'));
 	if($mylik)$sty='color:#e81c4f;';}
-$bt=pic('heart',$sty,'like','','',span($nlik,'liknb'));
+$bt=ico('heart',$sty,'like','','',span($nlik,'liknb'));
 $ret=aj($rid.'|telex,savelike|id='.$id.',lid='.$mylik.',name='.$p['name'],$bt);
 return span($ret,'',$rid);}
 
@@ -331,10 +332,10 @@ $id=Sql::read('id','telex_ab','v',$w);
 $rb=Sql::read('wait,block','telex_ab','ra',$w);//contexts:user see visitor (ucv),
 if($id){
 	if($rb['wait'])$flag='pending'; elseif($rb['block'])$flag='blocked'; else $flag='unfollow';
-	$bt=$sm?pico($flag):langph($flag);
-	$ret=dropdown('tlxcall,follow|chan=1,usr='.$usr.',rid='.$rid,pico('menu'),'');
+	$bt=$sm?pic($flag):langph($flag);
+	$ret=dropdown('tlxcall,follow|chan=1,usr='.$usr.',rid='.$rid,pic('menu'),'');
 	$ret.=aj($rid.'|tlxcall,follow|usr='.$usr.',unfollow='.$id.',rid='.$rid,$bt,'btdel');}
-else{$bt=$sm?pico('follow'):langph('follow');
+else{$bt=$sm?pic('follow'):langph('follow');
 	$ret=dropdown('tlxcall,follow|chan=1,usr='.$usr.',rid='.$rid,$bt,'btsav');}
 $c=val($p,'rid')?'':'followbt';
 return span($ret,$c,$rid);}
@@ -345,12 +346,15 @@ if(!$uid)$uid=Sql::read('id','login','v','where name="'.$usr.'"');
 $n0=Sql::read('count(id)',self::$db,'v','where uid="'.$uid.'"');
 $n1=Sql::read('count(id)','telex_ab','v','where usr="'.$usr.'"');
 $n2=Sql::read('count(id)','telex_ab','v','where ab="'.$usr.'"');
-$bt=div(div(lang('published telex'),'subscrxt').div($n0,'subscrnb'),'subscrbt');
-$ret=self::loadtm('tm='.$usr.',noab=1',$bt,'');//timbck
-$bt=div(div(lang('subscriptions'),'subscrxt').div(span($n1,'','tlxabs'),'subscrnb'),'subscrbt');
-$ret.=aj('tlxbck|tlxcall,subscrptn|type=ption,usr='.$usr.'|tlxabs',$bt);
-$bt=div(div(lang('subscribers'),'subscrxt').div(span($n2,'','tlxsub'),'subscrnb'),'subscrbt');
-$ret.=aj('tlxbck|tlxcall,subscrptn|type=ber,usr='.$usr.'|tlxsub',$bt);
+$bt=div(lang('published telex'),'subscrxt').div($n0,'subscrnb');//telexs
+$ret=div(self::loadtm('tm='.$usr.',noab=1',$bt,''),'subscrbt');
+$bt=div(lang('subscriptions'),'subscrxt').div(span($n1,'','tlxabs'),'subscrnb');//ab
+$ret.=div(aj('tlxbck|tlxcall,subscrptn|type=ption,usr='.$usr.'|tlxabs',$bt),'subscrbt');
+$bt=div(lang('subscribers'),'subscrxt').div(span($n2,'','tlxsub'),'subscrnb');//sub
+$ret.=div(aj('tlxbck|tlxcall,subscrptn|type=ber,usr='.$usr.'|tlxsub',$bt),'subscrbt');
+//$n3=Sql::read('count(id)','telex_ab','v','where ab="'.$usr.'"');//likes
+//$bt=div(lang('likes'),'subscrxt').div($n3,'subscrnb');
+//$ret.=div(self::loadtm('lik='.$usr.',noab=1',$bt,''),'subscrbt');
 $ret.=hidden('tlxsubnb',$n2).hidden('tlxabsnb',$n1).div('','clear');
 return div($ret,'subscrstats').div('','clear');}
 
@@ -369,8 +373,9 @@ return profile::divim($f,'avatarsmall',$clr);}
 
 #notifications
 static function saventf($id,$type,$o){$r=$_POST[$o];
-if($r)foreach($r as $k=>$v)if($k!=ses('user'))$sql[]=[$k,ses('user'),$type,$id,'1'];
-if(isset($sql))Sql::insert2('telex_ntf',$sql); $_POST[$o]='';}
+if($r)foreach($r as $k=>$v)if($k!=ses('user'))
+	tlxcall::saventf1($k,$id,$type);
+$_POST[$o]='';}
 
 static function readntf($v){$n=$v['typntf']; $by='@'.$v['byusr']; $ret='';
 //$uname=Sql::read('name','login','v','where usr="'.$v['byusr'].'"');
@@ -399,26 +404,25 @@ static function lablbt(){$ret='';//self::loadtm('labl=',lang('all'));
 	if($r)foreach($r as $k=>$v)$ret.=self::loadtm('labl='.$k,$v);
 	return div($ret,'list');}
 
+static function pub($p){$usr=val($p,'usr');
+$mail=Sql::read('mail','login','v','where name="'.$usr.'"');
+$r=Sql::read_inner('name','profile','login','puid','rv','where mail="'.$mail.'" and name!="'.$usr.'" and privacy=0');
+if($r){foreach($r as $v)$ret[]=profile::small(['usr'=>$v]);
+	return implode('',$ret);}}
+
 #desktop
 static function desktop($p){$css=val($p,'mode','licon');
-$bt=href('/desktop/'.ses('user'),pic('link'),'btxt');
-$ret=div($bt,'right');
-$r=Sql::read('id,dir,type,com,picto,bt,auth','desktop','id','where uid="'.ses('uid').'" and auth<="'.ses('auth').'" and dir="/documents" order by id desc limit 10');
+//$bt=href('/desktop/'.ses('user'),ico('link'),'btxt');
+$ret=aj('popup|desktop|dir=/documents',lang('desktop'),'btit');
+$r=Sql::read('id,dir,type,com,picto,bt,auth','desktop','id','where uid="'.ses('uid').'" and auth<="'.ses('auth').'" and dir like "/documents%" order by id desc limit 10');
 if($r)foreach($r as $k=>$v){
 	if($v[1]=='img'){$f='img/full/'.$v[2];
 		if(is_file($f))$ret.=imgup($f,self::playthumb($v[2],'micro',1).span($v[4]),$css);}
-	elseif($v[1]=='pop')$ret.=aj('popup,,,1|'.$v[2].',headers=1',pic($v[3],24).span($v[4]),$css);
-	elseif($v[1]=='pag')$ret.=aj('pagup,,,1|'.$v[2].',headers=1',pic($v[3],24).span($v[4]),$css);
+	elseif($v[1]=='pop')$ret.=aj('popup,,,1|'.$v[2].',headers=1',ico($v[3],24).span($v[4]),$css);
+	elseif($v[1]=='pag')$ret.=aj('pagup,,,1|'.$v[2].',headers=1',ico($v[3],24).span($v[4]),$css);
 	elseif($v[1]=='lk')$ret.=href('/app'.$v[2],'',$css,1);
-	else $ret.=aj($v[2],pic($v[3],24).span($v[4]),$css);}
-else $ret=div(lang('desktop'),'btit');
+	else $ret.=aj($v[2],ico($v[3],24).span($v[4]),$css);}
 return $ret.div('','clear');}
-
-#pub
-static function pub(){
-$r=['newsnet','socialsys','socialgov'];
-foreach($r as $v)$ret[]=self::profile(['usr'=>$v,'small'=>'1']);
-return implode('',$ret);}
 
 #read
 static function relativetime($sec){$time=ses('time')-$sec;
@@ -450,13 +454,13 @@ $name=href('/'.$usr,tag('strong','',$v['pname']),'btxt').' ';
 $usrnm=span('@'.$usr,'grey'); if(ses('user'))
 $usrnm=aj('pn'.$idv.'|telex,editor|idv='.$idv.',to='.$usr,span('@'.$usr,'grey'));
 $time=self::relativetime($v['now']).' ';
-$url=href('/id/'.$id,pic('link',12),'grey');
+$url=href('/id/'.$id,ico('link',12),'grey');
 $date=pagup('telex,read|popwidth=500px,th='.$id,$time,'grey');
-$ico=$v['icon']?pic($v['icon']):'';
+$ico=$v['icon']?ico($v['icon']):'';
 if($v['ref'])$label=span(span(ucfirst($v['ref']),'tx').$ico,'label right'); else $label='';
 //if(auth(6))
 if($usr==ses('user'))
-	$url.=aj('popup|telex,redit|id='.$id,pico('edit'));
+	$url.=aj('popup|telex,redit|id='.$id,pic('edit'));
 if($v['ib']){
 	$to=Sql::read_inner('name',self::$db,'login','uid','v','where '.self::$db.'.id='.$v['ib']);
 	$url.=' '.pagup('telex,read|th='.$id,lang('in-reply to').' '.$to,'grey').' ';}
@@ -466,16 +470,17 @@ return div($name.' '.$usrnm.' - '.$date.' '.$url.' '.$label,'username');}
 
 static function panefoot($v,$tg){
 $id=$v['id']; $idv=$v['idv']; $pr='pn'.$idv; $usr=$v['name']; $ret='';
-$ret.=toggle($pr.'|telex,editor|idv='.$idv.',to='.$v['name'].',ib='.$id,picit('reply','to reply'));
-$ret.=toggle($pr.'|telex,editor|idv='.$idv.',quote='.$id,picit('retweet','quote'));
+$ret.=toggle($pr.'|telex,editor|idv='.$idv.',to='.$v['name'].',ib='.$id,icit('reply','to reply'));
+$ret.=toggle($pr.'|telex,editor|idv='.$idv.',quote='.$id,icit('retweet','quote'));
 $ret.=self::likebt($v);
-$ret.=toggle($pr.'|tlxcall,share|id='.$id,picit('share-alt','share'));
-if($usr==ses('user'))
-	$ret.=toggle($pr.'|tlxcall,del|idv='.$idv.',did='.$id,picit('bolt','delete','del'));
+$ret.=toggle($pr.'|tlxcall,share|id='.$id,icit('share-alt','share'));
 if(self::$objects)
-	$ret.=toggle($pr.'|tlxcall,keep|idv='.$idv.',id='.$id,picit('download','keep'));
-$ret.=toggle($pr.'|tlxcall,report|idv='.$idv.',id='.$id.',cusr='.$usr,picit('warning','report'));
-$ret.=toggle($pr.'|tlxcall,translate|id='.$id,picit('exchange','translate'));
+	$ret.=toggle($pr.'|tlxcall,keep|idv='.$idv.',id='.$id,icit('download','keep'));
+$ret.=toggle($pr.'|tlxcall,actions|id='.$id.',idv='.$idv.',uid='.$v['uid'].',usr='.$usr,icit('tasks','actions'));
+/*if($usr==ses('user'))
+	$ret.=toggle($pr.'|tlxcall,del|idv='.$idv.',did='.$id,icit('flash','delete','del'));
+$ret.=toggle($pr.'|tlxcall,report|idv='.$idv.',id='.$id.',cusr='.$usr,icit('warning','report'));
+$ret.=toggle($pr.'|tlxcall,translate|id='.$id,icit('exchange','translate'));*/
 return $ret;}
 
 static function pane($v,$current=''){$id=$v['id']; $usr=$v['name'];
@@ -502,10 +507,12 @@ if($current==$id){self::$title='telex.fr/'.$id.' by @'.$usr; self::$description=
 return $ret;}
 
 static function readusr($p,$usr){//authorized to watch
+$open=Sql::read('auth','login','v','where name="'.$usr.'"');
+if(!$open)return div(ico('lock').hlpxt('closed account'),'pane');
 $prv=Sql::read('privacy','profile','v','where pusr="'.$usr.'"');
 if($prv){
 	$id=Sql::read('id','telex_ab','v','where usr="'.ses('user').'" and ab="'.$usr.'" and wait=0 and block=0');
-	if(!$id)return div(pic('lock').hlpxt('private account'),'pane');
+	if(!$id)return div(ico('lock').hlpxt('private account'),'pane');
 	else return self::read($p);}
 else return self::read($p);}
 
@@ -562,8 +569,8 @@ return Sql::read($cols,self::$db,$vmode,$inn.$where,0);}//1=verbose
 static function call($p){$r=self::api($p);
 foreach($r as $k=>$v){self::$objects='';
 	$r[$k]['avatar']='http://tlex.fr/img/full/'.$v['avatar'];
-	$r[$k]['txt']=Conn::load(['msg'=>$v['txt'],'app'=>'telex','mth'=>'reader']);
-	$r[$k]['objects']=self::objects();}
+	$r[$k]['txt']=Conn::load(['msg'=>$v['txt'],'app'=>'telex','mth'=>'reader']);}
+	//$r[$k]['objects']=self::objects();
 return json_r($r);}
 
 //load button
@@ -578,13 +585,14 @@ static function vrfusr($d){return Sql::read('id','login','v','where name="'.$d.'
 static function vrfid($d){return Sql::read_inner('name',self::$db,'login','uid','v','where '.self::$db.'.id="'.$d.'"');}
 
 #content
-static function content($p){$badusr=''; $badid=''; $dsk=''; $pub='';
-$own=ses('user'); $desk=val($p,'desk'); $chat=val($p,'chat'); 
+static function content($p){$badusr=''; $badid=''; $dsk=''; $pub=''; $bigprofile='';
+$own=ses('user'); $desk=val($p,'desk'); $chat=val($p,'chat');
 $ntf=val($p,'ntf'); $art=val($p,'art');
 //self::install();
 //profile::install();
 //if(ses('dev')=='prog')self::$db='telex_xt';//alternative table
-if(!$own)$login=login::com(['auth'=>2]);
+if(!$own)//$login=login::com(['auth'=>2]);
+$login=Menu::call(array('app'=>'tlxcall','method'=>'profilelogin'));
 else $login=Menu::call(array('app'=>'tlxcall','method'=>'profilemenu'));
 //usr
 $usr=val($p,'usr'); $id=val($p,'id',val($p,'th')); if(is_numeric($usr)){$id=$usr; $usr='';}
@@ -594,8 +602,9 @@ if(!$usr && $own)$p['usr']=$own;
 if($id){$okid=self::vrfid($id); if(!$okid){$badid=1; $id='';} else{$p['id']=$id; $usr=$okid;}}
 //nav
 $nav=span($login,'right');
-$nav.=span(href('/',langph('tlex'),'btn abbt'),'');//span('TELEX','microsys')
-//$nav.=self::loadtm('tm='.$usr,langph('telex'),'btn abbt');
+$nav.=href('/',pic('home'),'btn');
+//$nav.=href('/','Tlex','microsys abbt');
+//$nav.=self::loadtm('tm='.$usr,'Tlex','microsys abbt');
 if(ses('uid')){
 	$bt=langph('notifications').span('','nbntf','tlxntf');
 	//$nav.=aj('tlxbck|telex,read|ntf=1|tlxntf',$bt,'btn abbt');
@@ -606,14 +615,18 @@ if(ses('uid')){
 if($own)$nav.=ajtime('telex,chanbt','usr='.$usr.',list='.ses('list'),langph('lists'),'btn abbt');
 if(ses('uid'))$nav.=aj('pblshcnt|telex,searchbt',langph('search'),'btn abbt');
 //profile
-$bigprofile='';
 if($badid or $badusr)$profile=help('telex','board');
-elseif($usr && !$badusr)list($bigprofile,$profile)=profile::read(['usr'=>$usr,'big'=>'1']);
-elseif(!$own or $usr or $id or $desk)$profile='';//div(help('welcome'),'board');
+elseif($usr && !$badusr)
+	list($bigprofile,$profile)=profile::read(['usr'=>$usr,'big'=>'1']);
+elseif(!$own or $usr or $id or $desk)$profile='';
 else $profile=self::profile(['usr'=>$own,'face'=>'1']);
 //dashboard
-if(auth(1) && !$desk)$dsk=div(self::desktop($p),'board','dsk');
-elseif(!$own && !$usr && !$id)$pub=div(self::pub(),'');
+if(auth(1) && !$desk){
+	if($usr && $usr!=$own)$dsk=self::pub(['usr'=>$usr]);
+	else $dsk=div(self::desktop($p),'board','dsk');}
+elseif(!$own && !$usr && !$id)
+	$pub=div(App::open('devnote',''),'').div(paypal::content(''),'board');
+//elseif(!$own && !$usr && !$id)$pub=applist::tlex();
 $credits=help('credits','board',1);
 //publish
 if($own && !$id && !$usr && !$badid && !$badusr && !$art && !$desk)
@@ -628,7 +641,7 @@ else $refresh='';
 if($badid)$stream=help('404iderror');
 elseif($badusr)$stream=help('404usrerror');
 elseif($art)$stream=App::open('article',['id'=>$art,'appFrom'=>'telex']);
-elseif(!$usr && !$own && !$id)$stream=App::open('article',['id'=>6]);
+elseif(!$usr && !$own && !$id)$stream=help('welcome','',1);
 elseif($desk)$stream=Desk::load('desktop','com',val($p,'dir','/documents'));
 elseif($chat)$stream=App::open('chat','');
 elseif($usr && $usr!=$own)$stream=self::readusr($p,$usr);
@@ -644,7 +657,7 @@ $cnt=div($profile.$dsk.$credits.$pub,'dashboard'.$hdash,'',$rs[1]);
 $cnt.=div($publish.$refresh.$stream,'timeline'.$htime,'timbck',$rs[1]);
 //prmtm
 if(val($p,'th'))$pmtm='th='.$usr; elseif($ntf)$pmtm='ntf=1,usr='.$usr; 
-elseif(!$id && !$desk && !$chat && !$art){
+elseif(!$id && !$desk && !$chat && !$art && $own){
 	if($usr)$pmtm='noab=1,tm='.$usr; else $pmtm='tm='.$own;}
 else $pmtm='';
 $cnt.=hidden('prmtm',$pmtm);

@@ -31,7 +31,7 @@ class upfile{
 	//interface
 	static function content($p){
 		$p['rid']=randid('md');
-		$ret=Upload::call();
+		$ret=Upload::call('upl');
 		return div($ret,'',$p['rid']);}
 }
 ?>

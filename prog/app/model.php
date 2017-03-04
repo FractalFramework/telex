@@ -5,7 +5,7 @@ static $private='1';
 static $db='model';
 	
 static function injectJs(){return '';}
-		
+
 static function headers(){
 	Head::add('csscode','.txt textarea{width:100%;}');
 	Head::add('jscode',self::injectJs());}
@@ -52,7 +52,7 @@ static function edit($p){
 	$cols=self::cols(); $colstr=implode(',',$cols);
 	$r=Sql::read($colstr,self::$db,'ra',['id'=>$id]);
 	$ret=aj($rid.'|model,menu|rid='.$rid.',xid='.$xid,langp('back'),'btn');
-	$ret.=aj($rid.',,load|model,modif|rid='.$rid.',xid='.$xid.',id='.$id.'|'.$colstr,langp('modif'),'btsav');
+	$ret.=aj($rid.',,z|model,modif|rid='.$rid.',xid='.$xid.',id='.$id.'|'.$colstr,langp('save'),'btsav');
 	$ret.=aj($rid.'|model,del|rid='.$rid.',xid='.$xid.',id='.$id,langp('delete'),'btdel');
 	$ret.=aj('popup|model,call|rid='.$rid.',xid='.$xid.',id='.$id,langp('view'),'btn');
 	//$ret.=aj('popup|model,sysedit|id='.$id,langp('edit'),'btsav');//default editor
@@ -119,8 +119,8 @@ static function com($p){$id=val($p,'id');
 static function content($p){
 	self::install();
 	$p['rid']=randid('md');
-	$bt=hlpbt('model_help');//describtion
 	$id=val($p,'id',val($p,'param'));
+	$bt=hlpbt('model_app');//description
 	if($id && val($p,'edit'))$ret=self::edit($p);
 	elseif($id)$ret=self::call(['id'=>$id]);
 	else $ret=self::menu($p);

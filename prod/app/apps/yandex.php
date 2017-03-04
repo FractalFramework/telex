@@ -50,7 +50,8 @@ static function read($p){
 	
 //com (apps)
 static function com($p){
-	return self::read($p);}
+	$r=self::build($p);
+	return $r['text'][0];}
 	
 //interface
 static function content($p){

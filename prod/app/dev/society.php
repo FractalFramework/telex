@@ -42,7 +42,7 @@ class society{
 		//self::install();
 		//$p1=val($prm,'p1');
 		//$ret=input('inp1','value1','','1');
-		//$ret.=Ajax::j('popup|society,result|msg=text|inp1',lang('send'),'btn');
+		//$ret.=aj('popup|society,result|msg=text|inp1',lang('send'),'btn');
 		$pr['code']='[rand,black,1:attr]';
 		$pr['code'].=self::square();
 		$pr['size']='100%/100%';

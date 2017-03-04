@@ -87,9 +87,9 @@ class slide{
 		if($own){
 			$ret['menu']=aj($rid.'|slide,menu|'.$prm.$pid,langp('back'),'btn');
 			$ret['url']=href('/app/slide/'.$tid,'#'.$tid,'btn',1);
-			$ret['edit_obj']=aj('popup|slide,editit|'.$prm.$tid,pico('edit'),'btn');
+			$ret['edit_obj']=aj('popup|slide,editit|'.$prm.$tid,pic('edit'),'btn');
 			$ret['del_obj']=aj($rid.'|slide,del|'.$prm.$tid.',delall=1',langpi('delete'),'btdel');
-			$ret['refresh']=aj($rid.'|slide,callin|'.$prm.$pid,picxt(ics('slide'),$pid),'btn');
+			$ret['refresh']=aj($rid.'|slide,callin|'.$prm.$pid,icxt(ics('slide'),$pid),'btn');
 			$ret['edit_slide']=aj('popup|slide,edit|'.$prm.$pid,langpi('modif'),'btn');
 			$ret['del_slide']=aj('popup|slide,del|'.$prm.$pid,langpi('del'),'btdel');
 			$ret['add_slide']=aj('popup|slide,add|'.$prm.$pid.',bid=',langpi('add'),'btsav');}
@@ -102,9 +102,9 @@ class slide{
 			if($r)foreach($r as $ka=>$va){
 				if($va['rel']==$pid)
 					$ret['end']=aj($com.'|'.$app.'|'.$prm.$va['pid'],langp('end'),'btn');
-				if($va['bid']==$pid)$next.=aj($com.'|'.$app.'|'.$prm.$va['pid'],pico('next').' '.$va['pid'],'btn');
+				if($va['bid']==$pid)$next.=aj($com.'|'.$app.'|'.$prm.$va['pid'],pic('next').' '.$va['pid'],'btn');
 				$ret['next']=$next;}}
-		$here=aj($rid.'|slide,callin|'.$prm.$pid,picxt(ics('slide'),$pid),'btn').' ';
+		$here=aj($rid.'|slide,callin|'.$prm.$pid,icxt(ics('slide'),$pid),'btn').' ';
 		$res=[];
 		$bt=div(implode('',$ret));
 		if(isset($ra))$ret=div(($ra['txt']),'','tx'.$rid,'margin:auto;');//nl2br->white-space:pre-wrap;
@@ -114,16 +114,16 @@ class slide{
 		$r=Sql::read('id,pid,bid,txt,rel','slides','rr','where tid="'.$tid.'"');
 		$p['own']=Sql::read('id','slides_menu','v','where uid="'.ses('uid').'" and id="'.$tid.'"');
 		$p['tit']=Sql::read('tit','slides_menu','v','where id='.$tid);
-		//if($p['own'])$edt=' '.aj('popup|slide,editit|id='.$tid.$tid,pico('edit'),'btn');
+		//if($p['own'])$edt=' '.aj('popup|slide,editit|id='.$tid.$tid,pic('edit'),'btn');
 		$ret=div($p['tit'].$edt,'tit');
 		return $ret.self::read($r,$p);}
 	
 	static function menu($p){$rid=val($p,'rid'); $ret='';
-		if(auth(6))$ret.=aj($rid.',,y|slide,create|rid='.$rid,pic('plus').span(lang('new')),'bicon');
+		if(auth(6))$ret.=aj($rid.',,y|slide,create|rid='.$rid,ico('plus').span(lang('new')),'bicon');
 		if(ses('uid'))$w='where uid="'.ses('uid').'"'; else $w='where pub=1';
 		$r=Sql::read('id,tit','slides_menu','kv',$w);
 		if($r)foreach($r as $k=>$v)
-			$ret.=aj($rid.',,y|slide,callin|tid='.$k.',rid='.$rid,pico('slide').span($v),'bicon');
+			$ret.=aj($rid.',,y|slide,callin|tid='.$k.',rid='.$rid,pic('slide').span($v),'bicon');
 	return div($ret);}
 	
 	static function callin($p){$p['rid']=val($p,'rid',randid('sld')); $tid=val($p,'tid');
@@ -141,11 +141,11 @@ class slide{
 	
 	static function com($p){$rid=randid('sld');
 		$r=Sql::read('id,tit','slides_menu','kv','where uid="'.ses('uid').'" order by id desc');
-		$ret=aj('popup|slide,create|rid='.$rid,pic('plus').span(lang('new')),'licon');
+		$ret=aj('popup|slide,create|rid='.$rid,ico('plus').span(lang('new')),'licon');
 		if($r)foreach($r as $k=>$v){
 			$bt=insertbt(lang('use'),$k.':slide',val($p,'rid'));
 			//$bt=telex::publishbt($k,'slide');
-			$op=aj('pagup|slide,call|id='.$k,pico('slide').' '.span($v),'btn');
+			$op=aj('pagup|slide,call|id='.$k,pic('slide').' '.span($v),'btn');
 			$ret.=div($op.$bt,'licon');}
 		return div($ret,'',$rid);}
 	

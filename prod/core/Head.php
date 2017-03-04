@@ -28,9 +28,9 @@ static function add($action,$values){
 	self::$add[][$action]=$values;}
 
 static function build(){$ret='';
-	$headerArray=self::$add;
-	if($headerArray){
-		foreach($headerArray as $k=>$v){		
+	$r=self::$add;
+	if($r){
+		foreach($r as $k=>$v){		
 			if(is_array($v))$va=current($v);
 			switch(key($v)){
 				case('code'):$ret.=$va."\n"; break;

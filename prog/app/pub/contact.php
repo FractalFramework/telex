@@ -25,7 +25,7 @@ static function read($p){$rid=val($p,'rid');
 	$r=Sql::read_inner('contact.id,name,cto,cmail,ctit,ctxt,dateup',self::$db,'login','vuid','rr','where cto="'.ses('uid').'" order by contact.id desc');
 	$tmp='[_name, (_cmail) [_date*class=date:span] _del
 	[_ctit*class=tit:div][_ctxt*class=txt:div]*class=menu:div]';
-	$ret=aj($rid.'|contact',pico('back'),'btn').br();
+	$ret=aj($rid.'|contact',pic('back'),'btn').br();
 	if($r)foreach($r as $k=>$v){
 		$v['del']=aj($rid.'|contact,del|rid='.$rid.',id='.$v['id'],langp('del'),'btxt');
 		$ret.=Vue::read($v,$tmp);}

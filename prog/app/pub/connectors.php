@@ -6,7 +6,7 @@ class connectors{
 	static function injectJs(){
 		return '
 		function connread(){
-			ajaxCall("div,conn,2|Conn,load","app=connectors,mth=reader","msg");}';}
+			ajaxCall("div,conn,2|Conn,z","app=connectors,mth=reader","msg");}';}
 	static function headers(){
 		Head::add('jscode',self::injectJs());}
 	
@@ -26,7 +26,7 @@ class connectors{
 			case('art'):return App::open($c,['param'=>$p,'headers'=>1]); break;
 			case('web'):$ret=telex::playweb($p); break;
 			case('pub'):$t=Sql::read('tit',article::$db,'v','where id="'.$p.'"');
-				return aj('popup|art|param='.$p,pic('file-text-o').' '.$t,'btn'); break;
+				return aj('popup|art|param='.$p,ico('file-text-o').' '.$t,'btn'); break;
 			default:$ret=Conn::reader($d,$p); break;}//default connectors
 	return $ret;}
 	

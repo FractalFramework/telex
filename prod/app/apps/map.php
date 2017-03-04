@@ -15,9 +15,8 @@ class map{
 			$t=$city.' '.$v['properties']['postcode'];
 			$loc=$v['geometry']['coordinates'][1].'/'.$v['geometry']['coordinates'][0];//lat,lon
 			$ret.=popup('map,com|coords='.$loc,$t,'btn');
-			$ret.=insertbt(lang('use'),$loc.':gps',$rid).br();
+			$ret.=insertbt(lang('use'),$loc.':gps',$rid).br();}
 			//$ret.=telex::publishbt($loc,'gps').br();
-			}
 		return $ret;}
 	
 	static function gps($p){$rid=val($p,'rid');
@@ -37,11 +36,11 @@ class map{
 		return iframe($f,$w.'px',$h.'px');}
 	
 	static function request($p){
-		$r=Gps::search($p);//pr($r);
+		$r=Gps::search($p); //pr($r);
 		//$r=Gps::api(['req'=>val($p,'request'),'mode'=>'search','limit'=>'1']);
 		if($r)$rb=$r['features'][0]['geometry']['coordinates'];
 		$pr['coords']=$rb[1].'/'.$rb[0];
-		if($pr)return self::com($pr);}
+		return self::com($pr);}
 	
 	//interface
 	static function content($p){$ret='';

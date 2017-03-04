@@ -5,7 +5,7 @@ class Auth {
 	static $mailAdmin='bot@tlex.fr';
 	static $noregister='0';
 	
-	static function install(){
+	static function install(){//,'priv'=>'int'
 		$r=array('name'=>'var','password'=>'var','auth'=>'int','mail'=>'var','ip'=>'var');
 		Sql::create(self::$db,$r);}
 	
@@ -106,6 +106,6 @@ class Auth {
 		if($o){$mode='menu'; login::$css='';} else{$mode='pagup'; login::$css='btn abbt';}
 		//if(!ses('time'))self::autolog();
 		$bt=ses('user')?ses('user'):lang('login');
-		return Ajax::j($mode.',,1|login|auth=2,o='.$o,pic('user').' '.$bt,login::$css);}//level2 default
+		return Ajax::j($mode.',,1|login|auth=2,o='.$o,ico('user').' '.$bt,login::$css);}//level2 default
 
 }

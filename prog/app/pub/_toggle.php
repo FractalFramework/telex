@@ -98,8 +98,8 @@ class _toggle{
 			if(is_array($v)){
 				$rt='';
 				foreach($v as $ka=>$va)
-					$rt.=self::toogleButtonSecondLevel($ka,$i);
-				$rt=Build::scroll($v,$rt,6,'','240');
+					$rt[]=self::toogleButtonSecondLevel($ka,$i);
+				$rt=Build::scroll($rt,6,'240');
 				$ret.=tag('ul',array('style'=>'display:none;'),$rt);
 			}
 		}

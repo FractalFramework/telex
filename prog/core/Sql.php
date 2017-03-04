@@ -49,14 +49,15 @@ if($d=='all')$d=self::columns($b,2);
 if(is_array($q))$q=self::read_from_array($q);
 $sql='select '.$d.' from '.$b.' '.$q;
 $rq=self::query($sql,$z);
-if($rq){$ret=self::sqlformat($rq,$p);
-	mysqli_free_result($rq);
-	return $ret;}}
+if($rq){$ret=self::sqlformat($rq,$p); mysqli_free_result($rq); return $ret;}}
 
 //join b2 to b1, associating b2.$key to b1.id
 static function read_inner($d,$b1,$b2,$key,$p,$q='',$z=''){
 $q='left join '.$b2.' on '.$b1.'.'.$key.'='.$b2.'.id '.$q;
 return self::read($d,$b1,$p,$q,$z);}
+
+static function select($sql,$p,$z=''){if($z)echo $sql; $rq=self::query($sql,$z);
+if($rq){$ret=self::sqlformat($rq,$p); mysqli_free_result($rq); return $ret;}}
 
 #modif
 static function modif($r,$act,$n,$ra,$nb=''){switch($act){
@@ -100,8 +101,6 @@ static function insert2($b,$r,$o='',$z=''){
 static function insert($b,$r,$z=''){
 	$sql='insert into '.$b.' values '.self::insert_from_array($r);
 	$rq=self::query($sql,$z); return mysqli_insert_id(self::$dbq);}
-static function select($s,$b,$w=''){
-	self::query('select '.$s.' from '.$b.' '.$w);}
 static function update($b,$d,$v,$id,$col='',$z=''){$col=$col?$col:'id';
 	self::query('update '.$b.' set '.$d.'="'.self::escape($v).'" where '.$col.'="'.$id.'"',$z);}
 static function updates($b,$r,$id,$z=''){$com='';

@@ -17,7 +17,7 @@ class dev{
 	}
 	
 	static function menubt($dr,$f){
-		return Ajax::j('devedit|dev,read|f='.$dr.'/'.$f,$f);
+		return aj('devedit|dev,read|f='.$dr.'/'.$f,$f);
 		//$r[]=array($dr,'j','popup|dev,menu','file',$f);
 	}
 	
@@ -33,7 +33,7 @@ class dev{
 		foreach($r as $k=>$v){
 			$f=after($v,'/');
 			$dr=before($v,'/');
-			$rb[$f]= Ajax::j('devedit|dev,read|f='.$dr.'/'.$f,$f);
+			$rb[$f]= aj('devedit|dev,read|f='.$dr.'/'.$f,$f);
 		}
 		if($rb)ksort($rb,SORT_STRING);
 		if($rb)$ret=implode('',$rb);
@@ -49,7 +49,7 @@ class dev{
 	
 	static function add($prm){
 		$ret=input('inp1','app name','',1);
-		$ret.=Ajax::j('devedit|dev,create||inp1',lang('create'),'btn').' ';
+		$ret.=aj('devedit|dev,create||inp1',lang('create'),'btn').' ';
 		return $ret;
 	}
 	
@@ -81,12 +81,12 @@ class dev{
 	static function read($prm){
 		$f=val($prm,'f'); $app=portion($f,'/','.',1,1);
 		if($f)$txt=file_get_contents($f); else return '';
-		$bt=Ajax::j('devedit|dev,read|f='.$f.'|',langp('reload'),'btn').' ';
-		//$bt.=Ajax::j('popup|dev,see|f='.$f.'|'.ses('rid'),langp('open'),'btn').' ';
-		$bt.=Ajax::j(ses('rid').'|dev,model|app='.$app,langp('reset'),'btn').' ';
-		$bt.=Ajax::j('devedit|dev,save|f='.$f.'|'.ses('rid'),langp('save'),'btsav').' ';
-		$bt.=Ajax::j(ses('rid').'|dev,del|f='.$f,langp('erase'),'btdel').' ';
-		$bt.=Ajax::j('popup|'.$app,langp('load'),'btn').' ';
+		$bt=aj('devedit|dev,read|f='.$f.'|',langp('reload'),'btn').' ';
+		//$bt.=aj('popup|dev,see|f='.$f.'|'.ses('rid'),langp('open'),'btn').' ';
+		$bt.=aj(ses('rid').'|dev,model|app='.$app,langp('reset'),'btn').' ';
+		$bt.=aj('devedit|dev,save|f='.$f.'|'.ses('rid'),langp('save'),'btsav').' ';
+		$bt.=aj(ses('rid').'|dev,del|f='.$f,langp('erase'),'btdel').' ';
+		$bt.=aj('popup|'.$app,langp('load'),'btn').' ';
 		$bt.=href('/app/'.$app,langp('open'),'btn',1).br();
 		$ret=tag('textarea',array('id'=>ses('rid'),'class'=>'txarea'),htmlentities($txt));
 		return $bt.$ret;
@@ -99,8 +99,8 @@ class dev{
 	}
 	
 	static function content($prm){
-		$bt=Ajax::j('popup|dev,add',langp('new'),'btn').' ';
-		$bt.=Ajax::j('popup|dev,menu',langp('open'),'btn').' ';
+		$bt=aj('popup|dev,add',langp('new'),'btn').' ';
+		$bt.=aj('popup|dev,menu',langp('open'),'btn').' ';
 		return $bt.self::com($prm);
 	}
 }

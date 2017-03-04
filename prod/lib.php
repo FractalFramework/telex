@@ -74,9 +74,12 @@ function hidden($id,$v){
 function password($id,$v,$sz='',$h=''){$type=$h?'placeholder':'value';
 	$r=array('type'=>'password','id'=>$id,$type=>$v,'size'=>$sz);
 	return tag('input',$r,'',1);}
-function textarea($id,$v,$cols,$rows,$h='',$c=''){
-	$r=array('id'=>$id,'cols'=>$cols,'rows'=>$rows,'class'=>$c); if($h)$r['placeholder']=$h;
-	return tag('textarea',$r,$v);}
+function textarea($id,$v,$cols=70,$rows=7,$h='',$c='',$m='',$n=''){
+	$r=['id'=>$id,'cols'=>$cols,'rows'=>$rows]; $op='';
+	if($h)$r['placeholder']=$h; if($c)$r['class']=$c; if($m)$r['maxlength']=$m;
+	if($n){$r['onkeyup']='strcount(\''.$id.'\','.$n.')';
+		$op=' '.span($n-mb_strlen($v),'small','strcnt'.$id.'');}
+	return tag('textarea',$r,$v).$op;}
 function label($for,$v,$id=''){return tag('label',['for'=>$for,'id'=>$id],$v);}
 function small($t){return tag('small','',$t);}
 function iframe($f,$w='',$h=''){if(!$w)$w='400px'; if(!$h)$h='350px';
@@ -84,7 +87,7 @@ return tag('iframe',['width'=>$w,'height'=>$h,'frameborder'=>'0','scrolling'=>'n
 function video($f,$w='',$h=''){if(!$w)$w='640px'; if(!$h)$h='400px'; return '<video controls width="'.$w.'" height="'.$h.'"><source src="'.$f.'" type="video/'.$xt.'"></video>';}
 function audio($d,$id=''){return '<audio controls>
 <source id="mp3'.$id.'" src="'.$d.'" type="audio/mpeg"></audio>';}
-function bar($id,$value=50,$step=10,$min=0,$max=100,$js='inn',$c=''){return '<input type="range" id="'.$id.'" min="'.$min.'" max="'.$max.'" step="'.$step.'" value="'.$value.'" onchange="'.$js.'(this.value,\'lbl'.$id.'\');"/>'.label($id,$value,'lbl'.$id);}
+function bar($id,$v=50,$step=10,$min=0,$max=100,$js='inn',$c=''){return '<input type="range" id="'.$id.'" min="'.$min.'" max="'.$max.'" step="'.$step.'" v="'.$v.'" onchange="'.$js.'(this.value,\'lbl'.$id.'\');"/>'.label($id,$v,'lbl'.$id);}
 
 function select($id,$r,$slct='',$o=''){$ret='';
 	if($r)foreach($r as $k=>$v){
@@ -116,7 +119,7 @@ function input_label($id,$v,$t){return input($id,$v).label($id,$t);}
 function aj($call,$t,$c='',$r=''){//replace Ajax::j()
 	$ra=explode('|',$call); $rb=explode(',',$ra[0]);//wait for data-jb/-prmtm/-toggle
 	$onc=isset($r['onclick'])?' '.$r['onclick']:'';
-	$r['onclick']='ajbt(this);'.$onc; $r['data-j']=$call;
+	$r['onclick']='ajbt(this);'.$onc; $r['data-j']=($call);//base64_encode
 	if($c)$r['class']=$c;//onmousedown not mobile
 	if(auth(6) && !isset($r['title']))$r['title']=$call;
 	return tag('a',$r,$t);}
@@ -127,9 +130,9 @@ function bubble($call,$t,$c='',$o=''){$id=randid('bb');
 	return span(aj('bubble,'.$id.','.$o.'|'.$call,$t,$c,['id'=>$id]));}
 function dropdown($call,$t,$c='',$r=''){$id=randid('bb');
 	return span(aj('bubble,'.$id.',1|'.$call,$t,$c,$r),'',$id);}
-function toggle($call,$t,$c=''){//need container for close others
+function toggle($call,$t,$c='',$o=''){//need container for close others
 	$id=randid('tg'); $div=before(before($call,'|',1),',',1);
-	return aj($call,$t,$c,['id'=>$id,'data-toggle'=>$div]);}
+	return aj($call,$t,$c.($o?' active':''),['id'=>$id,'data-toggle'=>$div,'rel'=>$o]);}
 function ajtime($call,$prm,$t,$c=''){$id=randid('bbt');
 	$r['onmouseover']='ajaxTimer(\'bubble,'.$id.',1|'.$call.'\',\''.$prm.'\'); zindex(\''.$id.'\');';
 	$r['onmouseout']='clearTimeout(xc);'; $r['onmouseup']='clearTimeout(xc);';
@@ -140,25 +143,25 @@ function lang($d,$o='',$no=''){return Lang::get($d,$o,$no);}//ucfirst
 function langs($d){$r=explode(',',$d); foreach($r as $v)$ret[]=Lang::get($v);
 	return ucfirst(implode(' ',$ret));}
 //icons
-function pic($d,$s='',$c='',$t='',$ti='',$tb=''){
+function ico($d,$s='',$c='',$t='',$ti='',$tb=''){
 	if(is_numeric($s))$s='font-size:'.$s.'px'; if($s)$r['style']=$s; 
 	$r['class']='pic fa fa-'.$d.($c?' '.$c:'');
 	if($t)$t=lang($t); elseif($ti)$r['title']=lang($t);
 	return tag('span',$r,'').$t.($tb?' '.$tb:'');}
-function picxt($d,$t,$c='',$s=''){return span(pic($d,$s).$t,$c);}
-function picit($d,$t,$c='',$s=''){return pic($d,$s,$c,'',$t);}
-function ics($d,$o=''){return Icon::get($d,$o);}//semantic
-function pico($d,$s='',$c=''){return pic(ics($d),$s,$c);}
-function langp($d){return pico($d).lang($d);}
-function langpi($d){return tag('span','title='.lang($d),pico($d));}
-function langph($d){return pico($d).span(lang($d),'react');}
-//philum
+function icxt($d,$t,$c='',$s=''){return span(ico($d,$s).$t,$c);}
+function icit($d,$t,$c='',$s=''){return ico($d,$s,$c,'',$t);}
+function ics($d,$o=''){return Icon::get($d,$o);}
+function pic($d,$s='',$c=''){return ico(ics($d),$s,$c);}
+function langp($d){return pic($d).lang($d);}
+function langpi($d){return tag('span',['title'=>lang($d)],pic($d));}
+function langph($d){return pic($d).span(lang($d),'react');}
 function plurial($d,$n,$o=''){return lang($d.($n>1?'s':''),$o);}
+//philum
 function picto($d,$s='',$c=''){if($c)$c=' '.$c; if(is_numeric($s))$s='font-size:'.$s.'px;';
 	return span('','philum ic-'.$d.$c,'',$s);}
 //helps
 function help($d,$c='',$b=''){return Help::get(['ref'=>$d,'css'=>$c,'conn'=>$b]);}
-function hlpbt($d,$t=''){return bubble('Help,com|ref='.$d,$t?$t:pic('info'),'help');}
+function hlpbt($d,$t=''){return bubble('Help,com|ref='.$d,$t?$t:ico('info'),'');}
 function hlpxt($d){return Help::get(['ref'=>$d,'brut'=>1]);}
 
 //strings
@@ -185,8 +188,7 @@ function clean_n($ret){
 
 function ptag($d){$r=explode("\n\n",$d);
 	if($r)foreach($r as $k=>$v)if(trim($v) && $v!="\n")$rb[$k]='<p>'.trim($v).'</p>';
-	if(isset($rb))return implode('',$rb); //return str_replace('</p>'."\n",'</p>',$ret);
-}
+	if(isset($rb))return implode('',$rb);}//return str_replace('</p>'."\n",'</p>',$ret);
 
 //php
 function combine($a,$b){$n=count($a); $r=array();
@@ -259,10 +261,8 @@ function prm($p){foreach($p as $k=>$v)$ret[]=$k.'='.$v; if($ret)return implode('
 function mkprm($p){foreach($p as $k=>$v)$ret[]=$k.'='.$v; if($ret)return implode('&',$ret);}
 function get($d){if(isset($_GET[$d]))return urldecode($_GET[$d]);}
 function post($d){if(isset($_POST[$d]))return $_POST[$d];}
-function cookie($name,$value=''){
-	if($value)setcookie($name,$value,time()+86400);
-	elseif(isset($_COOKIE[$name]))$value=$_COOKIE[$name];
-return $value;}
+function cookie($d,$v=''){if($v)setcookie($d,$v,time()+86400);
+	elseif(isset($_COOKIE[$d]))$v=$_COOKIE[$d]; return $v;}
 function ses($d,$v=''){if($v)$_SESSION[$d]=$v; if(isset($_SESSION[$d]))return $_SESSION[$d];}
 function sez($d,$v=''){return $_SESSION[$d]=$v;}
 function sesif($d,$v=''){return ses($d)?ses($d):ses($d,$v);}
@@ -321,10 +321,25 @@ return $ret;}
 function json_r($r){
 foreach($r as $k=>$v){
 	if(is_array($v))$ret[]=json_r($v); 
-	elseif(is_numeric($k))$ret[]='"'.utf8_encode(htmlspecialchars($v)).'"';
-	else $ret[]='"'.$k.'":"'.utf8_encode(htmlspecialchars($v)).'"';}
+	//elseif(is_numeric($k))$ret[]='"'.utf8_encode(htmlspecialchars($v)).'"';
+	//else $ret[]='"'.$k.'":"'.utf8_encode(htmlspecialchars($v)).'"';}
+	elseif(is_numeric($k))$ret[]='"'.rawurlencode($v).'"';
+	else $ret[]='"'.$k.'":"'.rawurlencode($v).'"';}
 if(is_numeric($k))return '['.implode(',',$ret).']'; else 
 return '{'.implode(',',$ret).'}';}
+
+function utf_r($r,$o=''){
+foreach($r as $k=>$v){
+	if(is_array($v))$ret[$k]=utf_r($v,$o);
+	else $ret[$k]=$o?utf8_decode($v):utf8_encode($v);}
+return $ret;}
+
+function json_enc($r){$r=utf_r($r);
+return json_encode($r,JSON_FORCE_OBJECT| JSON_HEX_TAG| JSON_HEX_APOS| JSON_HEX_QUOT| JSON_HEX_AMP | JSON_UNESCAPED_UNICODE);}
+
+function json_dec($d){
+if($d)$r=json_decode($d,true);
+return utf_r($r,1);}
 
 //clr
 function invert_color($p,$o){

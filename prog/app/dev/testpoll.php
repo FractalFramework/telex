@@ -26,7 +26,7 @@ class testpoll{
 	static function content($prm){$ret='';
 		$prm['nbargs']='50'; $prm['nbvotesmax']='50';
 		$bt=input('nbargs',50).input('nbvotesmax',50);
-		$bt.=Ajax::j('testcnt|testpoll,build||nbargs,nbvotesmax','ok','btn');
+		$bt.=aj('testcnt|testpoll,build||nbargs,nbvotesmax','ok','btn');
 		$ret=self::build($prm);
 		return $bt.div($ret,'','testcnt');
 	}

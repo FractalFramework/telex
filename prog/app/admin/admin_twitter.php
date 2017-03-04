@@ -46,9 +46,9 @@ static function edit($p){
 	$cols=self::cols(); $colstr=implode(',',$cols);
 	$r=Sql::read($colstr,self::$db,'ra',['id'=>$id]);
 	$ret=aj($rid.'|admin_twitter,menu|rid='.$rid,langp('back'),'btn');
-	$ret.=aj($rid.',,load|admin_twitter,modif|rid='.$rid.',id='.$id.'|'.$colstr,langp('modif'),'btsav');
+	$ret.=aj($rid.',,z|admin_twitter,modif|rid='.$rid.',id='.$id.'|'.$colstr,langp('modif'),'btsav');
 	$ret.=aj($rid.'|admin_twitter,del|rid='.$rid.',id='.$id,langp('delete'),'btdel');
-	$ret.=aj('popup|admin_twitter,call|rid='.$rid.',id='.$id,langp('view'),'btn');
+	//$ret.=aj('popup|admin_twitter,call|rid='.$rid.',id='.$id,langp('view'),'btn');
 	foreach($cols as $v)$ret.=div($v,'tit').input($v,$r[$v],54);
 	return $ret;}
 	

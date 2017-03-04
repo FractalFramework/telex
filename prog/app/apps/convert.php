@@ -91,7 +91,7 @@ class convert{
 	#content
 	static function content($prm){$ret='';
 		$r=array('connectors','clean_mail','url-decode','url-encode','utf8-decode','utf8-encode','htmlentities-decode','htmlentities-encode','base64-decode','base64-encode','timestamp-decode','timestamp-encode','bin-dec','dec-bin','bin-hex','hex-bin','dec-hex','hex-dec','json-decode','unicode (%u)','unicode (\\u)','iconv','ascii_encode','ascii_decode','ascii2utf8','bin2ascii','ascii2bin','ord','md5');
-		foreach($r as $v)$ret.=Ajax::j('input,res|convert,com|mode='.$v.'|code',$v,'btn').' ';
+		foreach($r as $v)$ret.=aj('input,res|convert,com|mode='.$v.'|code',$v,'btn').' ';
 		$ret.=br();
 		$ret.=tag('textarea',array('id'=>'code','class'=>'txarea left'),'');
 		$ret.=tag('textarea',array('id'=>'res','class'=>'txarea'),'');

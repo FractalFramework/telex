@@ -33,7 +33,7 @@ return tag('pre','',($txt));}
 static function modif($p){$id=val($p,'id');
 $txt=Sql::read('txt',self::$db,'v',['id'=>$id]);
 $ret=textarea('tx'.$id,$txt,60,6);
-$ret.=aj('md'.$id.'|admin_lib,update|id='.$id.'|tx'.$id,pico('save'));
+$ret.=aj('md'.$id.'|admin_lib,update|id='.$id.'|tx'.$id,pic('save'));
 return div($ret,'','md'.$id);}
 
 //read
@@ -79,9 +79,9 @@ static function content($p){
 self::install();
 $rid=randid('dcl');
 $bt=aj($rid.'|admin_lib,reflush|rid='.$rid,langp('update'),'btn');
-$bt.=aj('popup|Sql,rsbcp|b=syslib',langp('restore'),'btdel');
 $bt.=aj('popup|Sql,mkbcp|b=syslib',langp('backup'),'btsav');
-$bt.=aj('popup|admin_lib,menu|o=1',langp('view'),'btn');
+$bt.=aj('popup|Sql,rsbcp|b=syslib',langp('restore'),'btdel');
+//$bt.=aj('popup|admin_lib,menu|o=1',langp('view'),'btn');
 $ret=self::menu($p);
 return $bt.div($ret,'board',$rid);}
 }

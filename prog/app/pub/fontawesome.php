@@ -38,21 +38,21 @@ class fontawesome{
 		$r=self::vars();
 		foreach($r as $v){
 			if(($inp && strpos($v,$inp)!==false) or !$inp or $inp==$v)
-				//self::$ret.=pic($v,32).':'.$v.br();
-				self::$ret.=tag('span','class=icon',pic($v,32).br().$v).' ';
+				//self::$ret.=ico($v,32).':'.$v.br();
+				self::$ret.=tag('span','class=icon',ico($v,32).br().$v).' ';
 		}
 		return self::$ret;
 	}
 	
 	static function com($p){$id=val($p,'id'); $ret='';
 		$r=self::vars();
-		foreach($r as $v)$ret.=btj(pic($v,20),'insert(\'['.$v.':pic]\',\''.$id.'\'); Close(\'popup\');').' ';
+		foreach($r as $v)$ret.=btj(ico($v,20),'insert(\'['.$v.':pic]\',\''.$id.'\'); Close(\'popup\');').' ';
 		return $ret;
 	}
 	
 	/*static function comlight($p){$id=val($p,'id'); $ret='';
 		$d=self::varslight(); $r=explode('¬',$d);
-		foreach($r as $v)$ret.=btj(pic($v,24),'insert(\'['.$v.':pic]\',\''.$id.'\'); Close(\'popup\');').' ';
+		foreach($r as $v)$ret.=btj(ico($v,24),'insert(\'['.$v.':pic]\',\''.$id.'\'); Close(\'popup\');').' ';
 		return $ret;
 	}*/
 	
@@ -68,7 +68,7 @@ class fontawesome{
 		$p['p1']=val($p,'param',val($p,'p1'));//unamed param before
 		$ret=hlpbt('fontawesome');
 		//$ret.=self::search($p).br();
-		//$ret.=div('use pic(\'tv\');');
+		//$ret.=div('use ico(\'tv\');');
 		$ret.=self::build($p);
 		$ret.=div('','clear');
 		return div($ret,'',$p['rid']);

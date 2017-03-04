@@ -61,7 +61,7 @@ class petition{
 		$tmp='[[[_date*class=date:span] _ptit _bt _insert _answ*class=tit:div][_ptxt*class=txt:div]*class=menu:div]';
 		if($r)foreach($r as $k=>$v){
 			$tit=aj('popup|petition,read|pid='.$v['id'],$v['ptit']);
-			$bt=aj($rid.'|petition,edit_lead|pid='.$v['id'].',rid='.$rid.',xid='.$xid,pico('edit'));//edit
+			$bt=aj($rid.'|petition,edit_lead|pid='.$v['id'].',rid='.$rid.',xid='.$xid,pic('edit'));//edit
 			if($xid)$in=insertbt(lang('use'),$v['id'].':petition',$xid); else $v['insert']='';
 			//if($xid)$in=telex::publishbt($v['id'],'petition'); else $v['insert']='';
 			$answ=aj('popup|petition,answers|pid='.$v['id'],langp('answers'),'btn');

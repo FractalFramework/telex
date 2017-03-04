@@ -51,8 +51,8 @@ class admin_db{
 		$db=str_replace('/','',$d);
 		$r=Dir::read($d); //pr($r);
 		if($r)foreach($r as $k=>$v)
-			if(is_numeric($k))$ret.=Ajax::j($db.'|admin_db,read|file='.$d.'/'.before($v,'.'),$v,'btn');
-			else $ret.=Ajax::j($db.'|admin_db,planeNav|root='.$d.'/'.$k,$k,'btn');
+			if(is_numeric($k))$ret.=aj($db.'|admin_db,read|file='.$d.'/'.before($v,'.'),$v,'btn');
+			else $ret.=aj($db.'|admin_db,planeNav|root='.$d.'/'.$k,$k,'btn');
 				//$ret.=href('/app/admin_db:root='.$d.'/'.$k,$k);
 		$ret.=tag('div',array('id'=>$db),'');
 		return $ret;

@@ -3,16 +3,16 @@
 class Form{
 	
 	static function build($r){$ret='';
-		foreach($r as $k=>$v){
+		foreach($r as $k=>$v){$val=val($v,'value');
 			$ret[$k]['label']=div(label($k,$v['label']),'fcell');
 			switch($v['type']){
-				case('input'):$d=input($k,$v['value'],20,'','100p'); break;
-				case('textarea'):$d=textarea($k,$v['value'],40,10,'','100p'); break;
-				case('select'):$d=select($k,$v['opts'],$v['value'],''); break;
-				case('checkbox'):$d=checkbox($k,$v['opts'],$v['value']); break;
-				case('radio'):$d=radio($v['opts'],$k,$v['value']); break;
-				case('hidden'):$d=hidden($k,$v['value']); break;
-				case('bar'):$d=bar($k,$v['value']); break;}
+				case('input'):$d=input($k,$val,20,'','100p'); break;
+				case('textarea'):$d=textarea($k,$val,40,10,'','100p'); break;
+				case('select'):$d=select($k,$v['opts'],$val,''); break;
+				case('checkbox'):$d=checkbox($k,$v['opts'],$val); break;
+				case('radio'):$d=radio($v['opts'],$k,$val); break;
+				case('hidden'):$d=hidden($k,$val); break;
+				case('bar'):$d=bar($k,$val); break;}
 			$ret[$k]['inp']=div($d,'fcell');}
 	return $ret;}
 	

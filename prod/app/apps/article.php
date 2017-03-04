@@ -18,13 +18,13 @@ static function headers(){
 	Head::add('jscode',self::injectJs());}
 
 static function wysiwyg($id){$ret='';//'insertHTML'=>'conn'
-	//$ret.=tag('button',array('onclick'=>'format(\'FontSize\');'),pic('font'));
-	//$ret.=tag('button',array('onclick'=>'format(\'FontSize\',\'22\');'),pic('font'));
+	//$ret.=tag('button',array('onclick'=>'format(\'FontSize\');'),ico('font'));
+	//$ret.=tag('button',array('onclick'=>'format(\'FontSize\',\'22\');'),ico('font'));
 	$r=array('bold'=>'bold','italic'=>'italic','underline'=>'underline','insertUnorderedList'=>'list-ul','insertOrderedList'=>'list-ol','Indent'=>'indent','Outdent'=>'outdent','JustifyLeft'=>'align-left','JustifyCenter'=>'align-center','createLink'=>'link','delete'=>'ban','inserthorizontalrule'=>'minus');
 	foreach($r as $k=>$v)
-		$ret.=tag('button',array('onclick'=>'format(\''.$k.'\');'),pic($v,14));
-	//$ret.=tag('button',array('onclick'=>'format(\'foreColor\',\'#ff0000\');'),pic('paint-brush'));
-	//$ret.=tag('button',array('onclick'=>'format(\'foreColor\',\'#000000\');'),pic('paint-brush'));
+		$ret.=tag('button',array('onclick'=>'format(\''.$k.'\');'),ico($v,14));
+	//$ret.=tag('button',array('onclick'=>'format(\'foreColor\',\'#ff0000\');'),ico('paint-brush'));
+	//$ret.=tag('button',array('onclick'=>'format(\'foreColor\',\'#000000\');'),ico('paint-brush'));
 return $ret;}
 
 //open
@@ -101,7 +101,7 @@ static function edit($p){
 
 static function editconn($p){$id=val($p,'id'); if(!$id)return;
 	list($tit,$txt)=Sql::read('tit,txt','articles','rw','where id='.$id);
-	$ret=aj('art'.$id.',,y|article,read|id='.$id.',edit=1',pico('back'),'btn').' ';
+	$ret=aj('art'.$id.',,y|article,read|id='.$id.',edit=1',pic('back'),'btn').' ';
 	$ret.=aj('art'.$id.',,y|article,save|brut=1,id='.$id.'|tit,txt',langp('save'),'btsav').br();
 	$ret.=connectors::edit('txt');
 	$ret.=textarea('txt',$txt,70,24,'','console').hidden('tit',$tit);
@@ -112,14 +112,14 @@ static function art($p){$mnu=''; $edition='';
 	$id=val($p,'id'); $name=val($p,'name'); 
 	$date=val($p,'date'); $priv=val($p,'private');
 	$title=val($p,'tit'); $txt=val($p,'txt'); $edit=val($p,'edit');
-	if(ses('uid'))$mnu=aj('art'.$id.',,y|article,read|id='.$id,pico('refresh'),'btn').' ';
+	if(ses('uid'))$mnu=aj('art'.$id.',,y|article,read|id='.$id,pic('refresh'),'btn').' ';
 	if(ses('user')==$name or !$name){
 		if($edit)$edition=self::edit($p);
 		else $mnu.=aj('art'.$id.',,y|article,read|id='.$id.',edit=1',langp('edit'),'btn').' ';
 		if($edit)$prm=array('contenteditable'=>'true','id'=>'txt','class'=>'txth');
 		else $prm=array('class'=>'article');}
 	else $prm=array('class'=>'article');
-	if($edit)$mnu.=aj('art'.$id.',,y|article,editconn|id='.$id.',edit=1',pico('edit'),'btn').' ';
+	if($edit)$mnu.=aj('art'.$id.',,y|article,editconn|id='.$id.',edit=1',pic('edit'),'btn').' ';
 	if(ses('uid'))$mnu.=aj('popup|article',langpi('folder'),'btn').' ';
 	//$mnu.=href('/app/article',langp('new'),'btn');
 	//$mnu.=dropdown('article,menu|id='.$id,langpi('open'),'btn').' ';
@@ -137,8 +137,8 @@ static function art($p){$mnu=''; $edition='';
 
 static function artlx($p){
 	$id=val($p,'id'); $txt=val($p,'txt');
-	$ret=btj(pic('close'),'Close(\'popup\');','btn');
-	$ret.=span(href('/art/'.$id,pic('link')),'right');
+	$ret=btj(ico('close'),'Close(\'popup\');','btn');
+	$ret.=span(href('/art/'.$id,ico('link')),'right');
 	$txt=Conn::load(['msg'=>$txt,'ptag'=>1]);
 	$ret.=div($txt,'article');
 	return $ret;}
@@ -169,10 +169,10 @@ static function content($p){$ret='';
 	$p['id']=val($p,'param',val($p,'id'));
 	if($p['id'])return self::call($p);
 	//self::install();
-	$ret.=aj('popup,,,1|article,call',pic('plus',36).div(lang('new')),'bicon');
+	$ret.=aj('popup,,,1|article,call',ico('plus',36).div(lang('new')),'bicon');
 	$r=Sql::read('id,tit','articles','kv','where uid=0 or uid="'.ses('uid').'" or pub="1"');
 	if($r)foreach($r as $k=>$v)if($v){
-		$bt=pic('file',32).div($v);
+		$bt=ico('file',32).div($v);
 		$ret.=aj('pagup,,,1|article,call|id='.$k,$bt,'bicon');}
 	return $ret;}
 }

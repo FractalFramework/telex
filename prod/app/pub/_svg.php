@@ -37,7 +37,7 @@ $code=val($prm,'code'); $size=val($prm,'size');
 if(!$code)$code=self::ex();
 $prm=array('code'=>$code,'size'=>$size);
 $bt=textarea('code',$code,74,10).' ';
-$bt.=Ajax::j('div,'.$rid.',2|Svg,j||code',lang('ok'),'btn');
+$bt.=aj($rid.',2|Svg,j||code',lang('ok'),'btn');
 $ret=Svg::j($prm);
 //echo textarea('',$ret,60,10);
 return $bt.div($ret,'',$rid);}

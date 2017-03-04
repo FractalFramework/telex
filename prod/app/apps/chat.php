@@ -15,13 +15,13 @@ static function injectJs(){
 static function headers(){
 	Head::add('csscode','
 	/*display:inline-block; */
-	.chatwrapper{background-color:#eaeaea; width:80vw; max-width:630px;}
-	.chatcontent{height:calc(100vh - 180px); overflow-x:visible; overflow-y:auto; background-color:#eaeaea; padding:10px;}
+	.chatwrapper{background-color:#eaeaea; max-width:580px;}
+	.chatcontent{height:400px; overflow-x:visible; overflow-y:auto; background-color:#eaeaea; padding:10px;}
 	.chatpane{font-size:12px; color:black; background-color:lightblue; border:0px solid #aaa; margin:10px 0; padding:7px 10px; border-radius:2px; box-shadow: 2px 2px 4px #aaa; min-width:100px; max-width:60%;}
 	.chatpane a{color:black;}
 	.chatdate{display:block; font-size:x-small; margin:0 7px;}
 	.chatprofile{background:whitesmoke; padding:9px; font-size:small;}
-	.chatform{background-color:#f4f4f4; width:80vw; max-width:630px;}
+	.chatform{background-color:#f4f4f4; width:580px;}
 	.flex-container{padding:0; margin:10px 0; list-style:none;
 	-ms-box-orient: horizontal; display: -webkit-box; display: -moz-box; display: -ms-flexbox; display: -moz-flex; display: -webkit-flex; display: flex;}
 	.chatarea{width:100%; resize:none; padding:4px;}
@@ -37,7 +37,7 @@ static function headers(){
 
 //read
 static function attime($sec){$ret=lang('there_was').' '; $sec=time()-$sec;
-	if($sec>84600*3){$n=floor($sec/84600/30); return $ret.$n.' '.plurial('month',$n,1);}
+	if($sec>84600*30){$n=floor($sec/84600/30); return $ret.$n.' '.plurial('month',$n,1);}
 	elseif($sec>84600){$n=floor($sec/84600); return $ret.$n.' '.plurial('day',$n,1);}
 	elseif($sec>3600){$n=floor($sec/3600); return $ret.$n.' '.plurial('hour',$n,1);}
 	elseif($sec>60){$n=floor($sec/60); return $ret.$n.' '.plurial('minute',$n,1);}
@@ -49,7 +49,7 @@ static function pane($r){$ret='';
 		$txt=tag('li',['class'=>'chatpane'],nl2br($v[1]));
 		$date=tag('div',['class'=>'chatdate'],self::attime($v[3]));
 		if($v[0]==ses('user')){
-			$bt=aj('popup|chat,del|id='.$v[2],pic('bolt'));
+			$bt=aj('popup|chat,del|id='.$v[2],ico('flash'));
 			$del=tag('li',['class'=>'chatdate'],$bt);}
 		if($v[0]==ses('user'))$css='row-reverse'; else $css='row ';
 		$ret.=div($user.$txt.$date.$del,'flex-container '.$css);}
@@ -89,7 +89,7 @@ static function create($p){$r=explode('-',val($p,'users')); $prv=val($p,'private
 	if($room){
 		foreach($r as $v){
 			//Sql::insert('telex_ntf',[$v,ses('user'),5,'','1']);
-			telex::saventf1($v,ses('user'),5);
+			tlxcall::saventf1($v,ses('user'),5);
 			$ok=Sql::insert('chatlist',[$room,$v]);}
 		$bt=lang('room created').' #'.$room;
 		if($rid=val($p,'rid'))$ret=insertbt($bt,$room.':chat',$rid);
@@ -148,6 +148,7 @@ static function menu($p){$ret=''; $rid=val($p,'rid');//tlex
 		//if($rid)$pp='popup'; else $pp='chtwrp,,y';
 		$cssvu=$v['vu']||$ntf?'active':'';
 		$del=aj('pagup|chat,com|headers=1,del='.$v['room'],langp('del'),'btdel');
+		if($rc[0]!=ses('user'))$del='';
 		$bt=aj('pagup|chat|headers=1,room='.$v['room'],$im.$from.$prv.$nfo.$in);
 		$ret.=div($bt.$del,'menu'.$cssvu);
 	}
@@ -155,12 +156,8 @@ static function menu($p){$ret=''; $rid=val($p,'rid');//tlex
 	$ret.=div('','','newchat');
 	return $ret;}
 
-static function roomusers($p){$room=val($p,'room'); $ret='';
-	$r=Sql::read_inner('name','chatlist','login','ruid','rv','where roid="'.$room.'"');
-	foreach($r as $v)$ret.=aj('popup|profile,read|headers=1,usr='.$v,$v);
-	return div($ret,'list');}
-
-static function comtlx($p){$rid=val($p,'rid'); $bt=pic('comment').sp();
+//com
+static function comtlx($p){$rid=val($p,'rid'); $bt=ico('comment').sp();
 	//steps of invitation
 	//$ret=aj('newchat|chat,newchat|rid='.$rid,$bt.lang('new chat'),'btsav').' ';
 	$ret=aj('newchat|chat,create|users='.ses('uid').',rid='.$rid,'#'.lang('new chat'),'btsav').' ';
@@ -174,14 +171,23 @@ static function com($p){
 	//$tit=div(lang('chat'),'btit');$tit.
 	return div(self::menu(''),'chatwrapper','chtwrp');}
 
-#content
-static function content($prm){
-	//self::install();
-	if(!ses('uid'))return $form=App::open('login');
-	$room=sez('room',val($prm,'room',val($prm,'param')));
-	if(!$room)return div(self::menu(''),'chatwrapper','chtwrp');
+//used by telex
+static function discussion($p){$uid=$p['uid'];
+	$r=Sql::read('id','chatroom','rv','where ruid ='.ses('uid').' and private=1');
+	if($r)foreach($r as $k=>$v){$n=Sql::read('count(ruid)','chatlist','v','where roid='.$v.' and ruid in('.ses('uid').','.$uid.')'); if($n==2)$room=$v;}
+	if(!isset($room)){$room=Sql::insert('chatroom',[ses('uid'),1,0]);
+		Sql::insert('chatlist',[$room,ses('uid')]); Sql::insert('chatlist',[$room,$uid]);}
+	return $ret=aj('pagup|chat|headers=1,room='.$room,langp('open').' #'.$room,'btsav');}
+
+//board
+static function roomusers($p){$room=val($p,'room'); $ret='';
+	$r=Sql::read_inner('name','chatlist','login','ruid','rv','where roid="'.$room.'"');
+	foreach($r as $v)$ret.=aj('popup|profile,read|headers=1,usr='.$v,$v);
+	return div($ret,'list');}
+
+static function board($p){$room=$p['room'];
 	//head
-	$head=btj(pic('close'),'Close(\'popup\');','btn');
+	$head=btj(ico('close'),'Close(\'popup\');','btn');
 	$head.=aj('pagup|chat,com|headers=1','#'.$room,'btn');
 	$head.=dropdown('chat,roomusers|room='.$room,lang('members'),'btn');
 	//room
@@ -192,12 +198,20 @@ static function content($prm){
 	else $txt=self::read(['room'=>$room]);
 	//form
 	$js=Ajax::js(['com'=>'atend,chtbck,resetform,scrollBottom,chtbck','app'=>'chat,save','prm'=>'room='.$room,'inp'=>'chtsav']);
-	$prm=['id'=>'chtsavfrm','action'=>'javascript:if(getbyid(\'chtsav\').value)'.$js];
+	$p=['id'=>'chtsavfrm','action'=>'javascript:if(getbyid(\'chtsav\').value)'.$js];
 	$area=tag('textarea',['id'=>'chtsav','placeholder'=>'message','class'=>'chatarea','rows'=>'2','maxlenght'=>'1000','onkeypress'=>'checkEnter(event,\'chtsavfrm\');'],'').br();
-$ret=div($head,'chatform').div($txt,'chatcontent','chtbck');
-$ret.=tag('form',$prm,div($area,'chatform').hidden('chtroom',$room));
-//$ret.=aj('chtwrp|chat,menu','menu','btn');
-//$ret.=aj('chtwrp|chat,invite','invite','btn');
-return div($ret,'chatwrapper','chtwrp','');}
+	$ret=div($head,'chatform').div($txt,'chatcontent','chtbck');
+	$ret.=tag('form',$p,div($area,'chatform').hidden('chtroom',$room));
+	//$ret.=aj('chtwrp|chat,menu','menu','btn');
+	//$ret.=aj('chtwrp|chat,invite','invite','btn');
+	return div($ret,'chatwrapper','chtwrp','');}
+
+#content
+static function content($p){
+	//self::install();
+	if(!ses('uid'))return $form=App::open('login');
+	$p['room']=sez('room',val($p,'room',val($p,'param')));
+	if(!$p['room'])return div(self::menu(''),'chatwrapper','chtwrp');
+	return self::board($p);}
 }
 ?>

@@ -33,15 +33,16 @@ class Desk{
 			$private=class_exists($v[2]) && isset($v[2]::$private)?$v[2]::$private:0;
 			if($auth>=$private){
 				if($v[0]==$dir){
-					$bt=pic($v[3],$sz).span($v[4]);//thumb
+					$bt=ico($v[3],$sz).span($v[4]);//thumb
 					//if($v[1]=='img')$bt=telex::playthumb($v[2],'micro',1);
 					if($v[1]=='' && class_exists($v[2])){
-						$bt=span(pic($v[3],$sz).span($v[4]),$css);
+						if(!$ico=ics($v[4]))$ico=$v[3];
+						$bt=span(ico($ico,$sz).span($v[4]),$css);
 						$bt=aj('popup,,,1|'.$v[2].'|headers=1',$bt);
 						//if($auth)$bt.=span(aj($k.'|desktop,modifbt|id='.$k,$v[4]),'',$k);
 						//else $bt.=span($v[4]);
 						$ret[]=$bt;}
-					elseif($v[1]=='j')$ret[]=Ajax::j($v[2],$bt,$css);
+					elseif($v[1]=='j')$ret[]=aj($v[2],$bt,$css);
 					elseif($v[1]=='pop')$ret[]=popup($v[2].',headers=1',$bt,$css);
 					elseif($v[1]=='pag')$ret[]=pagup($v[2].',headers=1',$bt,$css);
 					//elseif($v[1]=='img')$ret[]=imgup('img/full/'.$v[2],$bt,$css);
@@ -50,9 +51,9 @@ class Desk{
 					elseif($v[1]=='lk')$ret[]=href('/app'.$v[2],$bt,$css,1);
 				}
 				elseif(substr($v[0],0,strlen($dir))==$dir && $depht>$current_depht){
-					//$bt=pic('folder',$sz).div($next_level);
+					//$bt=ico('folder',$sz).div($next_level);
 					//can use popup instead of div
-					$bt=span(pic('folder',$sz).span($next_level),$css);
+					$bt=span(ico('folder',$sz).span($next_level),$css);
 					$bt=aj('div,'.$rid.',2|Desk,call|dir='.$dir.'/'.$next_level.',app='.$app.',mth='.$mth.',rid='.$rid.',title='.$dir.'/'.$next_level,$bt);
 					//if($auth)$bt.=span(aj($k.'|desktop,modifdir',
 					//'dir='.$dir.'/'.$next_level,'',$next_level),'',$k);
@@ -68,10 +69,10 @@ class Desk{
 			$back.=aj('div,'.$rid.',2|Desk,call|dir='.$dr.',app='.$app.',mth='.$mth.',rid='.$rid.',title='.$dr.'/',$v,'btn');}
 		//edit
 		$prm='dir='.$dir.',app='.$app.',mth='.$mth.',rid='.$rid.'';
-		$edit=aj('div,'.$rid.',y|Desk,call|'.$prm.',display=grid',pic('th-large'),'');
-		$edit.=aj('div,'.$rid.',y|Desk,call|'.$prm.',display=list',pic('list'),'');
+		$edit=aj('div,'.$rid.',y|Desk,call|'.$prm.',display=grid',ico('th-large'),'');
+		$edit.=aj('div,'.$rid.',y|Desk,call|'.$prm.',display=list',ico('list'),'');
 		if(ses('uid'))$edit.=aj('popup|desktop,manage|dir='.$dir,langpi('edit'),'');
-		//$edit.=href('/app/'.$app.'/dir:'.$dir,pic('link'),'btn');
+		//$edit.=href('/app/'.$app.'/dir:'.$dir,ico('link'),'btn');
 		$edit=span($edit,'right');
 		if($ret)return div($edit.$back).implode('',$ret);
 	}

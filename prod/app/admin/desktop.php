@@ -110,7 +110,7 @@ class desktop{
 	
 	//edit on place
 	static function mdfbtn($p){
-		if($p['col']=='picto')$btn=pic($p['val']).' '; else $btn=$p['val'];
+		if($p['col']=='picto')$btn=ico($p['val']).' '; else $btn=$p['val'];
 		return aj($p['cbk'].'|desktop,modif|id='.$p['id'].',col='.$p['col'].',val='.jurl($p['val']).',cbk='.$p['cbk'],$btn,'btn');
 	}
 	
@@ -147,7 +147,7 @@ class desktop{
 		foreach($r as $k=>$v){
 			//$ra[$k][0]=aj('popup|desktop,edit|id='.$v[0],$v[0],'btn');
 			for($i=1;$i<$n;$i++){$cbk='inp'.$k.$i;//public can edit $v[6]
-				if($kr[$i]=='picto')$ti=pic($v[$i]);
+				if($kr[$i]=='picto')$ti=ico($v[$i]);
 				else $ti=strlen($v[$i])>20?substr($v[$i],0,16).'...':$v[$i];
 				if($kr[$i]=='com')$v[$i]=jurl($v[$i]);
 				$bt=aj($cbk.'|desktop,modif|dir='.$dir.',id='.$v[0].',col='.$kr[$i].',val='.$v[$i].',cbk='.$cbk,$ti,'btn');

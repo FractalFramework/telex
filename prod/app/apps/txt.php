@@ -12,7 +12,7 @@ class txt{
 	}
 	
 	static function popup(){
-		$bt=Ajax::j('pagup|txt',pic('window-maximize'));
+		$bt=aj('pagup|txt',ico('window-maximize'));
 		$ret['title']='NotePad';
 		$ret['wifth']=640;
 		return $ret;

@@ -64,9 +64,10 @@ function mozWrap(opn,clo,id){var id=id?id:'txtarea';
 
 //localstorage
 function memStorage(val){
-	var vn=val.split('_'); var ob=getbyid(vn[0]);//tar_var_copy
-	if(vn[2]=='sav')localStorage[vn[1]]=ob.value;
-	if(vn[2]=='res' && localStorage[vn[1]]!=undefined)ob.value=localStorage[vn[1]];}
+	var vn=val.split('_'); var ob=getbyid(vn[0]);
+	if(vn[2]=='sav')localStorage[vn[1]]=vn[3]==1?ob.innerHTML:ob.value;
+	if(vn[2]=='res')if(vn[3]==1)ob.innerHTML=localStorage[vn[1]];
+		else ob.value=localStorage[vn[1]];}
 
 //autorefresh
 function getfilmtime(f){
@@ -194,16 +195,32 @@ function upload(rid){
 		var formData=new FormData();
 		var time=Math.floor(Date.now()/1000);
 		var file=files[i];
-		var xtr=file.name.split('.'); var xt=xtr[xtr.length-1];
+		var xtr=file.name.split('.');
+		var xt=xtr[xtr.length-1];
 		var filename='upl'+time+'.'+xt;
 		if(!file.type.match("image.*"))continue;
 		formData.append("upfile",file,filename);
 		insert('['+filename+':img]',rid);
 		//var prm="getinp:1"; else var prm="";
 		var url="/call.php?appName=Upload&appMethod=save&params="+prm;
-		var ajax=new AJAX(url,"atend","tlxapps","load",formData);
-	}
-}
+		var ajax=new AJAX(url,"atend","tlxapps","load",formData);}}
+
+function upload_profile(rid){
+	var form=getbyid("upl"+rid);
+	var fileSelect=getbyid("upfile"+rid);
+	var files=fileSelect.files;
+	for(var i=0;i<1;i++){//files.length
+		var formData=new FormData();
+		var time=Math.floor(Date.now()/1000);
+		var file=files[i];
+		var xtr=file.name.split('.');
+		var xt=xtr[xtr.length-1];
+		var filename='upl'+time+'.'+xt;
+		if(!file.type.match("image.*"))continue;
+		formData.append("upfile"+rid,file,filename);
+		getbyid(rid).value=filename; //alert(getbyid(rid).value);
+		var url="/call.php?appName=Upload&appMethod=save&params=rid:"+rid;
+		var ajax=new AJAX(url,"div",rid+"up","z",formData);}}
 
 //continuous scrolling
 var exs=[]; var prmtm='';
@@ -249,3 +266,12 @@ function inn(v,id){getbyid(id).innerHTML=v;}
 function val(v,id){getbyid(id).value=v;}
 function innfromval(from,id){getbyid(id).innerHTML=getbyid(from).value;}
 function valfromval(from,id){getbyid(id).value=getbyid(from).value;}
+
+function decodeBase64(s){
+var e={},i,b=0,c,x,l=0,a,r='',w=String.fromCharCode,L=s.length;
+var A="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+for(i=0;i<64;i++)e[A.charAt(i)]=i;
+for(x=0;x<L;x++){
+	c=e[s.charAt(x)];b=(b<<6)+c;l+=6;
+	while(l>=8)((a=(b>>>(l-=8))&0xff)||(x<(L-2)))&&(r+=w(a));}
+return r;}

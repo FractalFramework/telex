@@ -6,7 +6,7 @@ class blockchains{
 	static function injectJs(){
 		return '
 		function connread(){
-			ajaxCall("div,blkc,2|Conn,load","app=blockchains,mth=reader","msg");}';}
+			ajaxCall("div,blkc,2|Conn,z","app=blockchains,mth=reader","msg");}';}
 	static function headers(){
 		Head::add('jscode',self::injectJs());}
 	

@@ -29,13 +29,13 @@ class _sql{
 	static function content($prm){$ret='';
 		$rid=randid('sql');
 		//self::install(0);
-		$ret.=Ajax::j($rid.',,y|_sql,read|cols=*,mode=','read all','btn');
-		$ret.=Ajax::j($rid.',,y|_sql,read|cols=val,mode=k','read mode k','btn');
-		$ret.=Ajax::j($rid.',,y|_sql,read|cols=val,mode=v','read mode v','btn');
-		$ret.=Ajax::j($rid.',,y|_sql,read|cols=id-ib-val,mode=ra','read mode ra','btn');
-		$ret.=Ajax::j($rid.',,y|_sql,read|cols=id-ib-val,mode=rr','read mode rr','btn');
-		$ret.=Ajax::j($rid.',,y|_sql,read|cols=val-id,mode=kk','read mode kk','btn');
-		$ret.=Ajax::j($rid.',,y|_sql,read|cols=id-ib-val,mode=kkv','read mode kkv','btn');
+		$ret.=aj($rid.',,y|_sql,read|cols=*,mode=','read all','btn');
+		$ret.=aj($rid.',,y|_sql,read|cols=val,mode=k','read mode k','btn');
+		$ret.=aj($rid.',,y|_sql,read|cols=val,mode=v','read mode v','btn');
+		$ret.=aj($rid.',,y|_sql,read|cols=id-ib-val,mode=ra','read mode ra','btn');
+		$ret.=aj($rid.',,y|_sql,read|cols=id-ib-val,mode=rr','read mode rr','btn');
+		$ret.=aj($rid.',,y|_sql,read|cols=val-id,mode=kk','read mode kk','btn');
+		$ret.=aj($rid.',,y|_sql,read|cols=id-ib-val,mode=kkv','read mode kkv','btn');
 		$ret.=div('','',$rid);
 	return $ret;}
 }

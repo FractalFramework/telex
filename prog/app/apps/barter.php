@@ -126,7 +126,7 @@ static function build($p){
 	if(!$r)return lang('not exists');
 	$do=$r['btyp']==1?lang('sale'):lang('buy');
 	$price=$r['price'].' '.lang(self::money($r['money']),1);
-	$edt=aj('cbarter|barter,edit|mnu='.$mnu.',rid='.$rid.',id='.$id,pico('edit'),'');
+	$edt=aj('cbarter|barter,edit|mnu='.$mnu.',rid='.$rid.',id='.$id,pic('edit'),'');
 	$ret=div($edt.span($do,'btok').' '.$r['btit'].' '.span($price,'stit'),'tit');
 	$ret.=div(self::read_props($id));
 	return div($ret,'pane','brt'.$id);}
@@ -175,9 +175,9 @@ static function com($p){$rid=val($p,'rid');
 static function content($p){$ret='';
 	self::install();
 	if(isset($p['param']))$p['idbarter']=$p['param'];
-	$ret=aj('pllscnt|barter,read',pic('list'),'btn').' ';
+	$ret=aj('pllscnt|barter,read',ico('list'),'btn').' ';
 	$ret.=hlpbt('barter_app').' ';
-	if(ses('uid'))$ret.=aj('pllscnt|barter,edit',pic('plus').' '.lang('new'),'btn').br().br();
+	if(ses('uid'))$ret.=aj('pllscnt|barter,edit',ico('plus').' '.lang('new'),'btn').br().br();
 	//root
 	if(isset($p['idbarter']))$res=self::build($p);
 	else $res=self::read();

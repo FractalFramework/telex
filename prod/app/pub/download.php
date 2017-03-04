@@ -1,9 +1,8 @@
 <?php
-
 class download{
-
-	static function update($f){
-		$r=['prog/app','prog/core','prog/js','prog/css','prog/telex','index.php','call.php','lib.php','amt.php','api.php','cnfg/site.com.php','cnfg/_twitter_oAuth.php','.htaccess','favicon.ico','readme.txt'];
+	
+	static function createtar($f){
+		$r=['prog','fonts','cfng/site.com.php','amt.php','api.php','boot.php','call.php','htaccess.txt','index.php','favicon.ico','readme.txt'];
 		return Tar::buildFromList($f,$r);}
 
 	#content
@@ -11,11 +10,9 @@ class download{
 		$f=val($prm,'fileName','fractalframework');
 		$f.='.tar'; $fgz=$f.'.gz';
 		if(is_file($fgz))unlink($fgz);
-		$url=self::update($f);
-		$ico=pic('download');
-		return href($fgz,$ico.$url,'btn');
+		$url=self::createtar($f);
+		$ico=ico('download');
+		return href('/'.$fgz,$ico.$url,'btn');
 	return $ret;}
-
 }
-
 ?>

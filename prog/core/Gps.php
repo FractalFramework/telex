@@ -1,18 +1,7 @@
 <?php
 
 class Gps{
-	
-	static function example(){
-		$p['lat']=48.8390804;
-		$p['lon']=2.23537670;
-	}
-	
 	//http://adresse.data.gouv.fr/api/
-		//$url=$host.'search/?q=8 bd du port&limit=15';
-		//$url=$host.'search/?q=8 bd du port&lat=48.789&lon=2.789';
-		//$url=$host.'search/?q=8 bd du port&postcode=44380';
-		//$url=$host.'search/?q=paris&type=street';
-		//$url=$host.'reverse/?lat=48.8390804&lon=2.23537670&type=street';
 	static function api($p){
 		$lat=val($p,'lat');
 		$lon=val($p,'lon');
@@ -20,16 +9,10 @@ class Gps{
 		$mode=val($p,'mode');
 		$limit=val($p,'limit',5);
 		$host='http://api-adresse.data.gouv.fr/';
-		if($mode=='search')$url=$host.'search/?q='.$req.'&limit='.$limit;
+		if($mode=='search')$url=$host.'search/?q='.rawurlencode($req).'&limit='.$limit;
 		//elseif($mode=='postcode')$url=$url=$host.'search/?q=&postcode='.$req.'';
 		else $url=$host.'reverse/?lat='.$lat.'&lon='.$lon.'';
 		$d=File::read($url);
-		//$d=utf8_decode($d);
-		//echo Json::error();
-	//	$d=mb_convert_encoding($d,'UCS-2BE','UTF-8');
-		//$d=utf8_decode($d);
-		//$d=self::json_utf($d);
-		//$d=self::unicode2html($d);
 		if($d)return json_decode($d,true);//,512,JSON_UNESCAPED_UNICODE
 	}
 	
@@ -40,22 +23,6 @@ class Gps{
 		$mode=val($p,'mode','search');//postcode
 		$r=self::api(['req'=>$req,'mode'=>$mode]); //pr($r);
 		return $r;}
-	
-	/*
-		[street] => Rue de Châteaudun
-		[label] => 1 TER Rue de Châteaudun 92100 Boulogne-Billancourt
-		[distance] => 7
-		[context] => 92, Hauts-de-Seine, Île-de-France
-		[id] => 92012_1430_187b83
-		[postcode] => 92100
-		[citycode] => 92012
-		[name] => 1 TER Rue de Châteaudun
-		[city] => Boulogne-Billancourt
-		[housenumber] => 1 TER
-		[score] => 0.99999997442737
-		[type] => housenumber*/
-		//$ret=$r['features'][0]['properties']['label'];
-		//$ret=$r['features'][0]['properties']['city'];
 	
 	static function unicode2html($d){$i=65535;
 		while($i>0){$hex=dechex($i); $d=str_replace("\u$hex","&#$i;",$d); $i--;}
@@ -79,7 +46,5 @@ class Gps{
 		$r=self::api($p); //pr($r);
 		$ret=$r['features'][0]['properties'][$type];
 		return $ret;}
-	
 }
-
 ?>

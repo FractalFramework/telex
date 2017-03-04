@@ -44,12 +44,12 @@ static function graph($page){
 
 static function live($p){$rid=val($p,'rid');
 	$r=Sql::read('uid,app,prm,ip,date_format(up,"%H:%i %d/%m")',self::$db,'','order by id desc limit 200');
-	$bt=aj($rid.'|stats,live|ip='.$rid,pico('refresh'));
+	$bt=aj($rid.'|stats,live|ip='.$rid,pic('refresh'));
 	return $bt.Build::table($r);}
 	
 //interface
 static function content($p){
-	self::install();
+	//self::install();
 	$p['rid']=randid('md');
 	if($uid=val($p,'uid'))$ret=self::pages_by_user($uid);
 	elseif($page=val($p,'page'))$ret=self::users_by_page($p);

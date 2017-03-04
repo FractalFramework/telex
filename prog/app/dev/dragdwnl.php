@@ -1,7 +1,7 @@
 <?php
 
 class dragdwnl{
-	static $private='1';
+	static $private='6';
 	static $db='telex';
 	
 	static function injectJs(){

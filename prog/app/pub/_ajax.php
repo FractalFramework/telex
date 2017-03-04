@@ -7,9 +7,9 @@ class _ajax{
 	}
 
 	static function test(){
-		//$ret=Ajax::j('bubble,,1|utils,result|msg=txt,inp1=ok','bubble as menu','btn');
+		//$ret=aj('bubble,,1|utils,result|msg=txt,inp1=ok','bubble as menu','btn');
 		$ret=dropdown('utils,result|msg=txt,inp1=ok','bubble as menu','btn');
-		//$ret.=Ajax::j('callback|utils,resistance','no loading','btn');
+		//$ret.=aj('callback|utils,resistance','no loading','btn');
 		$ret.=aj('callback|utils,resistance','no loading','btn');
 		$ret.=aj('callback,,x|utils,result|msg=txt,inp1=ok,','close popup','btn');
 		$ret.=aj('callback,,y|utils,result|msg=txt,inp1=ok,','resize popup','btn');
@@ -56,7 +56,7 @@ class _ajax{
 		$ret.=tag('a',$params,'bigbubble');
 		
 		//using j()
-		$ret.=Ajax::j('div,callback|File,fdate|fileRoot=app/pub/_ajax.php,verbose=1,format=ymd.His','call:ftime','btn');
+		$ret.=aj('div,callback|File,fdate|fileRoot=app/pub/_ajax.php,verbose=1,format=ymd.His','call:ftime','btn');
 		
 		$ret.=br();
 		
@@ -78,7 +78,7 @@ class _ajax{
 		$ret.=br().br();
 		
 		//options
-		$ret.=Ajax::j('popup|_ajax,test','ajax options','btn');
+		$ret.=aj('popup|_ajax,test','ajax options','btn');
 		$ret.=br().br();
 		
 		$ret.=tag('div',array('id'=>'callback'),'callback').br();

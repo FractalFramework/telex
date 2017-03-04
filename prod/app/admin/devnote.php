@@ -42,7 +42,7 @@ class devnote{
 	$id=val($p,'id'); $rid=val($p,'rid'); $xid=val($p,'xid');
 	$r=Sql::read('tit,txt',self::$db,'ra',['id'=>$id]);
 	$ret=aj($rid.'|devnote,menu|rid='.$rid.',xid='.$xid,langp('back'),'btn');
-	$ret.=aj($rid.',,load|devnote,modif|rid='.$rid.',xid='.$xid.',id='.$id.'|tit,txt',langp('modif'),'btsav');
+	$ret.=aj($rid.',,z|devnote,modif|rid='.$rid.',xid='.$xid.',id='.$id.'|tit,txt',langp('save'),'btsav');
 	$ret.=aj($rid.'|devnote,del|rid='.$rid.',xid='.$xid.',id='.$id,langp('delete'),'btdel');
 	$ret.=aj('popup|devnote,call|rid='.$rid.',xid='.$xid.',id='.$id,langp('view'),'btn');
 	if($xid)$ret.=insertbt(lang('use'),$id.':devnote',$xid);
@@ -67,7 +67,7 @@ class devnote{
 		$app='edit';} else $app='read';
 	if($r)foreach($r as $k=>$v){$btn=$v['tit']?$v['tit']:$v['id'];
 		$ret[]=aj($rid.'|devnote,'.$app.'|rid='.$rid.',xid='.$xid.',id='.$v['id'],$btn);}
-	if($r)$ret=implode('',$ret);
+	if($r)$ret=Build::scroll($ret,10,300);
 	return $bt.div($ret,'list');}
 	
 	#interfaces

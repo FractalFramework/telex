@@ -36,7 +36,7 @@ class forms{
 	static function answers($p){$fid=val($p,'fid');
 		$fcom=Sql::read('fcom','forms_lead','v','where id='.$fid);
 		$rv=explode(',',$fcom); $n=count($rv); for($i=1;$i<=$n+1;$i++)$vr[]='q'.$i; $vars=implode(',',$vr);
-		foreach($rv as $v)$rd[]=str_prm($v,':',1);
+		foreach($rv as $v)if($v)$rd[]=str_prm($v,':',1);
 		$r=Sql::read('fvuid,'.$vars,'forms_vals','rr','where fid='.$fid);
 		array_unshift($rd,''); array_unshift($r,$rd);
 		return Build::table($r);}
@@ -88,7 +88,7 @@ class forms{
 		$r=Sql::read('id,ftit,ftxt,fcom,fcl,dateup','forms_lead','rr','where fuid='.ses('uid'));
 		if($r)foreach($r as $k=>$v){
 			$tit=aj('popup|forms,read|fid='.$v['id'],$v['ftit']);
-			$edit=aj($rid.'|forms,edit_lead|fid='.$v['id'].',rid='.$rid.',xid='.$xid,pico('edit'),'btn');//edit
+			$edit=aj($rid.'|forms,edit_lead|fid='.$v['id'].',rid='.$rid.',xid='.$xid,pic('edit'),'btn');//edit
 			$answ=aj('popup|forms,answers|fid='.$v['id'],langp('answers'),'btn');
 			if($xid)$in=insertbt(lang('use'),$v['id'].':forms',$xid);
 			//if($xid)$in=telex::publishbt($v['id'],'forms'); else $v['insert']='';

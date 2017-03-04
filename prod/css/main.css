@@ -10,8 +10,8 @@ section{
 }
 
 blockquote{
-	border-left:8px solid #eee;
-	background:white;
+	padding:10px;
+	background:#eee;
 }
 
 /*textarea full page*/
@@ -47,13 +47,15 @@ blockquote{
 }
 .btn:hover, a:hover .btn{
 	background-color:white;
-	background-image:linear-gradient(#f5f8fa,#fff);
+	/*background-image:linear-gradient(#f5f8fa,#fff);*/
+    border-color:#ccc;
 	color: black;
 }
 .btn.active{
-	background-image:linear-gradient(#fff,#fff);
+	/*background-image:linear-gradient(#fff,#fff);*/
+	background-color:white;
 	box-shadow:0 0 2px #ddd;
-    border-color:#dfdfdf;
+    border-color:#eee;
 }
 
 .btsav{background-image:linear-gradient(#f5f8fa,#f5f8fa); border-color:#0088e6;}

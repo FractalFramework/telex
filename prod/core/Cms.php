@@ -3,7 +3,7 @@
 class Cms{
 	
 	static function edition($id){$ret='';
-		$r=array('bold'=>pic('bold'),'italic'=>pic('italic'),'underline'=>pic('underline'),'insertUnorderedList'=>pic('list'),'Indent'=>pic('indent'),'Outdent'=>pic('outdent'));
+		$r=array('bold'=>ico('bold'),'italic'=>ico('italic'),'underline'=>ico('underline'),'insertUnorderedList'=>ico('list'),'Indent'=>ico('indent'),'Outdent'=>ico('outdent'));
 		foreach($r as $k=>$v)$ret.=tag('button','onclick=document.execCommand(\''.$k.'\',false,null);',$v).'';
 	return $ret;}
 

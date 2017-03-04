@@ -17,12 +17,12 @@ class _desk{
 	#structure:
 	//array('folder','//j/in/lk','action','picto','text')
 	static function menus(){
-		$r[]=array('','lk','/','home','');
-		$call_1='popup|File,fdate|fileRoot=app/demo/demo_ajax.php';//Ajax::j()
+		$r[]=array('','lk','/','home','home');
+		$call_1='popup|File,fdate|fileRoot='.ses('dev').'/app/pub/_ajax.php';
 		$r[]=array('/menu1','j',$call_1,'file','fdate');
-		$r[]=array('/menu1','j','popup|txt','text','textpad');
-		$r[]=array('/menu1/menu12','lk','/txt','','link to textpad');
-		$r[]=array('/menu1/textpad','in','txt','text','');
+		$r[]=array('/menu1','j','popup|txt','file-text','textpad');
+		$r[]=array('/menu1/menu12','lk','/txt','file-text','link to textpad');
+		$r[]=array('/menu1/textpad','in','text','text','');
 		$r[]=array('/menu2/menu21/m211','','pictos','map','pictos');
 		$r[]=array('/menu2/menu21/m211','j','popup|login','account-login','login');
 		$r[]=array('/menu2/menu21/m212','in','login','account-login','login in bubble');

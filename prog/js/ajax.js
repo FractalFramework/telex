@@ -62,7 +62,7 @@ if(this.mRequest.readyState==4){wait=0;
 	}
 	delete this.mRequest;
 }
-else if(this.ajaxOption=='load' && wait==0){wait=1;
+else if(this.ajaxOption=='z' && wait==0){wait=1;
 	//var percent=this.loaded/this.total*100;
 	if(this.method=='div')waitmsg(getbyid(this.targetId));}}
 
@@ -140,18 +140,16 @@ function ajbt(e){var p2='';
 	if(e.dataset.toggle){var ok=toggle(e,e.dataset.toggle); if(ok)return false;}
 	if(e.dataset.prmtm){
 		if(e.dataset.prmtm=='current')var p2=getbyid('prmtm').value;
-		else getbyid('prmtm').value=e.dataset.prmtm;}
-	var d=e.dataset.j; var p=d.split('|'); if(p2)p[2]=p[2]+','+p2; ajb(p,e);
+		else getbyid('prmtm').value=e.dataset.prmtm;}//decodeBase64
+	var d=(e.dataset.j); var p=d.split('|'); if(p2)p[2]=p[2]+','+p2; ajb(p,e);
 	var d=e.dataset.jb; if(d){var p=d.split('|'); ajb(p,e);}}
 
 function toggle(btn,did){
-	if(btn.rel=='active'){closediv(did); btn.rel=''; active(btn,0); return 1;} 
-	else{btn.rel='active'; btn.dataset.bid=btn.id; active(btn,1); var p=btn.parentNode.childNodes;
-	for(i=0;i<p.length;i++)if(p[i].id!=btn.id){p[i].rel=''; active(p[i],0);}
-return 0;}}
-
-/*function toggle_close(did){var id=getbyid(did).dataset.bid;
-	var btn=getbyid(id); closediv(did); btn.rel=''; active(btn,0);}*/
+	if(btn.rel=='1'){closediv(did); btn.rel=''; active(btn,0); return 1;} 
+	else{btn.rel='1'; btn.dataset.bid=btn.id; active(btn,1);
+		var p=btn.parentNode.childNodes;
+		for(i=0;i<p.length;i++)if(p[i].id!=btn.id){p[i].rel=''; active(p[i],0);}
+		return 0;}}
 
 function scrollBottom(d){
 	var div=getbyid(d);
@@ -160,6 +158,7 @@ function scrollBottom(d){
 function randid(d){var n=Math.random()+''; return d+(n.substr(2,7));}
 
 function active(btn,o){var css=btn.className;
+	if(css==undefined)css='';
 	if(o)btn.className=css+' active';
 	else btn.className=css.split(' ')[0];}
 
@@ -451,6 +450,7 @@ while(e.parentNode){if(e.style.position=='fixed')return e; e=e.parentNode;}
 return 0;}
 
 function Close(val){var pp=getbyid('popup');
-if(val=='popup' && pp){if(curid)pp.removeChild(getbyid(curid)); else pp.innerHTML=''; curid=0; move=0;}
+if(val=='popup' && pp){
+	if(curid)pp.removeChild(getbyid(curid)); else pp.innerHTML=''; curid=0;} //move=0;
 else if(val=='pop' && pp)pp.innerHTML='';
 else if(val){var div=getbyid(val); if(div)div.parentNode.removeChild(div);}}

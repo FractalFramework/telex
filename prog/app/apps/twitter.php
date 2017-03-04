@@ -60,16 +60,16 @@ class twitter{
 	$label=tag('span',array('class'=>'small'),'reply-to:').' ';
 	$url='https://twitter.com/'.$q['in_reply_to_screen_name'].'/status/'.$id;
 	$link=href($url,$name,'btn').' ';
-	$thread=Ajax::j('popup|twitter,thread|id='.$q['id'],pic('caret-up').'Thread','btn').' ';
+	$thread=aj('popup|twitter,thread|id='.$q['id'],ico('caret-up').'Thread','btn').' ';
 	return $label.$link.$thread;}}
 	
 	private static function favorited($q){
 	$txt=isset($q['favorite_count'])?$q['favorite_count']:'0';
-	return pic('heart').' '.$txt;}
+	return ico('heart').' '.$txt;}
 	
 	private static function retweeted($q){
 	$txt=isset($q['retweet_count'])?$q['retweet_count']:'0';
-	return pic('share').' '.$txt;}
+	return ico('share').' '.$txt;}
 	
 	//write
 	static function post($p){
@@ -160,19 +160,19 @@ class twitter{
 	private static function edit($p){
 		$usr=val($p,'usr'); $twid=val($p,'twid');
 		$ret=input('inp2','text to twit');
-		$ret.=aj(self::$rid.',,injectJs|twitter,post|usr='.$usr.',twid='.$twid.'|inp2',pico('send'));
+		$ret.=aj(self::$rid.',,injectJs|twitter,post|usr='.$usr.',twid='.$twid.'|inp2',pic('send'));
 		return $ret;}
 	
 	private static function menu($p){
 		$usr=val($p,'usr'); $o=val($p,'o',10);
 		$ret=input('inp1',$usr?$usr:'twitter-user');
-		$ret.=aj(self::$rid.',,injectJs|twitter,call|twid='.val($p,'twid').'|inp1',pic('eye'));
+		$ret.=aj(self::$rid.',,injectJs|twitter,call|twid='.val($p,'twid').'|inp1',ico('eye'));
 		return $ret;}
 	
 	/*static function api(){
 		$r=Sql::read('id,owner','admin_twitter','kv',['uid'=>ses('uid')]);
 		foreach($r as $k=>$v)
-			$tw[]=aj('sndtw|tlxcall,twit|id='.$id.',twid='.$k,pic('twitter',24).$v);
+			$tw[]=aj('sndtw|tlxcall,twit|id='.$id.',twid='.$k,ico('twitter',24).$v);
 		$ret=span(implode('',$tw),'','sndtw');
 		return $ret;}*/
 	
@@ -184,7 +184,7 @@ class twitter{
 		if($p['twid']){
 			$bt=self::menu($p).' ';
 			if(ses('auth')>4)$bt.=self::edit($p);}
-		if(ses('uid'))$bt.=aj('popup|admin_twitter',pico('params'));
+		if(ses('uid'))$bt.=aj('popup|admin_twitter',pic('params'));
 		$ret=div(self::build($p),'',self::$rid);
 		return $bt.br().$ret;}
 }

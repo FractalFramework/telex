@@ -36,7 +36,7 @@ class File{
 	
 	static function writegz($f,$d){$gz=gzopen($f,'w9');
 		gzwrite($gz,$d); return gzclose($gz);}
-	static function readgz($f,$d){$zd=gzopen($f,'r');
+	static function readgz($f,$d=''){$zd=gzopen($f,'r');
 		$d=gzread($zd,10000); gzclose($zd); return $d;}
 	
 	static function day($f,$format='ymd.His'){

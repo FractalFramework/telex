@@ -12,8 +12,8 @@ class poll{
 
 	static function headers(){
 		Head::add('csscode','
-	.anscnt{margin:4px 0; padding:2px; display:table-row;}
-	.anscnt:hover{background:#ffffff;}
+	.anscnt{margin:6px 0; padding:2px;}
+	.anscnt:hover{background:#f4f4f4;}
 	.anstit{padding:2px 10px; display:table-cell; min-width:120px; max-width:340px;}
 	.tensor{background:#cdcdcd; padding:2px; height:12px; border-radius:2px;}
 	.anstens{padding:2px 10px; display:table-cell; width:320px;}
@@ -31,8 +31,7 @@ class poll{
 		if($uid==ses('uid'))return 1;}
 	
 	static function textarea($v=''){
-		$r=array('id'=>'text','style'=>'width:500px; height:100px;','onkeyup'=>'strcount(\'text\',255)');
-		return tag('textarea',$r,$v).br().span('','right','strcnttext');}
+		return textarea('text',$v,70,4,lang('description'),'','',140).br();}
 	
 	#create
 	static function update($p){
@@ -44,7 +43,7 @@ class poll{
 		$txt=Sql::read('txt','poll_lead','v','where id='.$id);
 		$ret=self::textarea($txt);
 		$ret.=aj('pllscnt,,x|poll,update|mnu='.$mnu.',idPoll='.$id.'|text',lang('save'),'btsav');
-		return div($ret,'pane');}
+		return $ret;}
 	
 	static function del($p){$closed=val($p,'closed');
 		if(!self::security('poll_lead',$p['idPoll']))return;
@@ -95,7 +94,7 @@ class poll{
 		$score=val($rs,$i,0);
 		$size=$sum&&$score?round($score/$sum*100):0;
 		$css=$vote==$i?'active':'';
-		$pic=$vote==$i?pic('square'):pic('square-o');
+		$pic=$vote==$i?ico('square'):ico('square-o');
 		$answer=$pic.' '.$answ;
 		if(auth(6))$answer=aj($com.',val='.$i,$answer);//modif
 		$tit=span($answer,'anstit');
@@ -113,43 +112,43 @@ class poll{
 		$endtime=$date+self::$length;
 		$leftime=ses('time')-$endtime;
 		if($leftime>0)$closed=1; else $closed=0;
-		//vote button
+		//vote buttons
 		$com='p'.$id.',,,1|poll,vote|mnu='.$mnu.',idPoll='.$id.',current='.$vote;
-		//pane
 		for($i=1;$i<=$nb;$i++)$ret.=self::pane($rb,$rs,$i,$sum,$closed,$vote,$com);
 		//footer
-		$ret.=span($sum.' '.plurial('vote',$sum,1),'tot');
-		if($closed)$state=lang('poll closed').' '.lang('the',1).' '.date('d/m/Y',$endtime);
+		$foot=span($sum.' '.plurial('vote',$sum,1),'nfo').' ';
+		if($closed)$state=lang('poll closed');
 		else $state=lang('time left').' : '.self::leftime($endtime);
-		$ret.=div($state,'grey');
-		return div($ret,'','p'.$id);}
+		$foot.=span($state,'grey');
+		return div($ret,'txt').div($foot);}
 	
 	#poll
-	static function build($p){$bt=''; $id=$p['idPoll']; $mnu=val($p,'mnu'); $closed=val($p,'closed');
+	static function build($p){$bt='';
+		$id=$p['idPoll']; $mnu=val($p,'mnu'); $closed=val($p,'closed');
 		$cols='name,txt,answ,UNIX_TIMESTAMP(poll_lead.up) as date';
 		$where='where poll_lead.id='.$id.' order by poll_lead.id desc';
 		$r=Sql::read_inner($cols,'poll_lead','login','uid','ra',$where);
 		if(!$r)return lang('not exists').br();
 		//admin
 		if($mnu)$go=aj('pllscnt|poll,com|rid='.val($p,'rid'),'#'.$id,'btn');
-		else $go=href('/app/poll/'.$id,pic('link').' '.$id,'btn').' ';
+		else $go=href('/app/poll/'.$id,ico('link').' '.$id,'btn').' ';
 		if($mnu)$go.=insertbt(lang('use'),$id.':poll',val($p,'rid'));
 		//if($mnu)$go.=telex::publishbt($id,'poll');
 		$by=self::userdate($r['date'],$r['name']);
 		if($r['name']==ses('user') && auth(4)){/**/
-			$bt.=aj('pagup|poll,modif|mnu='.$mnu.',idPoll='.$id,lang('modif'),'btn');
+			$bt.=aj('e'.$id.'|poll,modif|mnu='.$mnu.',idPoll='.$id,lang('modif'),'btn');
 			if(auth(6)){
 			$prm='pol'.$id.'|poll,del|rid='.val($p,'rid').',mnu='.$mnu.',idPoll='.$id.',closed=';
 			if(!$closed)$bt.=aj($prm.'0',lang('close'),'btdel');
 			else{$bt.=aj($prm.'1',lang('open'),'btsav');
 				$bt.=aj($prm.',del=1',lang('del'),'btdel');}}}
 		$bt=div($bt,'right');
-		$txt=div(nl2br($r['txt']),'text');
+		$txt=div(div(nl2br($r['txt']),'tit'),'','e'.$id);
 		//results
 		$r['idPoll']=$id;
-		$results=self::read($r);
+		$results=div(self::read($r),'','p'.$id);
 		//render
-		$ret=div($go.' '.$by.$bt.br().$txt.$results,'pane');
+		$ret=div(div($go.' '.$by.$bt,'').$txt.$results,'pane');
 		return div($ret,'','pol'.$id);}
 	
 	#polls
@@ -197,9 +196,9 @@ class poll{
 	static function content($p){$ret='';
 		//self::install();
 		if(isset($p['param']))$p['idPoll']=$p['param'];
-		$ret=aj('pllscnt|poll,polls',pic('list'),'btn').' ';
+		$ret=aj('pllscnt|poll,polls',ico('list'),'btn').' ';
 		$ret.=hlpbt('poll_app').' ';
-		if(ses('uid'))$ret.=aj('pagup|poll,create',pic('plus').' '.lang('new'),'btn').br().br();
+		if(ses('uid'))$ret.=aj('pagup|poll,create',ico('plus').' '.lang('new'),'btn').br().br();
 		//root
 		if(isset($p['idPoll']))$res=self::build($p);
 		else $res=self::polls();

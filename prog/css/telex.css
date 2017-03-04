@@ -40,6 +40,7 @@ a .nbntf{color:white;}
 .btn:hover{color:#0084b4;}
 .abbt{background:white; color:#292f33; border:0; padding:6px 8px 5px 7px; border-radius:0; margin:0; line-height:28px;}
 .abbt:hover{color:#0084b4; background:#e5e5e5;}
+.actions{text-align:center;}
 .actions a{padding:6px 10px; margin:0 10px;}
 .actions a:hover .pic{color:#1a282f;}
 .actions .pic{color:#aab8c2; transition:all 0.2s linear;}
@@ -94,9 +95,13 @@ img.left{margin-right:10px;}
 .profileb{border:1px solid #e1e8ed; border-radius:6px;  box-shadow:0 0 13px rgba(0,0,0,0.1);}
 .cols .profile{min-width:290px; margin-bottom:10px;}
 .banner{margin:0px 0 0 0; height:90px; border-radius:4px 4px 0 0; background-image:linear-gradient(#7ba8fd,#97c2ff); background-size:100% auto; background-position:0 50%; background-size:cover; box-shadow:0px -10px 30px -20px #000 inset;}
+.bansmall{text-align:center; padding:20px; background-color:rgba(0,0,0,0.2);}
+.bansmall a{color:white;}
+.bansmall .usrnam a{color:white; text-shadow:0px 1px 1px #000;}
+.bansmall .usrnam a:hover{color:white;}
 .avatar,.avatarsmall,.avatarbig{background-color:#7ba8fd; display:inline-block; width:90px; height:90px; border:2px solid #fff; border-radius:6px; background-size:100% auto; background-position:center; background-size:cover;}
 .avatar{float:left; margin:-34px 10px 10px 10px;}
-.avatarsmall{width:60px; height:60px; margin:0px 10px 0 0;}
+.avatarsmall{width:60px; height:60px; margin:0px 10px 0 0; border-radius:30px;}
 .cicon .avatarsmall{margin:0px 10px;}
 .avatarbig{width:280px; height:220px; margin:-40px 10px 10px 0px; border-width:6px; border-radius:10px; box-shadow:0px -10px 30px -20px #000;}
 .banr{}
@@ -109,12 +114,12 @@ img.left{margin-right:10px;}
 .statustxt,.statusdiv{margin:4px 0; font-size:14px;}
 .cols .statustxt{height:110px; overflow-x:visible; overflow-y:auto;}
 .subscrban{clear:both; padding:7px; margin-bottom:10px; background:white;}
-.subscrstats{text-align:center; float:right; min-width:300px;}
-.subscrbt{display:table-cell; padding:0 8px;}
+.subscrstats{text-align:center;}
+.subscrbt{display:inline-block; padding:0 16px;}
 .subscrxt{font-variant:small-caps; font-size:12px; color:#9d9d9d;}
 .followbt{float:right; margin:10px;}
 a:hover .subscrxt{color:#1da1f2;}
-.subscrnb{font-size:18px; color:#1da1f2; font-family:DIGITALDREAM;}
+.subscrnb{font-size:18px; color:#1da1f2;}
 /*react*/
 @media only screen and (max-width: 930px){
 	.container{width:auto;}

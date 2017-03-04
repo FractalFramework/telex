@@ -27,9 +27,8 @@ class ballot{
 		$uid=Sql::read('uid',$table,'v','where id='.$id);
 		if($uid==ses('uid'))return 1;}
 		
-		static function textarea($v=''){
-		$r=array('id'=>'text','style'=>'width:500px; height:100px;','onkeyup'=>'strcount(\'text\',255)');
-		return tag('textarea',$r,$v).br().span('','right','strcnttext');}
+	static function textarea($v=''){
+		return textarea('text',$v,70,4,lang('description'),'','',140).br();}
 		
 	#create
 	static function update($p){
@@ -66,7 +65,7 @@ class ballot{
 	static function create($p){$nb=val($p,'nb',2); $rid=val($p,'rid'); $mnu=val($p,'mnu');
 		$inp[]='text'; for($i=1;$i<=$nb;$i++)$inp[]='answ'.$i; $inps=implode(',',$inp);
 		$ret=span(aj('pllscnt,,x|ballot,save|mnu='.$mnu.',rid='.$rid.'|'.$inps,lang('save'),'btsav'),'right');
-		$ret.=div(lang('ballot presentation').' :','stit');
+		$ret.=div(lang('ballot presentation'),'stit');
 		$ret.=self::textarea(val($p,'text'));
 		for($i=1;$i<=$nb;$i++)$ret.=div(input('answ'.$i,val($p,'answ'.$i),'',lang('choice').' '.$i));
 		$ret.=aj('newballot|ballot,create|rid='.$rid.',nb='.($nb+1).'|'.$inps,langp('add choice'),'btn').br();
@@ -88,16 +87,16 @@ class ballot{
 		return self::read($p);}
 		
 	static function pane($rb,$i,$closed,$vote,$nb,$com){$ret='';
-		$answer=pic('square-o').' '.val($rb,$i);
+		$answer=ico('square-o').' '.val($rb,$i);
 		$voted=count($vote)==$nb?1:0;
 		if(auth(6))$voted=0;
 		$votedcase=val($vote,$i);
 		for($k=1;$k<=$votedcase;$k++){
-			if($closed or $voted)$ret.=span(pic('star'));
-			else $ret.=aj($com.',choice='.$i.',val='.$k,pic('star'));}
+			if($closed or $voted)$ret.=span(ico('star'));
+			else $ret.=aj($com.',choice='.$i.',val='.$k,ico('star'));}
 		for($k=$votedcase+1;$k<=5;$k++){
-			if($closed or $voted)$ret.=span(pic('star-o'));
-			else $ret.=aj($com.',choice='.$i.',val='.$k,pic('star-o'));}
+			if($closed or $voted)$ret.=span(ico('star-o'));
+			else $ret.=aj($com.',choice='.$i.',val='.$k,ico('star-o'));}
 		return div(span($answer,'anstit').span($ret,'anscell'),'anscnt');}
 		
 		static function pane_results($rb,$id){$ret='';
@@ -155,7 +154,7 @@ class ballot{
 		//admin
 		if($mnu){$go=aj('pllscnt|ballot,com|rid='.val($p,'rid'),'#'.$id,'btn');
 			$go.=insertbt(lang('use'),$id.':ballot',val($p,'rid'));}
-		else $go=href('/app/ballot/'.$id,pic('link').' '.$id,'btn').' ';
+		else $go=href('/app/ballot/'.$id,ico('link').' '.$id,'btn').' ';
 		//if($mnu)$go.=telex::publishbt($id,'ballot');
 		$by=self::userdate($r['date'],$r['name']);
 		/**/if($r['name']==ses('user') && auth(4)){
@@ -219,9 +218,9 @@ class ballot{
 	static function content($p){$ret='';
 		//self::install();
 		if(isset($p['param']))$p['idballot']=$p['param'];
-		$ret=aj('pllscnt|ballot,ballots',pic('list'),'btn').' ';
+		$ret=aj('pllscnt|ballot,ballots',ico('list'),'btn').' ';
 		$ret.=hlpbt('ballot_app').' ';
-		if(ses('uid'))$ret.=aj('pagup|ballot,create',pic('plus').' '.lang('new'),'btn').br().br();
+		if(ses('uid'))$ret.=aj('pagup|ballot,create',ico('plus').' '.lang('new'),'btn').br().br();
 		//root
 		if(isset($p['idballot']))$res=self::build($p);
 		else $res=self::ballots();

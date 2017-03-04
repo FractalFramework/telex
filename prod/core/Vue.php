@@ -11,7 +11,7 @@ static function reader($d,$b){
 		case('a'):return href($o,$p); break;//url*href=http://ph1.fr:a
 		case('tag'):return tag($o,'',$p); break;//txt*b:tag
 		//case('icon'):return icon($p,$o); break;
-		case('pic'):return pico($p,$o); break;
+		case('pic'):return pic($p,$o); break;
 		//case('picto'):return picto($p,$o); break;
 		//case('form'):return Form::com($p); break;//
 		case('img'): return img($p,$o); break;

@@ -1,9 +1,9 @@
 /*FractalFramework.com*/
 /*fonts*/
-@font-face{font-family:'philum'; src:url('/fonts/philum.eot?iefix') format('eot'),url('/fonts/philum.woff?v9.007') format('woff'),url('/fonts/philum.svg#philum') format('svg'),url('/fonts/philum.ttf') format('truetype');}
-@font-face{font-family:'DIGITALDREAM'; src:url('/fonts/DIGITALDREAM.eot?iefix') format('eot'),url('/fonts/DIGITALDREAM.woff?v8.71') format('woff'),url('/fonts/DIGITALDREAM.svg#DIGITALDREAM') format('svg');}
-@font-face{font-family:'Ubuntu-Regular'; src:url('/fonts/Ubuntu-Regular.eot?iefix') format('eot'),url('/fonts/Ubuntu-Regular.woff?v8.71') format('woff'),url('/fonts/Ubuntu-Regular.svg#Ubuntu-Regular') format('svg');}
-@font-face{font-family:'microsys'; src:url('/fonts/microsys4?iefix') format('eot'),url('/fonts/microsys4.woff?v9.007') format('woff'),url('/fonts/microsys4.svg#microsys4') format('svg'),url('/fonts/microsys4.ttf') format('truetype');}
+@font-face{font-family:'philum'; src:url('/fonts/philum.eot?iefix') format('eot'),url('/fonts/philum.woff?v9') format('woff'),url('/fonts/philum.svg#philum') format('svg'),url('/fonts/philum.ttf') format('truetype');}
+@font-face{font-family:'microsys'; src:url('/fonts/microsys4.eot?iefix') format('eot'),url('/fonts/microsys4.woff') format('woff'),url('/fonts/microsys4.svg') format('svg'),url('/fonts/microsys4.ttf') format('truetype');}
+@font-face{font-family:'Ubuntu-Regular'; src:url('/fonts/Ubuntu-Regular.eot?iefix') format('eot'),url('/fonts/Ubuntu-Regular.woff') format('woff'),url('/fonts/Ubuntu-Regular.svg') format('svg');}
+@font-face{font-family:'Lato-Black'; src:url('/fonts/Lato-Black.eot?iefix') format('eot'),url('/fonts/Lato-Black.woff') format('woff'),url('/fonts/Lato-Black.svg') format('svg');}
 *,*:before,*:after{box-sizing:border-box;}
 /*elements*/
 body{font-family:Arial,Verdana,sans-serif; border:0; margin:0; padding:0; height:calc(100vh - 40px);}
@@ -40,12 +40,12 @@ input[type=range]{border:0; vertical-align:middle; background:none;}
 input[type=range]:after,input[type=range]:before{position:absolute; top:1em; color:#aaa;}
 input[type=range]:before{left:0em; content:attr(min);}
 input[type=range]:after{right:0em; content:attr(max);}
-textarea,select{background-color:#ffffff; font-family:Arial; font-size:small; border-width:1px; border-style:solid; padding:0 2px; margin:1px 0;}
-textarea:hover,select:hover{border-color:#aaaaaa;}
+textarea,select{background-color:#fff; font-family:Arial; font-size:small; border-width:1px; border-style:solid; padding:2px 6px; margin:1px 0;}
+textarea:hover,select:hover,textarea:focus,select:active{border-color:#aaaaaa;}
 button{cursor:pointer; border-width:0px; background:none; padding:0;}
 form{padding:0px; margin:0px;}
 /*classes*/
-.telex{font-family:DIGITALDREAM; color:#ff0000; text-shadow:0 0 1px #000000; font-size:18px; line-height:22px;}
+.telex{font-family:microsys; color:#ff0000; text-shadow:0 0 1px #000000; font-size:18px; line-height:22px;}
 .telex:hover{text-shadow:1px 1px 1px #000000; color:red; text-decoration:blink;}
 .active{color:#bd0000;}
 .active a:hover{color:#bd0000;}
@@ -61,6 +61,7 @@ form{padding:0px; margin:0px;}
 .small a{color:#aaaaaa;}
 .small a:hover{color:#424242;}
 .xsmall{font-family:Arial; font-size:x-small;}
+.nfo{font-family:Arial; font-size:small; background-color:white; padding:4px; margin:4px;}
 .console{font-family:Lucida Console,Courier New; background-color:#2F2F2F; border-left:4px solid #000; word-wrap:break-word; color:#fff; border:0; padding:10px;}
 .editor{font-family:Lucida Console,Courier New; word-wrap:break-word;}
 .nbp{color:#000000; font-size:smaller; line-height:140%;}
@@ -80,7 +81,7 @@ form{padding:0px; margin:0px;}
 .list a:hover.del{background-color:#c82020; color:white;}
 /*btn*/
 .btn,.btsav,.btdel,.btok{color:#000000; border-color:#d3d3d3; font-family:Arial,sans-serif; margin:0 1px; padding:2px 6px; border-radius:3px; border-width:0px; border-style:solid; line-height:26px; font-size:15px;}
-.btn:active{background-image:linear-gradient(#50b8fa,#aff8fa);}
+/*.btn:active{background-image:linear-gradient(#50b8fa,#aff8fa);}*/
 .btsav,.btdel,.btok{border-width:1px; border-style:solid; text-align:center; min-width:100px;}
 .btsav{background-image:linear-gradient(#0088e6,#0079cc); color:#eee; border-color:#0079cc;}
 .btsav:hover{background-image:linear-gradient(#0088e6,#0079cc); color:#fff;}
@@ -93,9 +94,9 @@ form{padding:0px; margin:0px;}
 a.btxt{text-decoration:none; color:#000;}
 a.btxt:hover{text-decoration:underline; color:#0084b4;}
 .board{font-size:14px;}
-.btit{font-family:Ubuntu-Regular; font-size:18px; display:block; background-color:#f5f8fa; text-align:center; font-size:16px; color:#555; padding:10px;}
+.btit{font-family:Ubuntu-Regular; font-size:18px; display:block; background-color:rgba(0,0,0,0.1); text-align:center; font-size:16px; color:#555; padding:10px;}
 a.btit{text-decoration:none;}
-a.btit:hover{text-decoration:none; background:#e1e8ed;}
+a.btit:hover{text-decoration:none; background:background-color:rgba(0,0,0,0.2);}
 a.btlk{text-decoration:none; color:#0084b4;}
 a.btlk:hover{text-decoration:underline;}
 .imbtn{padding:5px 6px 4px 7px; margin:0px 0px;}
@@ -108,7 +109,7 @@ a.btlk:hover{text-decoration:underline;}
 .tit{font-size:16px; font-weight:bold;}
 .txt,.txth{background:white; margin-top:5px;}
 .txth{height:360px; overflow-y:auto;}
-.stit{font-size:14px; color:#292f33; border-color:#e1e8ed; border-width:0 0 1px 0; border-style:solid; margin:0 0 10px 0; padding:0 0 10px 0;}
+.stit{font-size:14px; font-family:Ubuntu-Regular; color:#292f33; border-color:#e1e8ed; padding:10px 0;}
 .stit .pic{font-size:18px;}
 .stxt{margin:5px 0;}
 .search input{border:1px solid white;}
@@ -149,7 +150,7 @@ a.grey:hover{color:#000;}
 .imgshadow_white{filter:drop-shadow(0 0 2px rgba(255,255,255,1));}
 .invert{filter:invert(1);}
 .pane{padding:10px; margin-bottom:20px; border-radius:3px; border:1px solid #f5f8fa; background-color:#ededed; box-shadow:1px 1px 4px #777;}
-.pagup .pane{width:660px;}
+/*.pagup .pane{width:660px;}*/
 .smtitle{overflow:hidden; text-overflow:ellipsis; white-space:nowrap;}
 .help{border:1px solid #dfdfdf; padding:0px 2px; border-radius:12px;
 background-image:linear-gradient(#fcfcfc,#eee);}
@@ -158,12 +159,12 @@ background-image:linear-gradient(#fcfcfc,#eee);}
 .icon{border-color:#aaaaaa; float:left; font-size:small; overflow:hidden; text-align:center; width:90px; height:70px; padding:0 4px; margin:2px; word-wrap:break-word;}
 .icon:hover{display:block;}
 /*bicon*/
-.bicon,.cicon{text-align:center; width:120px; height:120px; padding:10px 0; 
+.bicon,.cicon{text-align:center; width:120px; height:80px; padding:10px 0; 
 margin:10px; display:inline-block; word-wrap:break-word; overflow:hidden; 
 transition:all 0.2s linear; font-size:14px;}
 .bicon span,.cicon span{display:block;}
 .bicon .pic,.cicon .pic{font-size:32px;}
-.cicon{width:100px; height:86px; margin:0; font-size:12px;}
+.cicon{width:100px; height:90px; margin:0; font-size:12px;}
 .cicon:hover{box-shadow:0px 0px 0px #aaa; background:#3b88c3; color:#fff;}
 .cicon .pic{font-size:2em;}
 .cicon:hover .pic{text-shadow:0 0 4px #ffffff;}
@@ -224,11 +225,13 @@ margin:0 10px 0 0; padding:0;}
 .closepage{position:fixed; padding:0px; right:20px;}
 /*pictos*/
 .philum{color:#424242; font-family:'philum'; font-weight:normal; font-size:16px;}
-.microsys{color:#424242; font-family:'microsys'; font-weight:normal; font-size:32px;}
+.microsys{color:#424242; font-family:'microsys'; font-weight:normal; font-size:20px;}
+.latobold{font-family:'Lato-Black'; font-weight:normal; font-size:24px;}
 a.active .philum{color:#bd0000;}
 .philum:hover{color:#000;}
 .pic{font-size:1em; padding:2px; margin:0 2px;}
 a .pic{color:#292f33; text-decoration:none; font-size:1em;}
+a .pic.grey{color:#979797;}
 a .pic:hover,a.active .pic{color:#000;}
 a .del:hover{color:white; background-color:#e81c4f;}
 a .red:hover{color:#e81c4f;}
