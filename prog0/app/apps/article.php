@@ -31,7 +31,7 @@ return $ret;}
 static function menu(){$ret='';
 	$where=ses('uid')?' or uid="'.ses('uid').'"':'';
 	$r=Sql::read('id,tit','articles','kv','where uid="0"'.$where);
-	foreach($r as $k=>$v)$ret.=href('/art/'.$k,$v);
+	foreach($r as $k=>$v)$ret.=href('/app/article/'.$k,$v);
 	return div($ret,'list');}
 
 //edit
@@ -123,8 +123,8 @@ static function art($p){$mnu=''; $edition='';
 	if(ses('uid'))$mnu.=aj('popup|article',langpi('folder'),'btn').' ';
 	//$mnu.=href('/app/article',langp('new'),'btn');
 	//$mnu.=dropdown('article,menu|id='.$id,langpi('open'),'btn').' ';
-	//if(val($p,'rid') && $id)$url='art/'.$id; else 
-	$url='art/'.$id;
+	if(val($p,'rid') && $id)$url='art/'.$id; 
+	else $url='app/article'.($id?'/'.$id:'');
 	if(ses('uid'))$mnu.=href('/'.$url,langpi('url'),'btn');
 	$ret['mnu']=span($mnu,'right');
 	if($title && !$edit)$ret['t']=tag('h1','',$title);
@@ -157,7 +157,8 @@ static function tit($p){$id=val($p,'id');
 	if($id)return Sql::read('tit','articles','v','where id='.$id);}
 
 //tlex
-static function call($p){$id=val($p,'id');
+static function call($p){
+	$id=val($p,'id');
 	if($id)$p['id']=Sql::read('id','articles','v','where id='.$id);
 	if(!isset($p['id']))$p['edit']=1;
 	$ret=self::read($p);

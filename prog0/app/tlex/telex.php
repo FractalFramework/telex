@@ -285,8 +285,7 @@ foreach($vr as $k=>$v){$fc=''; $ic=''; list($p,$o)=$v;
 switch($kr){
 case('img'):if($imok)$ret.=self::playthumb($p,'micro'); $imok=1; break;
 case('article'): $t=Sql::read('tit','articles','v','where id='.$p);
-	$ret.=pagup('article,call|id='.$p,ico('file-text-o',$sz).span($t),$css);
-	//popwidth:550px,tlx=1,
+	$ret.=pagup('article,read|popwidth:550px,tlx=1,id='.$p,ico('file-text-o',$sz).span($t),$css);
 	break;
 case('chat'):$rb=Sql::read_inner('name','chatlist','login','ruid','rv','where roid='.$p);
 	if($rb)$with=lang('with').' '.implode(', ',$rb); else $with='';

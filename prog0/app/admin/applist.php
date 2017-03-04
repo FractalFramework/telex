@@ -14,10 +14,10 @@ static function headers(){
 
 static function tlex(){$ret='';
 	$r=Sql::read('com','desktop','rv','where dir="/apps/telex" and auth<=2');
-	$bt=tag('h1','',lang('applist'));
+	$bt=tag('h2','',lang('apps'));
 	if($r)foreach($r as $k=>$v)
 		$ret.=div(tag('h3','',pic($v,32).hlpxt($v)).hlpxt($v.'_app','board'));
-	return $bt.div($ret,'board');}
+	return div($bt.div($ret,''),'board');}
 
 static function appdir($dir,$files){$ret='';
 	$title=tag('div',array(),$dir);

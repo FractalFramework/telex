@@ -53,9 +53,7 @@ static function files2dl(){$ret=array();
 	$distant=self::mk_r($d); //pr($distant);
 	if($distant)foreach($distant as $k=>$v)
 		if(array_key_exists($k,$local)){if($v>$local[$k])$ret[]=$k;}
-	//obsoletes
-	if($local)foreach($local as $k=>$v)
-		if(!array_key_exists($k,$distant))unlink($k);
+		else unlink($k);//obsoletes
 	return $ret;}
 
 static function preview($p){
