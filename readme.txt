@@ -141,7 +141,7 @@ CONNECTORS
 ---------------
 
 //make tag div with class deco:
-$ret='[hello|class=deco:div]');
+$ret='[hello*class=deco:div]');
 
 SQL CLASS
 ---------
