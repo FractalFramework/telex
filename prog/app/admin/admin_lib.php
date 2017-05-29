@@ -18,7 +18,7 @@ $func=val($p,'func'); $lang=val($p,'lang');
 $w='where func="'.$func.'" and lang="'.$lang.'"';
 $id=Sql::read('id',self::$db,'v',$w);
 if($id){
-	$txt=Sql::read('txt',self::$db,'v','where id='.$id);
+	$txt=Sql::read('txt',self::$db,'v',$id);
 	if($txt && !$p['txt'])$p['txt']=$txt;
 	Sql::updates(self::$db,$p,$id);}
 else $id=Sql::insert(self::$db,$p);
@@ -31,14 +31,14 @@ Sql::update(self::$db,'txt',$txt,$id);
 return tag('pre','',($txt));}
 
 static function modif($p){$id=val($p,'id');
-$txt=Sql::read('txt',self::$db,'v',['id'=>$id]);
+$txt=Sql::read('txt',self::$db,'v',$id);
 $ret=textarea('tx'.$id,$txt,60,6);
 $ret.=aj('md'.$id.'|admin_lib,update|id='.$id.'|tx'.$id,pic('save'));
 return div($ret,'','md'.$id);}
 
 //read
 static function seecode($p){$id=val($p,'id');
-$ret=Sql::read('code',self::$db,'v','where id='.$id);
+$ret=Sql::read('code',self::$db,'v',$id);
 return div(Build::Code($ret),'paneb');}
 
 //build (methods)
@@ -70,8 +70,7 @@ if($r)foreach($r as $k=>$v){$id=$v['id'];
 	if(auth(6))$bt.=aj('popup|admin_lib,seecode|id='.$id,langp('view'));
 	if(auth(6))$bt.=aj('md'.$id.'|admin_lib,modif|id='.$id,langp('modif')).br().br();
 	$bt.=div(tag('pre','',($v['txt'])),'','md'.$id);
-	$ret[]=div($bt,'board').br();
-}
+	$ret[]=div($bt,'board').br();}
 if(isset($ret))return implode('',$ret);}
 
 //interface

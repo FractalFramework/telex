@@ -1,73 +1,117 @@
 //ph1.fr GNU/GPL
 
 //select
-var theSelection=false;
+var slct=false;
 var clientPC=navigator.userAgent.toLowerCase();
 var clientVer=parseInt(navigator.appVersion);
 var is_ie=((clientPC.indexOf('msie')!=-1) && (clientPC.indexOf('opera')==-1));
 var is_win=((clientPC.indexOf('win')!=-1) || (clientPC.indexOf('16bit')!=-1));
 
-function selectxt(input,selectionStart,selectionEnd){
+///////////////
+
+function selectxt(input,start,end){
 	if(input.setSelectionRange){input.focus();
-		input.setSelectionRange(selectionStart,selectionEnd);}
+		input.setSelectionRange(start,end);}
 	else if(input.createTextRange){
 		var range=input.createTextRange();
 		range.collapse(true);
-		range.moveEnd('character',selectionEnd);
-		range.moveStart('character',selectionStart);
+		range.moveEnd('character',end);
+		range.moveStart('character',start);
 		range.select();}}
 
-function embed_slct(debut,fin,id,act){var id=id?id:'txtarea';
-	var txtarea=getbyid(id); txtarea.focus(); 
-	donotinsert=false; theSelection=false; 
-	if((clientVer>=4) && is_ie && is_win){
-		theSelection=document.selection.createRange().text;
-		if(theSelection){
-		while(theSelection.substring(theSelection.length-1,theSelection.length)==' '){
-				theSelection=theSelection.substring(0,theSelection.length-1);}
-			document.selection.createRange().text=debut+theSelection+fin;
-			txtarea.focus(); theSelection=''; return theSelection;}}
-	else if(txtarea.selectionEnd && (txtarea.selectionEnd-txtarea.selectionStart>0)){
-		theSelection=mozWrap(debut,fin,id,act);
-		return theSelection;}}
+function getrange(id){
+var ob=getbyid(id);
+//alert(ob.selectedIndex);
+elStart=0; elEnd=0;
+var doc=ob.ownerDocument || ob.document;
+var win=doc.defaultView || doc.parentWindow;
+var sel;
+if(typeof win.getSelection!="undefined"){
+sel=win.getSelection();
+if(sel.rangeCount>0){
+	var range=win.getSelection().getRangeAt(0);
+	var preCaretRange=range.cloneRange();
+	preCaretRange.selectNodeContents(ob);
+	preCaretRange.setEnd(range.endContainer,range.endOffset);
+	elStart=preCaretRange.toString().length;}}
+else if((sel=doc.selection) && sel.type!="Control"){
+	var textRange=sel.createRange();
+	var preCaretTextRange=doc.body.createTextRange();
+	preCaretTextRange.moveToElementText(ob);
+	preCaretTextRange.setEndPoint("EndToEnd",textRange);
+	elStart=preCaretTextRange.text.length;}
+slct=sel.toString();
+while(slct.substring(slct.length-1,slct.length)==' ')slct=slct.substring(0,slct.length-1);
+var elEnd=elStart+slct.length;
+//restore selection
+/*if(elStart){
+if(range){range=window.getSelection().getRangeAt(0);
+	range.setStart(ob,elStart); range.setEnd(ob,elEnd);}
+else if(document.selection && document.selection.createRange){}}*/
+return elStart;}
 
-function insert(text,tar){var txtarea=getbyid(tar);
-	if(txtarea.createTextRange && txtarea.caretPos){
-		var caretPos=txtarea.caretPos; var ct=caretPos.text;
+
+///////////////
+
+function embed_div(opn,clo,id){//use getrange
+	var ob=getbyid(id); var len=slct.lenght; //alert(len); alert(elStart+'-'+elEnd);
+	var s1=(ob.innerHTML).substring(0,elStart);
+	var s2=(ob.innerHTML).substring(elStart,elEnd);
+	var s3=(ob.innerHTML).substring(elEnd,len);
+	ob.innerHTML=s1+opn+s2+clo+s3;}
+
+function embed_slct(debut,fin,id,act){//var id=id?id:'txtarea';
+	//var e=getrangepos(id); //alert(e);
+	//alert(document.getSelection());
+	var ob=getbyid(id); ob.focus(); 
+	donotinsert=false; slct=false; 
+	if((clientVer>=4) && is_ie && is_win){
+		slct=document.selection.createRange().text;
+		if(slct){while(slct.substring(slct.length-1,slct.length)==' '){
+				slct=slct.substring(0,slct.length-1);}
+			document.selection.createRange().text=debut+slct+fin;
+			ob.focus(); slct=''; return slct;}}
+	else if(ob.selectionEnd && (ob.selectionEnd-ob.selectionStart>0)){
+		slct=mozWrap(debut,fin,id,act);
+		return slct;}}
+
+function insert(text,tar){var ob=getbyid(tar);
+	if(ob.createTextRange && ob.caretPos){
+		var caretPos=ob.caretPos; var ct=caretPos.text;
 		caretPos.text=ct.charAt(ct.length-1)==' '?ct+text+' ':ct+text;}
 	else{mozWrap('',text,tar); return;}}
 
 //from http://www.massless.org/mozedit/
-function mozWrap(opn,clo,id){var id=id?id:'txtarea';
+function mozWrap(opn,clo,id){//var id=id?id:'txtarea';
 	var s1=''; var s2=''; var s3=''; 
-	var txtarea=getbyid(id); var vl=1;//
-	if(typeof txtarea.value==='undefined')var vl=0;
-	var selLength=txtarea.textLength;
-	var selStart=txtarea.selectionStart;
-	var selEnd=txtarea.selectionEnd;
-	var selTop=txtarea.scrollTop;
+	var ob=getbyid(id); var vl=1;//
+	if(typeof ob.value==='undefined')var vl=0;
+	var selLength=ob.textLength;
+	var selStart=ob.selectionStart;
+	var selEnd=ob.selectionEnd;
+	var selTop=ob.scrollTop;
 	if(selEnd==1 || selEnd==2)selEnd=selLength;
-	if(vl)var truend=(txtarea.value).substring(selEnd-1,selEnd);
+	if(vl)var truend=(ob.value).substring(selEnd-1,selEnd);
 	if(selEnd-selStart>0 && truend==' '){selEnd=selEnd-1;}
 	if(selEnd-selStart>0 && truend=="\n"){selEnd=selEnd-1;}
-	if(vl)var s1=(txtarea.value).substring(0,selStart);
-		//else var s1=(txtarea.innerHTML).substring(0,selStart);
-	if(vl)var s2=(txtarea.value).substring(selStart,selEnd);
-	if(vl)var s3=(txtarea.value).substring(selEnd,selLength);
-	if(vl)txtarea.value=s1+opn+s2+clo+s3;
-	else txtarea.innerHTML=s1+opn+s2+clo+s3;
+	if(vl)var s1=(ob.value).substring(0,selStart);
+		//else var s1=(ob.innerHTML).substring(0,selStart);
+	if(vl)var s2=(ob.value).substring(selStart,selEnd);
+	if(vl)var s3=(ob.value).substring(selEnd,selLength);
+	if(vl)ob.value=s1+opn+s2+clo+s3;
+	else ob.innerHTML=s1+opn+s2+clo+s3;
 	selFin=selEnd+clo.length+opn.length;
-	//window.selectxt(txtarea,selStart,selFin);//selStart
-	txtarea.scrollTop=selTop;
-	txtarea.focus();
+	//window.selectxt(ob,selStart,selFin);//selStart
+	ob.scrollTop=selTop;
+	ob.focus();
 	return s2;}
 
 //localstorage
 function memStorage(val){
 	var vn=val.split('_'); var ob=getbyid(vn[0]);
 	if(vn[2]=='sav')localStorage[vn[1]]=vn[3]==1?ob.innerHTML:ob.value;
-	if(vn[2]=='res')if(vn[3]==1)ob.innerHTML=localStorage[vn[1]];
-		else ob.value=localStorage[vn[1]];}
+	if(vn[2]=='res'){if(vn[3]==1)ob.innerHTML=localStorage[vn[1]];
+		else ob.value=localStorage[vn[1]];}}
 
 //autorefresh
 function getfilmtime(f){
@@ -112,7 +156,7 @@ function isEmail(myVar){
 function verifchars(e){var va=e.value;
 	var arr=[',','?',';','.',':','/','!','§',' ','"',"'",'(',')','=','+','$','*','%','<','>',' ','|','~','&','^','¨','é','è','à','ç','ù','£','@','{','}','[',']','`','^','µ','¨','^','²','#','\\'];//'-','_',
 	for(i=0;i<arr.length;i++)va=va.replace(arr[i],'');
-	if(Number(va.substr(0,1)))va=va.substr(1); //var va=va.toLowerCase();
+	if(Number(va.substr(0,1)))va=va.substr(1); //va=va.toLowerCase();
 	e.value=va;}
 
 //fixdiv
@@ -127,7 +171,7 @@ function fixdiv(ob){
 	else if(diff>0){
 		div.style.top=(0-diff)+'px';
 		div.style.position='fixed';}
-	else {
+	else{
 		div.style.top='0';
 		div.style.position='fixed';}}
 
@@ -171,14 +215,20 @@ function strcount(id,limit){
 	to.innerHTML=limit-ob.length;}
 
 function strcount1(id,limit){
-	var ob=getbyid(id).value; var to=getbyid('strcnt'+id);
-	if(ob.length>limit)getbyid('edtbt').className='btsav btsavno';
-	else getbyid('edtbt').className='btsav';
-	to.innerHTML=limit-ob.length;}
+	var t=getbyid(id).value; var to=getbyid('strcnt'+id);
+	if(t.length>limit)getbyid('edtbt'+id).className='btsav btsavno';
+	else getbyid('edtbt'+id).className='btsav';
+	to.innerHTML=limit-t.length;}
+
+function isNumeric(n){return !isNaN(parseFloat(n)) && isFinite(n);}
+
+function numonly(id){var inp=getbyid(id);
+	if(inp.value && !isNumeric(inp.value))inp.className='error';
+	else inp.className='';}
 
 function resizearea(id){var ob=getbyid(id);
 	var h=ob.offsetHeight; var t=ob.value; var r=t.split("\n"); var n=r.length;
-	ob.style.height=(n*16)+'px';}
+	ob.style.height=(n*18)+'px';}
 	
 function closeditor(){
 if(exb.indexOf(pid)==-1)exb.push(pid); var n=exb.length;
@@ -186,18 +236,18 @@ if(n>0)for(var i=0;i<n;i++)if(exb[i] && exb[i]!=pid){
 	var bt=getbyid(exb[i].substr(3)); if(bt){bt.rel=''; bt.className='';}
 	Close(exb[i]); exb[i]=0;}}
 
-//upload for telex
+//upload for tlex
 function upload(rid){
 	var form=getbyid("upl"); var prm='';
 	var fileSelect=getbyid("upfile");
 	var files=fileSelect.files;
-	for(var i=0;i<1;i++){//files.length
+	for(var i=0;i<files.length;i++){//1
 		var formData=new FormData();
-		var time=Math.floor(Date.now()/1000);
+		var time=Date.now()+i;
 		var file=files[i];
 		var xtr=file.name.split('.');
 		var xt=xtr[xtr.length-1];
-		var filename='upl'+time+'.'+xt;
+		var filename=time+'.'+xt;
 		if(!file.type.match("image.*"))continue;
 		formData.append("upfile",file,filename);
 		insert('['+filename+':img]',rid);
@@ -240,7 +290,7 @@ function loadscroll(component,div){
 		ajaxCall(call,prmtm+'from='+id.substr(3));}}
 //addEvent(document,'scroll',function(event){loadscroll("app,meth","div"))});
 
-//gps (for telex editor)
+//gps (for tlex editor)
 rid=0;
 function gps_ko(error){switch(error.code){
 	case error.PERMISSION_DENIED: console.log("refus utilisateur"); break;      
@@ -259,14 +309,64 @@ function checkEnter(e,frm,id){
 	if(characterCode==13){document.forms[frm].submit(); return false;}
 	else return true;}
 
-//utils
-function closediv(id){getbyid(id).innerHTML='';}
-function hidediv(id){getbyid(id).style.display='none';}
-function inn(v,id){getbyid(id).innerHTML=v;}
-function val(v,id){getbyid(id).value=v;}
-function innfromval(from,id){getbyid(id).innerHTML=getbyid(from).value;}
-function valfromval(from,id){getbyid(id).value=getbyid(from).value;}
+//art
+function savtim(id){if(sok){xa=setTimeout("savtim("+id+")",10000);//bug multi amt
+	if(sok)ajaxCall("socket|art,savetxt","id="+id,"txt"+id);}}
+function restore_art(id){editbt(id,2); getbyid("txt"+id).innerHTML=localStorage["m3"];}
 
+function editxt(div,id,o){var ob=getbyid(div+id);
+	if(ob.className!="editon"){
+		if(div=="txt" && o!=2)ajaxCall("div,txt"+id+"|art,playconn","id="+id,"");
+		ob.contentEditable="true"; ob.designMode="on"; void 0; //ob.focus();
+		ob.className="editon";}}
+
+function savtxt(div,id){var ob=getbyid(div+id);
+	ob.contentEditable="false"; ob.designMode="off"; ob.className="editoff";
+	if(div=="tit")ajaxCall("div,tit"+id+"|art,savetxt","id="+id,"tit"+id);
+	if(div=="txt")ajaxCall("div,txt"+id+"|art,savetxt","id="+id,"txt"+id);}
+
+function editbt(id,o){var bt=getbyid("bt"+id);
+	if(bt.rel==1 && !o){bt.rel=0; sok=0; //close
+		ajaxCall("div,bt"+id+"|art,editbt","id="+id+",o=0","");
+		savtxt("txt",id);
+		getbyid("edt"+id).style.display="none";}
+	else{bt.rel=1; sok=1; editxt("txt",id,o); //if(!o)savtim(id); //open
+		ajaxCall("div,bt"+id+"|art,editbt","id="+id+",o=1","");
+		if(!o)ajaxCall("socket,,store|art,savetxt","id="+id,"txt"+id);//backup
+		getbyid("edt"+id).style.display="";}}
+
+//appx
+function multhidden(n,id){var r=[];
+	for(i=1;i<=n;i++){var v=getbyid(id+i).value; if(v)r.push(v);}
+	getbyid(id).value=r.join('|');}
+
+//chat
+chatliv=4000;
+function chatlive(){
+	if(getbyid('chtbck')){
+		var room=getbyid('chtroom').value;
+		ajaxCall('div,chtbck|chat,read','vu=1,id='+room);}
+	setTimeout("chatlive()",chatliv);}
+if(chatliv)chatlive();
+
+//map
+rid=0;
+function gps_paste(position){
+	var	gpsav=position.coords.latitude+"/"+position.coords.longitude; val(gpsav,'coords'); 
+	var d=new Date; val(d.toDateString(),'address');}
+
+function geo2(id){rid=id;
+	if(navigator.geolocation)navigator.geolocation.getCurrentPosition(gps_paste,gps_ko,{enableHighAccuracy:true,timeout:10000,maximumAge:600000});}
+
+//profile
+function geo(){
+	if(navigator.geolocation)navigator.geolocation.getCurrentPosition(gps_ok,gps_ko, {enableHighAccuracy:true, timeout:10000, maximumAge:600000});
+	else console.log("need html5");}
+function gps_ok(position){
+	var gpsav=position.coords.latitude+"/"+position.coords.longitude;
+	ajaxCall("div,gpsloc|profile,gpsav","gps="+gpsav);}
+
+//unused
 function decodeBase64(s){
 var e={},i,b=0,c,x,l=0,a,r='',w=String.fromCharCode,L=s.length;
 var A="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
@@ -275,3 +375,11 @@ for(x=0;x<L;x++){
 	c=e[s.charAt(x)];b=(b<<6)+c;l+=6;
 	while(l>=8)((a=(b>>>(l-=8))&0xff)||(x<(L-2)))&&(r+=w(a));}
 return r;}
+
+//utils
+function closediv(id){getbyid(id).innerHTML='';}
+function hidediv(id){getbyid(id).style.display='none';}
+function inn(v,id){getbyid(id).innerHTML=v;}
+function val(v,id){getbyid(id).value=v;}
+function innfromval(from,id){getbyid(id).innerHTML=getbyid(from).value;}
+function valfromval(from,id){getbyid(id).value=getbyid(from).value;}

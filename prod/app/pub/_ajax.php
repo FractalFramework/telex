@@ -8,7 +8,7 @@ class _ajax{
 
 	static function test(){
 		//$ret=aj('bubble,,1|utils,result|msg=txt,inp1=ok','bubble as menu','btn');
-		$ret=dropdown('utils,result|msg=txt,inp1=ok','bubble as menu','btn');
+		$ret=bubble('utils,result|msg=txt,inp1=ok','bubble as menu','btn',1);
 		//$ret.=aj('callback|utils,resistance','no loading','btn');
 		$ret.=aj('callback|utils,resistance','no loading','btn');
 		$ret.=aj('callback,,x|utils,result|msg=txt,inp1=ok,','close popup','btn');
@@ -17,11 +17,11 @@ class _ajax{
 	}
 	
 	#content
-	static function content($prm){
+	static function content($p){
 		$ret='';
 		
 		#using call()
-		$params=array(
+		$prm=array(
 		//4 types of parameters:
 			//callbackType,callbackId,callbackOption,InjectJs
 			'com'=>'div,callback',
@@ -32,28 +32,22 @@ class _ajax{
 			//values to capture before to send to the App
 			'inp'=>'inp1');
 		//build the button and specify the css
-		$ret=Ajax::call($params,'call:fdate','btn');
+		$ret=aj(implode('|',$prm),'call:fdate','btn');
 		
 		//popup
-		$params=array('com'=>'popup','app'=>'File,fdate','prm'=>'fileRoot=app/pub/_ajax.php');
-		$ret.=Ajax::call($params,'popup','btn');
+		$ret.=popup('File,fdate|fileRoot=app/pub/_ajax.php','popup','btn');
 		
 		//pagup
-		$params=array('com'=>'pagup','app'=>'utils,resistance','prm'=>'');
-		$ret.=Ajax::call($params,'full page','btn');
-		
+		$ret=pagup('utils,resistance','call:fdate','btn');
 		$ret.=br().br();
 		
 		//bubble
-		$params=array('com'=>'bubble,bbl','app'=>'File,fdate',
-			'prm'=>'fileRoot=app/pub/_ajax.php');
-		$ret.=Ajax::call($params,'bubble','btn');
+		$ret.=bubble('File,fdate|fileRoot=app/pub/_ajax.php','bubble','btn');
 		
 		//menu
-		$params=array('com'=>'bubble,bb2,1','app'=>'utils,resistance');//1 mean vertical
-		$js=Ajax::js($params);
-		$params=array('id'=>'bb2','class'=>'btn','onclick'=>$js);
-		$ret.=tag('a',$params,'bigbubble');
+		$js=ajs('bubble,bb2,1|utils,resistance','','');
+		$prm=array('id'=>'bb2','class'=>'btn','onclick'=>$js);
+		$ret.=tag('a',$prm,'bigbubble');
 		
 		//using j()
 		$ret.=aj('div,callback|File,fdate|fileRoot=app/pub/_ajax.php,verbose=1,format=ymd.His','call:ftime','btn');
@@ -68,13 +62,8 @@ class _ajax{
 		
 		$options=array(1=>'one','two','three','four','five');
 		$ret.=select('inp4',$options,'two','v');
-			
-		$params=array(
-			'com'=>'div,callback,y',
-			'app'=>'utils,result',
-			'prm'=>'msg=text in input,verbose=1',
-			'inp'=>'inp1,inp2,inp3,inp4');
-		$ret.=Ajax::call($params,'call:form','btn');
+		
+		$ret.=aj('callback,,y|utils,result|msg=text in input,verbose=1|inp1,inp2,inp3,inp4','call:fdate','btn');
 		$ret.=br().br();
 		
 		//options

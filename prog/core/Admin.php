@@ -1,79 +1,85 @@
 <?php
-
 class Admin{
-	
-	#see code
-	static function seeCode($p){
-		if(isset($p['appSee'])){$dr=ses('dev').'/app';
-			$f=$p['appSee'].'.php';
-			$r=scandir($dr);
-			if($r)foreach($r as $k=>$v)if(is_dir($dr.'/'.$v))
-				if(is_file($dr.'/'.$v.'/'.$f))$appFile=$dr.'/'.$v.'/'.$f;
-			if($appFile)$ret=file_get_contents($appFile);
-			if(auth(6))$bt=aj('popup|dev,com|headers=1,f='.$appFile,lang('edit'),'btn');
-			if(isset($ret))return div($bt.Build::Code($ret),'pane');
-		}
-	}
-	
-	static function comdir(){
-	    $dirs=Dir::read('app');
-		foreach($dirs as $dir=>$files){
-			if(is_array($files) && $dir)foreach($files as $k=>$file){
-			if(is_string($file))$app=before($file,'.');
-			if($app)$private=isset($app::$private)?$app::$private:0;
-			$dr='Apps/'.$dir;
-			if(!$private or ses('auth')>=$private)
-				$r[]=array($dr,'j','popup,,,injectJs|'.$app.'|headers=1','',$app);
-				//$r[]=array($dr,'lk','/'.$app,'',$app);
-			}
-		}
-		return $r;
-	}
-	
-	static function com(){
-		$keys='id,dir,type,com,picto,bt';
-		$r=Sql::read($keys,'desktop','id','where uid="'.ses('uid').'" or auth=0 order by dir');
-		if(is_array($r))foreach($r as $k=>$v)$r[$k][0]='Apps'.$r[$k][0];//add root
-		return $r;
-	}
 
-	#menus
-	//array('folder','j/lk/in/t','action','picto','text')
-	static function menus(){
-		$ra[]=array('','lk','/','home','home');
-		$login=Auth::logbt(1);
-		//$login=App::open('login');
-		$r=self::com();
-		if(!$r)$r=self::comdir();
-		$r=array_merge($ra,$r);
-		$app=ses('app'); $dev=ses('dev');
-		$r[]=array('','t','','-',$login);
-		//if(!class_exists($app))return $r;
-		//$r[]=array('','lk','/app/'.$app,'',$app);
-		if(auth(4) && $app)$r[]=array('','j','pagup|Admin,seeCode|appSee='.$app,'code','Code');
-		if($app && method_exists($app,'admin')){$rb=$app::admin(); if($rb)$r=array_merge($r,$rb);}
-		if(auth(6)){
-			$r[]=array($dev.'/dev','j','ses,,reload||k=dev,v=prog','dev','dev');
-			$r[]=array($dev.'/dev','j','ses,,reload||k=dev,v=prod','prod','prod');
-			$r[]=array($dev.'/dev','j','popup|update,loaddl','download','update');
-			$r[]=array($dev.'/dev','j','popup|apisql','download','apisql');
-			$r[]=array($dev.'/admin','j','popup|admin_lang',ics('language'),'lang');
-			$r[]=array($dev.'/admin','j','popup|admin_icons',ics('pictos'),'pictos');
-			$r[]=array($dev.'/admin','j','popup|admin_help',ics('help'),'helps');
-			$r[]=array($dev.'/admin','j','popup|devnote','connectdevelop','devnote');
-			$r[]=array($dev,'j','popup|dev2prod','cloud-upload','publish');
-			$r[]=array('','t','','timer',chrono('load'));}
-		elseif($dev=='prog')$r[]=array('','lk','/?app='.$app.'&dev=prod','prod','prod');
-		return $r;
-	}
-	
-	#content
-	static function content($p){
-		$app=val($p,'app'); ses('app',$app);
-		$ret=Menu::call(array('app'=>'Admin','method'=>'menus','css'=>'fix'));
-		return $ret;
-	}
-	
+//profile
+static function badger($p){
+$r=Sql::read('name','login','rv','where mail="'.ses('mail').'" and auth>1 order by name');//
+foreach($r as $v){//$rb[]=aj('bdg|Admin,badger_switch|usr='.$v,$v,'');
+	$rb[]=aj('reload,bdg,loged_ok|login,badger|user='.$v,$v,'');}
+$ret=div(implode('',$rb),'list');
+if($usr=val($p,'usr'))$ret.=password('psw','').aj('|login',lang('login'),'btsav');
+$ret.=div('','','bdg');
+return $ret;}
+
+static function login(){
+//$r[]=['login','in','login,com','user','login'];
+$r[]=['login','in','login,com|auth=2','user','login'];
+$r[]=['lang','j','returnVar,lng,reload|Lang,set|lang=fr','flag','fr'];
+$r[]=['lang','j','returnVar,lng,reload|Lang,set|lang=en','flag','en'];
+$r[]=['lang','j','returnVar,lng,reload|Lang,set|lang=es','flag','es'];
+return $r;}
+
+static function profile(){
+$usr=ses('user')?ses('user'):'profile'; $dev=ses('dev');
+$r[]=[$usr,'j','tlxbck,,,1|profile,edit','user','edit profile'];
+$r[]=[$usr.'/lang','j','returnVar,lng,reload|Lang,set|lang=fr','flag','fr'];
+$r[]=[$usr.'/lang','j','returnVar,lng,reload|Lang,set|lang=en','flag','en'];
+$r[]=[$usr.'/lang','j','returnVar,lng,reload|Lang,set|lang=es','flag','es'];
+if(auth(6) or $dev=='prog'){
+	$r[]=[$dev.'/mode','j','ses,,reload||k=dev,v=prog','','prog'];
+	$r[]=[$dev.'/mode','j','ses,,reload||k=dev,v=prod','','prod'];}
+$n=Sql::read('count(id)','login','v','where mail="'.ses('mail').'" and auth>1');
+if($n>1)$r[]=[$usr.'/badger','in','Admin,badger','','badger'];
+$r[]=[$usr,'pop','desktop|dir=/documents','','desktop'];
+$r[]=[$usr.'/utils','','pad','file-text-o','notes'];
+$r[]=[$usr.'/utils','','tickets','','tickets'];
+//$r[]=[$usr.'/'.'utils','','convert','file-text-o','convert'];
+if(auth(6)){
+	$r[]=[$dev.'/admin','pop','admin_lang','','lang'];
+	$r[]=[$dev.'/admin','pop','admin_help','help','helps'];
+	$r[]=[$dev.'/admin','pop','admin_icons','','pictos'];
+	$r[]=[$dev.'/admin','pop','admin_labels','','labels'];
+	$r[]=[$dev.'/admin','pop','update,loaddl','','update'];
+	$r[]=[$dev.'/doc','pop','admin_sys','','sys'];
+	$r[]=[$dev.'/doc','pop','admin_lib','','lib'];
+	$r[]=[$dev.'/doc','pop','admin_conn','','conn'];
+	$r[]=[$dev.'/doc','pop','devnote','','devnote'];
+	$r[]=[$dev.'','j','popup,,xx|dev2prod','','push'];}
+$r[]=[$usr,'j',',,reload|login,disconnect','','logout'];
+return $r;}
+
+//com
+static function com(){
+	$keys='id,dir,type,com,picto,bt';
+	$r=Sql::read($keys,'desktop','id','where uid="'.ses('uid').'" or dir="/apps/tlex" order by dir');// or auth=0 
+	if(is_array($r))foreach($r as $k=>$v)$r[$k][0]='root'.$r[$k][0];//add root
+	return $r;}
+
+#menus
+static function menu(){
+	$app=ses('app'); $dev=ses('dev');
+	$r=self::com();
+	if(!$r)$r=applist::comdir();
+	$r[]=['','lk','/app/'.$app,'',$app];
+	//if(auth(4) && $app)$r[]=['','j','pagup|dev,seeCode|appSee='.$app,'code','Code'];
+	//if($app && method_exists($app,'admin')){$rb=$app::admin(); if($rb)$r=array_merge($r,$rb);}
+	if($app && method_exists($app,'admin')){$q=new $app; $rb=$q->admin();//['app'=>$app]
+		if($rb)$r=array_merge($r,$rb);}
+	return $r;}
+
+#content
+static function content($p){
+	$app=val($p,'app'); ses('app',$app); $own=ses('user');
+	$usr=val($p,'usr'); $id=val($p,'id',val($p,'th'));
+	if(is_numeric($usr)){$id=$usr; $usr='';}
+	$prf=$own?'profile':'login';
+	$login=Menu::call(['app'=>'Admin','method'=>$prf,'drop'=>1]);
+	//nav
+	$ret=span($login,'right');
+	$ret.=href(host(),ico('star'),'btn abbt');
+	//if($app!='tlex')$ret.=href('/app/'.$app,pic($app).hlpxt($app),'btn abbt');
+	if($app && method_exists($app,'admin_bt'))$ret.=$app::admin_bt($usr);
+	else $ret.=Menu::call(['app'=>'Admin','method'=>'menu','css'=>'fix','drop'=>1]);
+	return div(div($ret,'navigation'),'topbar');}
 }
-
 ?>

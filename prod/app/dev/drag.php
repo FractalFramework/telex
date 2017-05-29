@@ -2,7 +2,6 @@
 
 class drag{
 	static $private='1';
-	static $db='telex';
 	
 	static function injectJs(){
 		return "(function(){

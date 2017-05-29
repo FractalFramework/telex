@@ -15,8 +15,7 @@ static function read(){
 	//return File::read('/usr/apache2/error.log');//access.log
 }
 static function mktab(){
-	return '';
-}
+	return '';}
 	
 #operations
 static function save($app,$prm){
@@ -43,7 +42,8 @@ static function graph($page){
 	return Build::table($r);}
 
 static function live($p){$rid=val($p,'rid');
-	$r=Sql::read('uid,app,prm,ip,date_format(up,"%H:%i %d/%m")',self::$db,'','order by id desc limit 200');
+	//$r=Sql::read('uid,app,prm,ip,date_format(up,"%H:%i %d/%m")',self::$db,'','order by id desc limit 200');
+	$r=Sql::read_inner('name,count(stats.id),app,prm,stats.ip,date_format(stats.up,"%H:%i %d/%m")',self::$db,'login','uid','','group by stats.ip order by stats.id desc');
 	$bt=aj($rid.'|stats,live|ip='.$rid,pic('refresh'));
 	return $bt.Build::table($r);}
 	

@@ -6,7 +6,7 @@ class install{
 	static function menubt($dr,$f){
 		$app=before($f,'.');
 		if(method_exists($app,'install')){
-			$app::install();
+			$q=new $app; $q::install('');
 			return $f.br();}}
 	
 	static function build($p){
@@ -22,7 +22,7 @@ class install{
 		$p['rid']=randid('md');
 		$bt=hlpbt('install').' ';
 		$bt.=aj($p['rid'].'|install,build',langp('install'),'btn');
-		$bt.=aj($p['rid'].'|apisql',langp('databases'),'btn');
+		$bt.=aj($p['rid'].'|upsql',langp('databases'),'btn');
 		$bt.=href('/app/update',langp('updates'),'btn');
 		return $bt.div('','',$p['rid']);}
 }

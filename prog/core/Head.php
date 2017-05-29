@@ -10,13 +10,13 @@ static function headerHtml(){
 static function meta($attr,$prop,$content=''){
 	return '<meta '.$attr.'="'.$prop.'"'.($content?' content="'.$content.'"':'').'>';}
 
-static function cssLink($url){
-	if(strrchr($url,'.')=='.css')
-		return '<link href="/'.ses('dev').$url.'" rel="stylesheet" type="text/css">';}
+static function cssLink($u){
+	if(strrchr($u,'.')=='.css')
+		return '<link href="/'.ses('dev').$u.'" rel="stylesheet" type="text/css">';}
 
-static function jsLink($url){
-	if(substr($url,0,4)!='http')$root='/'.ses('dev'); else $root='';
-	return '<script src="'.$root.$url.'"></script>';}
+static function jsLink($u){
+	if(substr($u,0,4)!='http')$root='/'.ses('dev'); else $root='';
+	return '<script src="'.$root.$u.'"></script>';}
 
 static function cssCode($code){
 	return '<style type="text/css">'.$code.'</style>';}
@@ -24,8 +24,14 @@ static function cssCode($code){
 static function jsCode($code){
 	return '<script type="text/javascript">'.$code.'</script>';}
 
-static function add($action,$values){
-	self::$add[][$action]=$values;}
+static function add($action,$r){
+	self::$add[][$action]=$r;}
+
+static function add_prop($p,$v){
+	self::$add[]['meta']=['attr'=>'property','prop'=>$p,'content'=>$v];}
+
+static function add_name($p,$v){
+	self::$add[]['meta']=['attr'=>'name','prop'=>$p,'content'=>$v];}
 
 static function build(){$ret='';
 	$r=self::$add;
@@ -40,12 +46,8 @@ static function build(){$ret='';
 				case('jscode'):$ret.=self::jsCode($va)."\n"; break;
 				case('rel'):$ret.='<link rel="'.$v['rel']['name'].'" href="'.$v['rel']['value'].'">'."\n"; break;
 				case('meta'):$ret.=self::meta($v['meta']['attr'],$v['meta']['prop'],$v['meta']['content'])."\n"; break;
-				case('Tag'):$ret.=tag($v['Tag']['tag'],$v['Tag']['props'],$v['Tag']['txt']); break;
-			}
-		}
-		return $ret;
-	}
-}
+				case('tag'):$ret.=tag($v['tag'][0],$v['tag'][1],$v['tag'][2]); break;}}
+		return $ret;}}
 
 static function generate(){
 	return self::headerHtml().tag('head','',self::build());}

@@ -2,7 +2,7 @@
 
 class admin_twitter{
 static $private='1';
-static $db='admin_twitter';
+static $db='twitter';
 	
 static function injectJs(){return '';}
 
@@ -44,7 +44,7 @@ static function add($p){
 static function edit($p){
 	$id=val($p,'id'); $rid=val($p,'rid');
 	$cols=self::cols(); $colstr=implode(',',$cols);
-	$r=Sql::read($colstr,self::$db,'ra',['id'=>$id]);
+	$r=Sql::read($colstr,self::$db,'ra',$id);
 	$ret=aj($rid.'|admin_twitter,menu|rid='.$rid,langp('back'),'btn');
 	$ret.=aj($rid.',,z|admin_twitter,modif|rid='.$rid.',id='.$id.'|'.$colstr,langp('modif'),'btsav');
 	$ret.=aj($rid.'|admin_twitter,del|rid='.$rid.',id='.$id,langp('delete'),'btdel');
@@ -55,13 +55,13 @@ static function edit($p){
 #reader
 static function build($p){$id=val($p,'id');
 	$cols=self::cols(); $colstr=implode(',',$cols);
-	$ret=Sql::read($colstr,self::$db,'ra',['id'=>$id]);
+	$ret=Sql::read($colstr,self::$db,'ra',$id);
 	return $ret;}
 	
 static function menu($p){$rid=val($p,'rid');
 	$r=Sql::read('id,owner',self::$db,'rr',['uid'=>ses('uid')]);
 	//$ret['help']=hlpbt('admin_twitter');
-	if(!$r)$ret['add']=aj($p['rid'].'|admin_twitter,add|rid='.$p['rid'],langp('add'),'btn');
+	$ret['add']=aj($p['rid'].'|admin_twitter,add|rid='.$p['rid'],langp('add'),'btn');
 	if($r)foreach($r as $k=>$v){$btn=$v['owner']?$v['owner']:$v['id'];
 		$ret['obj'][]=aj($rid.'|admin_twitter,edit|rid='.$rid.',id='.$v['id'],$btn);}
 	$structure=['add','list'=>'obj'];

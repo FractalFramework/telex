@@ -90,7 +90,7 @@ static function content($p){
 	$f=val($p,'f'); $ret='';
 	if(auth(4))$ret=aj('cbupd,,z|update,preview',langp('preview'),'btn').' ';
 	if(auth(4))$ret.=aj('cbupd,,z|update,loaddl',langp('update software'),'btn').' ';
-	if(auth(6))$ret.=aj('cbupd|apisql',langp('databases'),'btn');
+	if(auth(6))$ret.=aj('cbupd|upsql',langp('databases'),'btn');
 	if(auth(6))$ret.=aj('cbupd|update,archive',langp('create archive'),'btn');
 	return $ret.div('','','cbupd');}
 }

@@ -7,7 +7,7 @@ static function call($p){
 	$p=val($p,'app','');
 	$f='http://'.self::$server.'/api.php?app=apisql&mth=render&p='.$p;
 	$d=File::get($f);
-	$r=json_dec($d);
+	$r=json_dec($d); //p($r);
 	if($_SERVER['HTTP_HOST']!=self::$server)
 		if(isset($r) && is_array($r)){
 			Sql::insert2($p,$r,1,0);
@@ -17,7 +17,7 @@ static function call($p){
 		else return 'nothing'.Json::error();}
 
 static function render($table){
-	$keys=Sql::columns($table,3);
+	$keys=Sql::columns($table,1);
 	if($table=='login')return;
 	elseif($table=='desktop')$wh='where uid=1';
 	elseif($table=='articles')$wh='where uid=1';

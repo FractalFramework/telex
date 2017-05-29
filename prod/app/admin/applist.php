@@ -12,34 +12,32 @@ static function headers(){
 	.block span:hover{background:white;}
 	.block div{}');}
 
-static function tlex(){$ret='';
-	$r=Sql::read('com','desktop','rv','where dir="/apps/telex" and auth<=2');
-	$bt=tag('h2','',lang('apps'));
-	if($r)foreach($r as $k=>$v)
-		$ret.=div(tag('h3','',pic($v,32).hlpxt($v)).hlpxt($v.'_app','board'));
-	return div($bt.div($ret,''),'board');}
+static function comdir(){
+	$dirs=Dir::read(ses('dev').'/app');
+	foreach($dirs as $dir=>$files){
+		if(is_array($files) && $dir)foreach($files as $k=>$file){
+			if(is_string($file))$app=before($file,'.');
+			if($app)$private=isset($app::$private)?$app::$private:0;
+			$dr='Apps/'.$dir;
+			if(!$private or ses('auth')>=$private)
+				$r[]=array($dr,'pop',$app.'|headers=1','',$app);}}
+	return $r;}
 
 static function appdir($dir,$files){$ret='';
-	$title=tag('div',array(),$dir);
-	//popup
-	$prm['com']='popup,,,injectJs';//append js to headers
-	//$prm['class']='btn';
-	//batch
 	foreach($files as $k=>$v){
 		if(!is_array($v))list($app,$ext)=explode('.',$v);
 		$private=isset($app::$private)?$app::$private:0;
-		if(!$private or ses('auth')>=$private){
-		$prm['app']=$app;
-		$prm['prm']='headers=1';//load headers
-		//$pictoPop=ico('window-restore');
-		//$pictoUrl=ico('chevron-right');
-		$js=Ajax::js($prm);
-		$ret.=tag('a',array('onclick'=>$js),div(langp($app),'btn'));
-		//$link=tag('a',array('href'=>'/'.$app,'target'=>'_blank'),$app);
-		//$ret.=tag('span',array('class'=>'btn'),$popup.' '.$link);
-		}
+		if(!$private or ses('auth')>=$private)
+			$ret.=popup($app.'|headers=1',langp($app),'');
 	}
-	if($ret)return div($title,'block').$ret;}
+	if($ret)return div(div($dir),'block').div($ret,'list');}
+
+static function tlex(){$ret='';
+	$r=Sql::read('com','desktop','rv','where dir="/apps/tlex" and auth<=2');
+	$bt=tag('h1','',lang('applist'));
+	if($r)foreach($r as $k=>$v)
+		$ret.=div(tag('h3','',pic($v,32).hlpxt($v)).hlpxt($v.'_app','board'));
+	return $bt.div($ret,'board');}
 
 static function content($prm){$ret='';
 	if(isset($prm['iframe']))$mod=$prm['iframe'];

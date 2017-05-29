@@ -24,7 +24,7 @@ static function reader($d,$b){
 	return '['.$d.']';}
 	
 static function read($r,$tmp){$tmp=deln($tmp);
-	if($r)foreach($r as $k=>$v)$tmp=str_replace('_'.$k.'',$v,$tmp);
+	if($r)foreach($r as $k=>$v)$tmp=str_replace('('.$k.')',$v,$tmp);
 	$ret=Conn::read($tmp,'Vue','reader');
 	return $ret;}
 

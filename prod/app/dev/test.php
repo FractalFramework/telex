@@ -1,32 +1,20 @@
 <?php
+class test extends model{
+static $private='6';
+static $a='test';
+static $db='test';
+static $cb='tst';
+static $cols=['tit','txt','tim'];
+static $typs=['var','var','date'];
+static $conn=0;
 
-class test{
-	static $private='6';
+function __construct(){
+	$r=['a','db','cb','cols','typs'];
+	foreach($r as $v){appx::$$v=self::$$v; parent::$$v=self::$$v;}}
 
-	static function injectJs(){}
-	static function headers(){
-		Head::add('csscode','');
-		Head::add('jscode',self::injectJs());
-	}
-	
-	static function admin(){
-		$r[]=array('','j','popup|test,content','plus',lang('open'));
-		return $r;
-	}
-	
-	static function result($prm){
-		$msg=val($prm,'msg');
-		$content=val($prm,'inp1','nothing');
-		return $msg.': '.$content;
-	}
-	
-	static function content($prm){
-		$p['lat']=48.8390804;
-		$p['lon']=2.23537670;
-		$p['type']='city';
-		//$ret=App::open('gps',$p);
-		$ret=App::open('Gps',$p);
-		return div($ret,'');
-	}
+static function content($p){
+	self::install();
+	return appx::content($p);}
 }
+
 ?>

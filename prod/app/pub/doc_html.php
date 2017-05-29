@@ -10,13 +10,12 @@ class doc_html{
 	}
 	
 	#content
-	static function content($prm){
+	static function content($p){
 		$ret='';
 		
 		#html tag
 		$ret.=tag('h2','','tag()');
 		//test
-		$params=array('com'=>array('popup'),'app'=>array('doc_html','htmltag'));
 		$ret.=tag('span',array('class'=>'btn'),'hello');
 		//code
 		$ret.=tag('div','class=console',Build::Code('
@@ -48,12 +47,12 @@ $ret=href(\'//ph1.fr\',\'ph1.fr\',\'btn\');'));
 		#img
 		$ret.=tag('h2','','img()');
 		//test
-		$ret.=img('/usr/telex/img/home.jpg');
+		$ret.=img('/usr/tlex/img/home.jpg');
 		//code
 		$ret.=tag('div','class=console',Build::Code('
 //4th param close tag with />
-$ret=tag(\'img\',array(\'src\'=>\'/usr/telex/img/home.jpg\'),\'\',1);
-$ret=img(\'usr/telex/account-login-2x.png\');'));
+$ret=tag(\'img\',array(\'src\'=>\'/usr/tlex/logo/tlex.jpg\'),\'\',1);
+$ret=img(\'usr/tlex/logo/tlex.png\');'));
 		$ret.=br();
 		
 		#input
@@ -100,22 +99,22 @@ $ret.=checkbox(\'options\',$opts,\'1\');'));
 		$ret.=tag('h2','','radio()');
 		//test
 		$opts=array('1b'=>lang('yes'),'2b'=>lang('no'));
-		$ret.=radio($opts,'position','1');
+		$ret.=radio('position',$opts,'1');
 		//code
 		$ret.=tag('div','class=console',Build::Code('
 $opts=array(\'1\'=>lang(\'yes\'),\'2\'=>lang(\'no\'));
-$ret.=radio($opts,\'position\',\'1\');'));
+$ret.=radio(\'position\',$opts,\'1\');'));
 		$ret.=br();
 		
 		#datalist
 		$ret.=tag('h2','','datalist()');
 		//test
 		$opts=array('1'=>lang('yes'),'2'=>lang('no'));
-		$ret.=datalist($opts,'id','',8,'label');
+		$ret.=datalist('id',$opts,'',8,'label');
 		//code
 		$ret.=tag('div','class=console',Build::Code('
 $opts=array(\'1\'=>lang(\'yes\'),\'2\'=>lang(\'no\'));
-$ret.=datalist($opts,\'id\',\'\',8,\'label\');'));
+$ret.=datalist(\'id\',$opts,\'\',8,\'label\');'));
 		$ret.=br();
 	
 	return $ret;}

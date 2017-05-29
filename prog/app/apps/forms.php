@@ -1,120 +1,151 @@
 <?php
 
 class forms{
-	static $private='1';
+static $private='1';
+static $a='forms';
+static $db='forms';
+static $cb='frm';
+static $cols=['tit','txt','com','cl'];
+static $typs=['var','var','var','int'];
+static $open=1;
+
+function __construct(){
+	$r=['a','db','cb','cols'];
+	foreach($r as $v)appx::$$v=self::$$v;}
+
+static function install(){
+	appx::install(array_combine(self::$cols,self::$typs));
+	Sql::create('forms_vals',['bid'=>'int','uid'=>'int','q1'=>'var','q2'=>'var','q3'=>'var','q4'=>'var','q5'=>'var','q6'=>'var','q7'=>'var','q8'=>'var','q9'=>'var'],1);}
+
+static function admin($rid=''){
+	$p['rid']=$rid; $p['o']='1';
+	return appx::admin($p);}
+
+static function injectJs(){return '';}
+
+static function headers(){
+	Head::add('jscode',self::injectJs());}
+
+#sys
+static function del($p){
+	$p['db2']='forms_vals';
+	return appx::del($p);}
+
+static function save($p){
+	return appx::save($p);}
 	
-	static function injectJs(){
-		return '';}
-		
-	static function headers(){
-		Head::add('csscode','
-		.ftit{background:#aaa; color:#eaeaea; padding:4px 10px;}
-		.ftxt{background:#eaeaea; color:#aaa; padding:4px 10px;}
-		.fcell{margin:5px 0;}
-		');
-		Head::add('jscode',self::injectJs());}
-		
-	static function admin(){
-		$r[]=array('','j','popup|forms,content','plus',lang('open'));
-		return $r;}
-		
-	static function install(){
-		Sql::create('forms_lead',array('fuid'=>'int','ftit'=>'var','ftxt'=>'var','fcom'=>'var','fcl'=>'int'),1);
-		Sql::create('forms_vals',array('fid'=>'int','fvuid'=>'int','q1'=>'var','q2'=>'var','q3'=>'var','q4'=>'var','q5'=>'var','q6'=>'var','q7'=>'var','q8'=>'var','q9'=>'var'),1);}
-	
-	static function sav($p){$fid=val($p,'fid'); $rid=val($p,'rid'); $vrf='';
-		$r=vals($p,['q1','q2','q3','q4','q5','q6','q7','q8','q9']);
-		for($i=1;$i<=9;$i++)$vrf.=$r['q1'];
-		if(!$vrf)return aj($rid.'|forms,read|fid='.$fid,langp('registration failed'),'alert');
-		$nid=Sql::insert('forms_vals',[$fid,ses('uid'),$r['q1'],$r['q2'],$r['q3'],$r['q4'],$r['q5'],$r['q6'],$r['q7'],$r['q8'],$r['q9']]);
-		return help('form_filled','valid');}
-	
-	static function play($r){
-		$tmp='[[_label*class=cell:div][_inp*class=cell:div]*class=row:div]';
-		return Vue::read_r($r,$tmp);}
-	
-	static function answers($p){$fid=val($p,'fid');
-		$fcom=Sql::read('fcom','forms_lead','v','where id='.$fid);
-		$rv=explode(',',$fcom); $n=count($rv); for($i=1;$i<=$n+1;$i++)$vr[]='q'.$i; $vars=implode(',',$vr);
-		foreach($rv as $v)if($v)$rd[]=str_prm($v,':',1);
-		$r=Sql::read('fvuid,'.$vars,'forms_vals','rr','where fid='.$fid);
-		array_unshift($rd,''); array_unshift($r,$rd);
-		return Build::table($r);}
-	
-	static function already($fid){
-		return Sql::read('id','forms_vals','v','where fvuid='.ses('uid').' and fid='.$fid);}
-		
-	static function read($p){$fid=val($p,'fid'); $rid=val($p,'rid');
-		if($fid)$r=Sql::read('id,ftit,ftxt,fcom,fcl,dateup','forms_lead','ra','where id='.$fid);
-		if($r)$rb=Form::buildfromstring($r['fcom']);
-		$ret=div($r['ftit'],'tit').div($r['ftxt'],'txt');
-		if(self::already($fid))$ret.=help('form_filled','valid');
-		else{$ret.=self::play($rb);
-		$n=substr_count($r['fcom'],','); for($i=1;$i<=$n+1;$i++)$vr[]='q'.$i; $vars=implode(',',$vr);
-		$ret.=div(aj('fcbk|forms,sav|fid='.$fid.',rid='.$rid.'|'.$vars,langp('send'),'btsav'));}//send
-		return div($ret,'paneb','fcbk');}
-	
-	static function sav_lead($p){$fid=val($p,'fid');
-		$r=vals($p,['ftit','ftxt','fcom']);
-		$r['fcom']=str_replace("\n",'',$r['fcom']);
-		if($fid)Sql::updates('forms_lead',$r,$fid);
-		else $fid=Sql::insert('forms_lead',[ses('uid'),$r['ftit'],$r['ftxt'],$r['fcom'],'']);
-		return self::edit_lead($p);}
-	
-	static function edit_form($p){$fcom=str_replace("\n",'',val($p,'fcom')); $fid=val($p,'id');
-		if(!$fcom)$fcom='input:name,textarea:message,select:choice:a;b;c,checkbox:options:a;b,radio:choose one:a;b,bar:evaluation'; $fcom=str_replace(',',",\n",$fcom);
-		$ret=textarea('fcom',$fcom,40,4,lang('fields'),'console').br();
-		$ret.=div(aj('fscrpt|forms,edit_form|id='.$fid.'|fcom',langp('preview'),'btn')).br();//preview
-		$r=Form::buildfromstring($fcom);
-		$tmp='[[_label*class=cell:div][_inp*class=cell:div]*class=menu:div]';
-		$ret.=div(self::play($r),'pane');
-		return $ret;}
-	
-	static function edit_lead($p){$fid=val($p,'fid'); $rid=val($p,'rid'); $xid=val($p,'xid');
-		if($fid)$r=Sql::read('id,ftit,ftxt,fcom,fcl,dateup','forms_lead','ra','where id='.$fid);
-		else $r=vals($p,['id','ftit','ftxt','fcom','fcl','date']);
-		$ret=aj($rid.'|forms,menu|fid='.$fid.',rid='.$rid.',xid='.$xid,langp('back'),'btn').br();//back
-		//$ret.=tag('h4','',lang('edit form'));
-		$ret.=input('ftit',val($r,'ftit'),28,lang('title')).br();
-		$ret.=textarea('ftxt',val($r,'ftxt'),28,4,lang('presentation')).br();
-		$ret.=aj($rid.'|forms,sav_lead|fid='.$fid.',rid='.$rid.',xid='.$xid.'|ftit,ftxt,fcom',lang('save'),'btsav');//save
-		if($fid)if(self::already($fid))return $ret.br().br().help('form is not editable','alert');
-		$ret.=tag('h4','',lang('edit fields').' '.hlpbt('forms_com'));
-		$ret.=div(self::edit_form($r),'','fscrpt');
-		return $ret;}
-	
-	static function menu($p){$fid=val($p,'fid'); $rid=val($p,'rid'); $xid=val($p,'xid'); $in='';
-		$ret=aj($p['rid'].'|forms,edit_lead|rid='.$rid,langp('add'),'btsav');//add
-		$r=Sql::read('id,ftit,ftxt,fcom,fcl,dateup','forms_lead','rr','where fuid='.ses('uid'));
-		if($r)foreach($r as $k=>$v){
-			$tit=aj('popup|forms,read|fid='.$v['id'],$v['ftit']);
-			$edit=aj($rid.'|forms,edit_lead|fid='.$v['id'].',rid='.$rid.',xid='.$xid,pic('edit'),'btn');//edit
-			$answ=aj('popup|forms,answers|fid='.$v['id'],langp('answers'),'btn');
-			if($xid)$in=insertbt(lang('use'),$v['id'].':forms',$xid);
-			//if($xid)$in=telex::publishbt($v['id'],'forms'); else $v['insert']='';
-			$ret.=div($tit.br().$edit.$answ.$in,'menu');}
-		return $ret;}
-	
-	//com
-	static function tit($p){$id=val($p,'id');
-		return Sql::read('ftit','forms_lead','v','where id='.$id);}
-	
-	static function call($p){$p['fid']=val($p,'id');
-		//$ret=div(langp('forms'),'stit');$ret.
-		return self::read($p);}
-	
-	static function com($p){$p['xid']=val($p,'rid');
-		$p['rid']=randid('fr');
-		$ret=self::menu($p);
-		return div($ret,'',$p['rid']);}
-	
-	//interface
-	static function content($p){
-		//self::install();
-		$p['rid']=randid('fr');
-		$p['fid']=val($p,'param',val($p,'fid'));
-		$ret=hlpbt('forms');
-		$ret.=self::menu($p);
-		return div($ret,'',$p['rid']);}
+static function modif($p){
+	return appx::modif($p);}
+
+#editor
+static function form($p){
+	return appx::form($p);}
+
+static function edit($p){
+	$p['collect']='forms_vals';
+	$p['help']='forms_com';
+	return appx::edit($p);}
+
+static function collect($p){
+	return appx::collect($p);}
+
+static function usave($p){$id=val($p,'id'); $rid=val($p,'rid'); $vrf='';
+	$r=vals($p,['q1','q2','q3','q4','q5','q6','q7','q8','q9']);
+	for($i=1;$i<=9;$i++)$vrf.=$r['q1'];
+	if(!$vrf)return aj(self::$cb.$id.'|forms,play|id='.$id,langp('registration failed'),'alert');
+	$nid=Sql::insert('forms_vals',[$id,ses('uid'),$r['q1'],$r['q2'],$r['q3'],$r['q4'],$r['q5'],$r['q6'],$r['q7'],$r['q8'],$r['q9']]);
+	return self::play($p);}
+
+static function udel($p){$id=$p['id'];
+	Sql::delete('forms_vals',['bid'=>$id,'uid'=>ses('uid')]);
+	return self::play($p);}
+
+static function sav_lead($p){$id=val($p,'id');
+	$r=vals($p,['tit','txt','com']);
+	$r['com']=str_replace("\n",'',$r['com']);
+	if($id)Sql::updates(self::$db,$r,$id);
+	else $bid=Sql::insert(self::$db,[ses('uid'),$r['tit'],$r['txt'],$r['com'],'']);
+	return self::create($p);}
+
+static function edit_form($p){$com=str_replace("\n",'',val($p,'com')); $id=val($p,'id');
+	if(!$com)$com='input,name|textarea,message|select,choice,a/b/c|checkbox,options,a/b|radio,choose one,a/b|bar,evaluation'; $com=str_replace('|',"|\n",$com); 
+	$ret=textarea('com',$com,40,4,lang('fields'),'console').br();
+	$ret.=div(aj('fscrpt|forms,edit_form|id='.$id.'|com',langp('preview'),'btn')).br();//preview
+	$r=Form::buildfromstring($com);
+	$ret.=div(self::vue($r),'pane');
+	return $ret;}
+
+static function create($p){$id=val($p,'id'); $rid=val($p,'rid'); $cb=self::$cb;
+	if($id)$r=Sql::read('id,tit,txt,com,cl,dateup',self::$db,'ra',$id);
+	else $r=vals($p,['id','tit','txt','com','cl','date']);
+	$ret=aj($cb.'|forms,stream|id='.$id.',rid='.$rid,pic('back'),'btn');//back
+	$ret.=aj($cb.'|forms,sav_lead|id='.$id.',rid='.$rid.'|tit,txt,com',lang('save'),'btsav').br();
+	//$ret.=tag('h4','',lang('edit form'));
+	$ret.=input('tit',val($r,'tit'),28,lang('title')).br();
+	$ret.=textarea('txt',val($r,'txt'),28,4,lang('presentation')).br();//save
+	if($id)if(self::already($id))return $ret.br().br().help('form is not editable','alert');
+	$ret.=tag('h4','',lang('edit fields').' '.hlpbt('forms_com'));
+	$ret.=div(self::edit_form($r),'','fscrpt');
+	return $ret;}
+
+static function create0($p){//->form
+	$p['help']='forms_com';
+	return appx::create($p);}
+
+static function template(){
+	return '[[(label)*class=cell:div][(inp)*class=cell:div]*class=row:div]';}
+
+static function vue($p){return Vue::read_r($p,self::template());}
+
+static function answers($p){$id=val($p,'id');
+	$com=Sql::read('com',self::$db,'v',$id);
+	$rv=explode(',',$com); $n=count($rv); for($i=1;$i<=$n;$i++)$vr[]='q'.$i; $vars=implode(',',$vr);
+	foreach($rv as $v)if($v)$rd[]=str_prm($v,',',1);
+	$r=Sql::read('uid,'.$vars,'forms_vals','rr','where bid='.$id);
+	array_unshift($rd,''); array_unshift($r,$rd);
+	return Build::table($r);}
+
+static function already($id){
+	return Sql::read('id','forms_vals','v','where uid='.ses('uid').' and bid='.$id);}
+
+static function play($p){$id=val($p,'id'); $rid=val($p,'rid');
+	if($id)$r=Sql::read('id,tit,txt,com,cl,dateup',self::$db,'ra',$id);
+	if($r)$rb=Form::buildfromstring($r['com']); else return help('id not exists','paneb');
+	$ret=div($r['tit'],'tit').div($r['txt'],'txt');
+	if($r['cl'])$form=help('form closed','alert');
+	elseif(self::already($id)){$form=help('form_filled','valid');
+		$form.=aj(self::$cb.$id.'|forms,udel|id='.$id.',rid='.$rid,langp('remove'),'btdel');}
+	else{$form=self::vue($rb).br();
+	$n=substr_count($r['com'],','); for($i=1;$i<=$n;$i++)$vr[]='q'.$i; $vars=implode(',',$vr);
+	$form.=aj(self::$cb.$id.'|forms,usave|id='.$id.',rid='.$rid.'|'.$vars,langp('send'),'btsav');}//send
+	return $ret.div($form);}
+
+static function conn($p){$id=val($p,'id'); $rid=val($p,'rid'); $cb=self::$cb.$id;
+	$r=Form::buildfromstring($p['com']);
+	$ret=self::vue($r);
+	$n=substr_count($p['com'],','); for($i=1;$i<=$n;$i++)$vr[]='q'.$i; $vars=implode(',',$vr);
+	$ret.=div(aj($cb.'|forms,usave|id='.$id.',rid='.$rid.'|'.$vars,langp('send'),'btsav'));//send
+	return div($ret,'paneb',self::$cb.$id);}
+
+static function stream($p){
+	return appx::stream($p);}
+
+#interfaces
+static function tit($p){
+	$p['t']='tit';
+	return appx::tit($p);}
+
+//call (read)
+static function call($p){
+	return div(self::play($p),'paneb',self::$cb.$p['id']);}
+
+//com (edit)
+static function com($p){
+	return appx::com($p);}
+
+//interface
+static function content($p){
+	//self::install();
+	return appx::content($p);}
 }
 ?>

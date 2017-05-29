@@ -1,94 +1,98 @@
 <?php
 
 class petition{
-	static $private='1';
+static $private='1';
+static $a='petition';
+static $db='petition';
+static $cb='ptwrp';
+static $cols=['tit','txt','cl'];
+static $typs=['var','var','int'];
+static $open=1;
+
+function __construct(){
+	$r=['a','db','cb','cols'];
+	foreach($r as $v)appx::$$v=self::$$v;}
 	
-	static function injectJs(){
-		return '';}
-		
-	static function headers(){
-		Head::add('csscode','');
-		Head::add('jscode',self::injectJs());}
-		
-	static function admin(){
-		$r[]=array('','j','popup|petition,content','plus',lang('open'));
-		return $r;}
-		
-	static function install(){
-		Sql::create('petition_lead',array('puid'=>'int','ptit'=>'var','ptxt'=>'var','pcl'=>'int'),1);
-		Sql::create('petition_vals',array('pid'=>'int','pvuid'=>'int'),1);}
+static function install(){
+	appx::install(array_combine(self::$cols,self::$typs));
+	Sql::create('petition_vals',['bid'=>'int','uid'=>'int'],1);}
+
+static function admin($rid=''){
+	$p['rid']=$rid; $p['o']='1';
+	return appx::admin($p);}
+
+static function injectJs(){
+	return '';}
 	
-	static function sav($p){$pid=val($p,'pid'); $rid=val($p,'rid'); $vrf='';
-		$nid=Sql::insert('petition_vals',[$pid,ses('uid')]);
-		return help('petition_filled','valid');}
+static function headers(){
+	Head::add('csscode','');
+	Head::add('jscode',self::injectJs());}
+
+#editor
+static function del($p){$p['db2']='petition_vals'; return appx::del($p);}
+static function modif($p){return appx::modif($p);}
+static function save($p){return appx::save($p);}
+static function create($p){return appx::create($p);}
+static function form($p){return appx::form($p);}
+
+static function edit($p){
+	$p['collect']='petition_vals';
+	return appx::edit($p);}
+
+/*static function collect($p){
+	return appx::collect($p);}*/
+
+static function sign($p){$id=val($p,'id');
+	$nid=Sql::insert('petition_vals',[$id,ses('uid')]);
+	return self::play($p);}
+
+static function unsign($p){$id=val($p,'id'); $vrf='';
+	Sql::delete('petition_vals',['bid'=>$id,'uid'=>ses('uid')],'',1);
+	return self::play($p);}
+
+static function answers($p){$id=val($p,'id'); $ret='';
+	$r=Sql::read_inner('name,dateup','petition_vals','login','uid','rr','where bid='.$id);
+	if($r)$ret=div(count($r).' '.lang('signatures'),'valid');
+	if($r)array_unshift($r,[lang('user'),lang('date')]);
+	return $ret.Build::table($r);}
+
+static function already($id){
+	return Sql::read('id','petition_vals','v','where uid='.ses('uid').' and bid='.$id);}
 	
-	static function answers($p){$pid=val($p,'pid'); $ret='';
-		$r=Sql::read_inner('name,dateup','petition_vals','login','pvuid','rr','where pid='.$pid);
-		if($r)$ret=div(count($r).' '.lang('signatures'),'valid');
-		if($r)array_unshift($r,[lang('user'),lang('date')]);
-		return $ret.Build::table($r);}
-	
-	static function already($pid){
-		return Sql::read('id','petition_vals','v','where pvuid='.ses('uid').' and pid='.$pid);}
-		
-	static function read($p){$pid=val($p,'pid'); $rid=val($p,'rid'); $nb='';
-		if($pid){$r=Sql::read('id,ptit,ptxt,pcl,dateup','petition_lead','ra','where id='.$pid);
-			$n=Sql::read('count(id)','petition_vals','v','where pid='.$pid);}
-		$ret=div($r['ptit'],'tit').div($r['ptxt'],'txt');
-		if($n)$nb=' '.span($n.' '.plurial('signature',$n),'btok');
-		if(self::already($pid))$ret.=help('petition_filled','valid').$nb;
-		else $ret.=div(aj('fcbk|petition,sav|pid='.$pid.',rid='.$rid,langp('sign'),'btsav').$nb);//send
-		return div($ret,'paneb','fcbk');}
-	
-	static function sav_lead($p){$pid=val($p,'pid');
-		$r=vals($p,['ptit','ptxt']);
-		if($pid)Sql::updates('petition_lead',$r,$pid);
-		else $pid=Sql::insert('petition_lead',[ses('uid'),$r['ptit'],$r['ptxt'],'']);
-		return self::menu($p);}
-	
-	static function edit_lead($p){$pid=val($p,'pid'); $rid=val($p,'rid'); $xid=val($p,'xid');
-		if($pid)$r=Sql::read('id,ptit,ptxt,pcl,dateup','petition_lead','ra','where id='.$pid);
-		else $r=vals($p,['id','ptit','ptxt','pcl','date']);
-		$ret=aj($rid.'|petition,menu|pid='.$pid.',rid='.$rid.',xid='.$xid,langp('back'),'btn').br();//back
-		$ret.=input('ptit',val($r,'ptit'),28,lang('title')).br();
-		$ret.=textarea('ptxt',val($r,'ptxt'),28,4,lang('description')).br();
-		$ret.=aj($rid.'|petition,sav_lead|pid='.$pid.',rid='.$rid.'|ptit,ptxt',lang('save'),'btsav');
-		return $ret;}
-	
-	static function menu($p){$pid=val($p,'pid'); $rid=val($p,'rid'); $xid=val($p,'xid'); $in='';
-		$ret=aj($p['rid'].'|petition,edit_lead|rid='.$rid,langp('add'),'btsav');//add
-		$r=Sql::read('id,ptit,ptxt,pcl,dateup','petition_lead','rr','where puid='.ses('uid'));
-		$tmp='[[[_date*class=date:span] _ptit _bt _insert _answ*class=tit:div][_ptxt*class=txt:div]*class=menu:div]';
-		if($r)foreach($r as $k=>$v){
-			$tit=aj('popup|petition,read|pid='.$v['id'],$v['ptit']);
-			$bt=aj($rid.'|petition,edit_lead|pid='.$v['id'].',rid='.$rid.',xid='.$xid,pic('edit'));//edit
-			if($xid)$in=insertbt(lang('use'),$v['id'].':petition',$xid); else $v['insert']='';
-			//if($xid)$in=telex::publishbt($v['id'],'petition'); else $v['insert']='';
-			$answ=aj('popup|petition,answers|pid='.$v['id'],langp('answers'),'btn');
-			$ret.=div($tit.br().$bt.$answ.$in,'menu');}
-		return $ret;}
-	
-	//call
-	static function tit($p){$id=val($p,'id');
-		return Sql::read('ptit','petition_lead','v','where id='.$id);}
-	
-	static function call($p){$p['pid']=val($p,'id');
-		//$ret=div(langp('petition'),'stit');$ret.
-		return self::read($p);}
-	
-	//com
-	static function com($p){$p['xid']=val($p,'rid');
-		$p['rid']=randid('fr');
-		$ret=self::menu($p);
-		return div($ret,'',$p['rid']);}
-	
-	//interface
-	static function content($p){
-		//self::install();
-		$p['rid']=randid('fr');
-		$p['pid']=val($p,'param',val($p,'pid'));
-		$ret=hlpbt('petition');
-		$ret.=self::menu($p);
-		return div($ret,'',$p['rid']);}
+static function play($p){$id=val($p,'id'); $rid=val($p,'rid'); $nb=''; $cancel='';
+	if($id){$r=Sql::read('id,tit,txt,cl,dateup',self::$db,'ra',$id);
+		$n=Sql::read('count(id)','petition_vals','v','where bid='.$id);}
+	$ret=div($r['tit'],'tit').div($r['txt'],'txt');
+	if($n)$nb=' '.span($n.' '.langs('signature',$n),'btok');
+	if($r['cl'])$bt=help('petition closed','alert');
+	elseif(self::already($id)){
+		$cancel=aj('ptcbk'.$id.'|petition,unsign|id='.$id,langp('remove'),'btdel');
+		$bt=div(ico('check').' '.hlpxt('petition_filled'),'valid');}
+	else $bt=aj('ptcbk'.$id.'|petition,sign|id='.$id.',rid='.$rid,langp('sign'),'btsav');
+	$ret.=div($bt.$nb.$cancel);
+	return div($ret,'paneb');}
+
+static function template(){
+	return '[[[_date*class=date:span] _tit _bt _insert _answ*class=tit:div][_txt*class=txt:div]*class=menu:div]';}
+
+static function stream($p){
+	return appx::stream($p);}
+
+#interfaces
+static function tit($p){
+	return appx::tit($p);}
+
+//call (read)
+static function call($p){
+	return div(self::play($p),'','ptcbk'.$p['id']);}
+
+//com (edit)
+static function com($p){
+	return appx::com($p);}
+
+//interface
+static function content($p){
+	//self::install();
+	return appx::content($p);}
 }
 ?>

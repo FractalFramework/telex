@@ -1,217 +1,231 @@
 <?php
 
 class chat{	
-	static $private='0';
-	
-//install
-static function install(){
-	Sql::create('chat',array('cuid'=>'int','room'=>'int','txt'=>'text','vu'=>'int'),1);
-	Sql::create('chatroom',array('ruid'=>'int','private'=>'int','old'=>'int'),1);
-	Sql::create('chatlist',array('roid'=>'int','ruid'=>'int'),0);}
+static $private='1';
+static $a='chat';
+static $db='chat';
+static $cb='cht';
+static $cols=['tit','list','old','pub'];
+static $typs=['var','var','int','int'];
+static $boot;
+
+function __construct(){
+	$r=['a','db','cb','cols'];
+	foreach($r as $v)appx::$$v=self::$$v;}
+
+static function boot(){$a=self::$a;
+	if(self::boot==null)self::$boot=new $a;}
+
+static function install($p=''){
+	appx::install(array_combine(self::$cols,self::$typs));
+	Sql::create('chatxt',array('bid'=>'int','rusr'=>'var','txt'=>'var'),1);}
+
+static function admin($rid=''){
+	$p['rid']=$rid; $p['o']='1';
+	return appx::admin($p);}
+
+static function titles($p){
+	return appx::titles($p);}
 
 static function injectJs(){
-	return '';}
+	Head::add('jscode','chatlive();');}
 
 static function headers(){
 	Head::add('csscode','
-	/*display:inline-block; */
-	.chatwrapper{background-color:#eaeaea; max-width:580px;}
-	.chatcontent{height:400px; overflow-x:visible; overflow-y:auto; background-color:#eaeaea; padding:10px;}
-	.chatpane{font-size:12px; color:black; background-color:lightblue; border:0px solid #aaa; margin:10px 0; padding:7px 10px; border-radius:2px; box-shadow: 2px 2px 4px #aaa; min-width:100px; max-width:60%;}
-	.chatpane a{color:black;}
-	.chatdate{display:block; font-size:x-small; margin:0 7px;}
-	.chatprofile{background:whitesmoke; padding:9px; font-size:small;}
-	.chatform{background-color:#f4f4f4; width:580px;}
-	.flex-container{padding:0; margin:10px 0; list-style:none;
-	-ms-box-orient: horizontal; display: -webkit-box; display: -moz-box; display: -ms-flexbox; display: -moz-flex; display: -webkit-flex; display: flex;}
-	.chatarea{width:100%; resize:none; padding:4px;}
-	.row{-webkit-flex-direction: row; flex-direction: row;}
-	.row-reverse{-webkit-flex-direction: row-reverse; flex-direction: row-reverse;}
-	.flex-container li{margin:0;}  
-	.row-reverse .chatpane{background:steelblue; color:white;}
-	.menu,.menuactive{clear:left; background:#f4f4f4; margin:0; padding:4px 7px;}
-	.menuactive{background:#D0D0D0;}
-	.menu:hover{background:#ffffff;}
-');
-	Head::add('jscode',self::injectJs());}
+.chatwrapper{background-color:#eaeaea; max-width:600px;}
+.chatcontent{height:calc(100vh - 200px); overflow-x:visible; overflow-y:auto; background-color:#eaeaea; padding:10px;}
+.chatpane{font-size:12px; color:black; background-color:lightblue; border:0px solid #aaa; margin:10px 0; padding:7px 10px; border-radius:2px; box-shadow: 2px 2px 4px #aaa; min-width:100px; max-width:60%;}
+.chatpane a{color:black;}
+.chatdate{display:block; font-size:x-small; margin:0 7px;}
+.chatprofile{background:whitesmoke; padding:9px; font-size:small;}
+.chatform{background-color:#f4f4f4; width:auto; display:block;}
+.flex-container{padding:0; margin:10px 0; list-style:none;
+-ms-box-orient: horizontal; display: -webkit-box; display: -moz-box; display: -ms-flexbox; display: -moz-flex; display: -webkit-flex; display: flex;}
+.chatarea{width:100%; max-width:calc(100vw - 24px); resize:none; padding:4px;}
+.divarea{display:block; height:100px; width:100%; overflow-y:auto; background:white; padding:4px;}
+.row{-webkit-flex-direction: row; flex-direction: row;}
+.row-reverse{-webkit-flex-direction: row-reverse; flex-direction: row-reverse;}
+.flex-container li{margin:0;}  
+.row-reverse .chatpane{background:steelblue; color:white;}
+.menu,.menuactive{clear:left; background:#f4f4f4; margin:0; padding:4px 7px;}
+.menuactive{background:#D0D0D0;}
+.menu:hover{background:#ffffff;}');}
+
+#edit
+static function del($p){return appx::del($p);}
+static function save($p){return appx::save($p);}
+static function modif($p){return appx::modif($p);}
+
+static function archive($p){$id=val($p,'del'); $action=val($p,'act');
+	if($act=='remove')Sql::update(self::$db,'old',1,$id);}
+
+static function toggle($p){$v=$p['v']; $id=$p['id']; $bid=$p['bid']; $rid=$p['rid'];
+	if(val($p,'sav'))Sql::update(self::$db,$id,$v,$bid);
+	if(!$v){$ic='user-secret'; $t='private';}else{$ic='users'; $t='public';}
+	$j=$rid.'|chat,toggle|sav=1,id='.$id.',bid='.$bid.',rid='.$rid.',v='.($v?'0':'3');
+	return span(aj($j,ico(''.$ic,22).lang($t)).hidden($id,$v),'',$rid);}
+
+static function listers($id,$o=''){
+	$d=Sql::read('list',self::$db,'v',$id); if($d)$r=array_flip(explode(',',$d));
+	if($o){$o=Sql::read_inner('name',self::$db,'login','uid','v',['chat.id'=>$id]); $r[$o]=1;}
+	if(isset($r))return $r;}
+
+static function invite_people($p){$id=val($p,'id'); $ra=self::listers($id);
+	$ret=aj('invits|chat,save_friends|id='.$id,langp('cancel'),'btn').' ';
+	$r=Sql::read('ab','tlex_ab','rv','where usr="'.ses('user').'"');
+	if($r)foreach($r as $k=>$v)if(!isset($ra[$v]))
+		$ret.=aj('invits|chat,save_friends|op=add,id='.$id.',usr='.$v,$v,'btn').' ';
+	return $ret;}
+
+static function save_friends($p){$d=''; $r='';
+	$id=val($p,'id'); $op=val($p,'op'); $usr=val($p,'usr');
+	if($id)$d=Sql::read('list',self::$db,'v',$id);
+	$r=self::listers($id);
+	if($op=='add')$r[$usr]=1; elseif($op=='del')unset($r[$usr]);
+	if(is_array($r))$d=implode(',',array_keys($r));
+	if($id)Sql::update(self::$db,'list',$d,$id);
+	return self::chat_friends($p);}
+
+static function chat_friends($p){$id=val($p,'id'); $ret=''; $d='';
+	$r=self::listers($id); $d='';
+	if($r)foreach($r as $k=>$v){$bt=profile::com($k,1).div($k);//avatar
+		$ret.=aj('invits|chat,save_friends|op=del,id='.$id.',usr='.$k,$bt,'cicon');}
+	if(isset($r))$d=implode(',',array_keys($r)); $ret.=hidden('list',$d);
+	return $ret;}
+
+static function form($p){$id=val($p,'id'); $cb=self::$cb; $ret=''; $people='';
+	$ret=label('tit',lang('title'));
+	$ret.=div(input('tit',val($p,'tit'),63,lang('title'),'',255));
+	$ret.=label('pub',lang('pub'));
+	$ret.=div(self::toggle(['id'=>'pub','bid'=>$id,'v'=>val($p,'pub'),'rid'=>randid('tg')]));
+	$ret.=hidden('old','');
+	if($id){
+		$ret.=aj('invits|chat,invite_people|id='.$id,langp('invite'),'btn');
+		$people=self::chat_friends($p);
+		$ret.=div($people,'','invits');}
+	else $ret.=hidden('list','');
+	return div($ret,'','people');}
+
+static function create($p){return appx::create($p);}
+static function edit($p){return appx::edit($p);}
 
 //read
 static function attime($sec){$ret=lang('there_was').' '; $sec=time()-$sec;
-	if($sec>84600*30){$n=floor($sec/84600/30); return $ret.$n.' '.plurial('month',$n,1);}
-	elseif($sec>84600){$n=floor($sec/84600); return $ret.$n.' '.plurial('day',$n,1);}
-	elseif($sec>3600){$n=floor($sec/3600); return $ret.$n.' '.plurial('hour',$n,1);}
-	elseif($sec>60){$n=floor($sec/60); return $ret.$n.' '.plurial('minute',$n,1);}
+	if($sec>84600*30){$n=floor($sec/84600/30); return $ret.$n.' '.langs('month',$n,1);}
+	elseif($sec>84600){$n=floor($sec/84600); return $ret.$n.' '.langs('day',$n,1);}
+	elseif($sec>3600){$n=floor($sec/3600); return $ret.$n.' '.langs('hour',$n,1);}
+	elseif($sec>60){$n=floor($sec/60); return $ret.$n.' '.langs('minute',$n,1);}
 	else return $ret.$sec.' s';}
+
+static function clearntf($id){
+	$q=['typntf'=>'5','txid'=>$id,'4usr'=>ses('user'),'state'=>1];
+	$ntf=Sql::read('id','tlex_ntf','v',$q);
+	if($ntf)Sql::update('tlex_ntf','state','0',$ntf);}
+
+static function chatntf($id){
+	//$r=self::listers($id,1);
+	$r=Sql::read('rusr','chatxt','k',['bid'=>$id]);
+	if($r)foreach($r as $k=>$v)if($k!=ses('user')){
+		$ra=['4usr'=>$k,'byusr'=>ses('user'),'typntf'=>5,'txid'=>$id];
+		$ex=Sql::read('id,state','tlex_ntf','rw',$ra);
+		if($ex[0] && !$ex[1])Sql::update('tlex_ntf','state',1,$ex[0]);
+		elseif(!$ex){$ra['state']=1; $rb[]=$ra;}}
+	if(isset($rb))Sql::insert2('tlex_ntf',$rb);}
+
+static function say($p){
+	$txt=val($p,'chtsav'); $id=val($p,'id');
+	if(trim($txt)){
+		$p['nid']=Sql::insert('chatxt',[$id,ses('user'),unicode($txt)]);
+		self::chatntf($id);
+		if($p['nid'])return self::read($p);}}
+
+static function delmsg($p){$id=$p['id'];
+	if(!isset($p['ok']))
+		return aj('chtbck,,x|chat,delmsg|ok=1,id='.$id,langp('confirm deleting'),'btdel');
+	$p['id']=Sql::read('bid','chatxt','v',$id);//find bid
+	if($id)Sql::delete('chatxt',$id);
+	return self::read($p);}
+
+#play
+static function roomusers($p){$id=val($p,'id'); $ret=''; $r=self::listers($id);
+	if($r)foreach($r as $k=>$v)$ret.=aj('popup|tlex,profile|small=1,usr='.$k,$k);
+	return div($ret,'list');}
 
 static function pane($r){$ret='';
 	if($r)foreach($r as $k=>$v){$del='';
-		$user=tag('li',['class'=>'chatprofile'],$v[0]);
-		$txt=tag('li',['class'=>'chatpane'],nl2br($v[1]));
+		$clr=profile::init_clr(['usr'=>$v[1]]); $txclr=invert_color($clr,1);
+		$sty='background-color:#'.$clr.'; color:#'.$txclr.';';
+		$user=tag('li',['class'=>'chatprofile','style'=>$sty],$v[1]);
+		$txt=tag('li',['class'=>'chatpane'],nl2br($v[2]));
 		$date=tag('div',['class'=>'chatdate'],self::attime($v[3]));
-		if($v[0]==ses('user')){
-			$bt=aj('popup|chat,del|id='.$v[2],ico('flash'));
+		if($v[1]==ses('user')){$css='row-reverse';
+			$bt=aj('popup|chat,delmsg|id='.$v[0],ico('flash'));
 			$del=tag('li',['class'=>'chatdate'],$bt);}
-		if($v[0]==ses('user'))$css='row-reverse'; else $css='row ';
+		else $css='row ';
 		$ret.=div($user.$txt.$date.$del,'flex-container '.$css);}
 	return $ret;}
 
-static function clearntf($room){
-	$ntf=Sql::read('id','telex_ntf','v','where 4usr="'.ses('user').'" and typntf=5 and txid='.$room.' and state=1');
-	if($ntf)Sql::update('telex_ntf','state','0',$ntf);}
-
-static function read($p){$id=val($p,'id'); $room=val($p,'room',ses('room'));
-	if(!val($p,'appName'))self::clearntf($room);
-	$cols='name,txt,chat.id as id,timeup';
-	if($id)$where='where chat.id='.$id;//and chat.up>now()-86400 
-	else $where='where room="'.$room.'" order by chat.id asc limit 100';
-	$r=Sql::read_inner($cols,'chat','login','cuid','',$where);
+static function read($p){$id=val($p,'id'); $nid=val($p,'nid');
+	if(val($p,'vu'))self::clearntf($id);
+	if($nid)$w='where id='.$nid;
+	else $w='where bid="'.$id.'" order by id desc limit 100';
+	$r=Sql::read('id,rusr,txt,timeup','chatxt','',$w);
 	return self::pane($r);}
 
-static function chatntf($roid){
-	$r=Sql::read_inner('name','chatlist','login','ruid','rv','where roid='.$roid);
-	if($r)foreach($r as $v)if($v!=ses('user'))$sql[]=[$v,ses('user'),5,$roid,'1'];
-	if(isset($sql))Sql::insert2('telex_ntf',$sql);}
-
-static function save($p){
-	$msg=val($p,'chtsav'); $room=val($p,'room'); 
-	if(trim($msg)){
-		$id=Sql::insert('chat',array(ses('uid'),$room,unicode($msg),''));
-		self::chatntf($room);
-		if(isset($id))return self::read(['id'=>$id]);}}
-
-static function del($p){
-	if(!isset($p['ok']))return aj('chtbck,,x|chat,del|ok=1,id='.$p['id'],langp('confirm deleting'),'btdel');
-	if($p['id'])$id=Sql::delete('chat',$p['id']);
-		return self::read([]);}
-
-static function create($p){$r=explode('-',val($p,'users')); $prv=val($p,'private');
-	$room=Sql::insert('chatroom',[ses('uid'),$prv,0]);
-	if($room){
-		foreach($r as $v){
-			//Sql::insert('telex_ntf',[$v,ses('user'),5,'','1']);
-			tlxcall::saventf1($v,ses('user'),5);
-			$ok=Sql::insert('chatlist',[$room,$v]);}
-		$bt=lang('room created').' #'.$room;
-		if($rid=val($p,'rid'))$ret=insertbt($bt,$room.':chat',$rid);
-		//if(val($p,'rid'))$ret=telex::publishbt($room,'chat');
-		else $ret=aj('chtwrp,,y|chat|headers=1,room='.$room,$bt,'btsav');}
-	return $ret;}
-
-static function access($p){$room=val($p,'room');
-	if(val($p,'ask')){
-		$ok=Sql::insert('chatlist',[$room,ses('uid')]);
-		if($ok)return self::content(['room'=>$room]);}
-	$ret=span(langp('access_refused'),'alert').' ';
-	$reg=Sql::read('id','chatlist','v','where roid="'.$room.'" and ruid="'.ses('uid').'"');
-	if(ses('uid') && !$reg)//auto-register
-		$ret=aj('chtacc,,y|chat,access|ask=1,room='.$room,langp('inscription'),'btsav');
-	elseif(!$reg)$ret=aj('chtwrp,,y|chat,menu',langp('private'),'btdel');
-	else return self::read(['room'=>$room]);
-	return div($ret,'','chtacc');}
-
-//telex
-static function chatinvit($p){$rid=val($p,'rid'); $ret='';
-	$id=val($p,'id'); $usr=val($p,'usr'); $op=val($p,'op');
-	if($op)sesrz('chtnvt',$usr,$op=='add'?$id:'');
-	$r=ses('chtnvt');
-	if($r)foreach($r as $k=>$v){
-		$avatar=profile::com($k,1);
-		$ret.=aj('invits|chat,chatinvit|op=del,usr='.$k,$avatar.div($k),'cicon');}
-	$ret=div($ret,'menu');
-	$rusr=ses('chtnvt');
-	if($rusr)$usrs=ses('uid').'-'.implode('-',$rusr); else $usrs=ses('uid');
-	//$ret.=aj('newchat|chat,create|users='.$usrs.',rid='.$rid,lang('create room'),'btsav');
-	$ret.=aj('newchat|chat,create|private=1,users='.$usrs.',rid='.$rid,lang('create private room'),'btsav');
-	return $ret;}
-
-static function newchat($p){$rid=val($p,'rid'); $ret=''; sez('chtnvt','');
-	$sq='inner join telex_ab on name=ab ';
-	$abs=Sql::read('login.id,ab','login','kv',$sq.'where usr="'.ses('user').'"');
-	foreach($abs as $k=>$v)
-		$ret.=aj('invits|chat,chatinvit|op=add,id='.$k.',usr='.$v.',rid='.$rid,$v,'btn').' ';
-	$ret.=div('','','invits');
-	return $ret;}
-
-//menu
-static function menu($p){$ret=''; $rid=val($p,'rid');//tlex
-	$r=Sql::read('distinct(roid) as room,DATE_FORMAT(chatlist.up,"%d/%m/%Y") as date,vu','chatlist','rr','left join chat on chatlist.ruid=cuid left join chatroom on chatroom.id=roid where chatlist.ruid="'.ses('uid').'" and old=0 order by chatlist.up desc');
-	foreach($r as $v){$in='';
-		$rc=Sql::read_inner('name,private','chatroom','login','ruid','rw','where chatroom.id='.$v['room'].'');
-		$rb=Sql::read_inner('name','chatlist','login','ruid','rv','where roid='.$v['room'].' and name!="'.$rc[0].'"');
-		$ntf=Sql::read('state','telex_ntf','v','where 4usr="'.ses('user').'" and typntf=5 and txid='.$v['room']);//
-		$prv=langp($rc[1]?'private':'public').' ';
-		$nfo=span('#'.$v['room'].' '.$v['date'],'small').' ';
-		$im=profile::com($rc[0],2).' ';
-		if($rc[1])$from=span(lang('with',1).' '.implode(', ',$rb),'small').' '; else $from='';
-		if($rid)$in=insertbt(langp('use'),$v['room'].':chat',$rid);
-		//if($rid)$in=telex::publishbt($v['room'],'chat');
-		//if($rid)$pp='popup'; else $pp='chtwrp,,y';
-		$cssvu=$v['vu']||$ntf?'active':'';
-		$del=aj('pagup|chat,com|headers=1,del='.$v['room'],langp('del'),'btdel');
-		if($rc[0]!=ses('user'))$del='';
-		$bt=aj('pagup|chat|headers=1,room='.$v['room'],$im.$from.$prv.$nfo.$in);
-		$ret.=div($bt.$del,'menu'.$cssvu);
-	}
-	$ret.=div(toggle('newchat|chat,newchat',langp('select users'),'btsav')).' ';
-	$ret.=div('','','newchat');
-	return $ret;}
-
-//com
-static function comtlx($p){$rid=val($p,'rid'); $bt=ico('comment').sp();
-	//steps of invitation
-	//$ret=aj('newchat|chat,newchat|rid='.$rid,$bt.lang('new chat'),'btsav').' ';
-	$ret=aj('newchat|chat,create|users='.ses('uid').',rid='.$rid,'#'.lang('new chat'),'btsav').' ';
-	$ret.=aj('newchat|chat,menu|rid='.$rid,lang('existing chat'),'btn');
-	$ret.=hlpbt('chatconn');
-	$ret.=div('','','newchat');
-	return $ret;}
-
-static function com($p){
-	if($del=val($p,'del'))Sql::update('chatroom','old',1,$del);
-	//$tit=div(lang('chat'),'btit');$tit.
-	return div(self::menu(''),'chatwrapper','chtwrp');}
-
-//used by telex
-static function discussion($p){$uid=$p['uid'];
-	$r=Sql::read('id','chatroom','rv','where ruid ='.ses('uid').' and private=1');
-	if($r)foreach($r as $k=>$v){$n=Sql::read('count(ruid)','chatlist','v','where roid='.$v.' and ruid in('.ses('uid').','.$uid.')'); if($n==2)$room=$v;}
-	if(!isset($room)){$room=Sql::insert('chatroom',[ses('uid'),1,0]);
-		Sql::insert('chatlist',[$room,ses('uid')]); Sql::insert('chatlist',[$room,$uid]);}
-	return $ret=aj('pagup|chat|headers=1,room='.$room,langp('open').' #'.$room,'btsav');}
-
-//board
-static function roomusers($p){$room=val($p,'room'); $ret='';
-	$r=Sql::read_inner('name','chatlist','login','ruid','rv','where roid="'.$room.'"');
-	foreach($r as $v)$ret.=aj('popup|profile,read|headers=1,usr='.$v,$v);
-	return div($ret,'list');}
-
-static function board($p){$room=$p['room'];
-	//head
+static function play($p){$id=$p['id'];
 	$head=btj(ico('close'),'Close(\'popup\');','btn');
-	$head.=aj('pagup|chat,com|headers=1','#'.$room,'btn');
-	$head.=dropdown('chat,roomusers|room='.$room,lang('members'),'btn');
-	//room
-	$ex=Sql::read('id','chatroom','v','where id="'.$room.'"');
-	$reg=Sql::read('id','chatlist','v','where roid="'.$room.'" and ruid="'.ses('uid').'"');
-	if($ex && !$reg)return div(self::access(['room'=>$room]),'chatwrapper','chtwrp');
-	elseif($room && !$ex)return aj('chtwrp,,y|chat,menu',langp('closed'),'btdel');
-	else $txt=self::read(['room'=>$room]);
-	//form
-	$js=Ajax::js(['com'=>'atend,chtbck,resetform,scrollBottom,chtbck','app'=>'chat,save','prm'=>'room='.$room,'inp'=>'chtsav']);
+	$head.=aj(self::$cb.'|chat,stream|headers=1','#'.$id,'btn');
+	$head.=bubble('chat,roomusers|id='.$id,lang('members'),'btn',1);
+	$rt=Sql::read_inner('name,tit',self::$db,'login','uid','rw',$id);
+	$head.=span($rt[1],'bold').' - '.span($rt[0],'small');
+	$txt=self::read(['id'=>$id,'vu'=>1]);
+	$js=ajs('begin,chtbck,resetform,scrollTop|chat,say','id='.$id,'chtsav');
 	$p=['id'=>'chtsavfrm','action'=>'javascript:if(getbyid(\'chtsav\').value)'.$js];
-	$area=tag('textarea',['id'=>'chtsav','placeholder'=>'message','class'=>'chatarea','rows'=>'2','maxlenght'=>'1000','onkeypress'=>'checkEnter(event,\'chtsavfrm\');'],'').br();
+	$area=tag('textarea',['id'=>'chtsav','placeholder'=>'message','class'=>'chatarea','rows'=>'2','cols'=>'100','maxlenght'=>'1000','onkeypress'=>'checkEnter(event,\'chtsavfrm\');'],'').br();
 	$ret=div($head,'chatform').div($txt,'chatcontent','chtbck');
-	$ret.=tag('form',$p,div($area,'chatform').hidden('chtroom',$room));
-	//$ret.=aj('chtwrp|chat,menu','menu','btn');
-	//$ret.=aj('chtwrp|chat,invite','invite','btn');
-	return div($ret,'chatwrapper','chtwrp','');}
+	$ret.=tag('form',$p,div($area,'chatform').hidden('chtid',$id));
+	$ret.=hidden('chtroom',$id);
+	return $ret;}
 
-#content
+static function stream_notifs($p){$ret=''; $a=self::$a; $cb=self::$cb; $usr=ses('user');
+	$r=Sql::read('byusr,txid,dateup','tlex_ntf','',['typntf'=>5,'4usr'=>$usr,'state'=>1]);
+	if($r)foreach($r as $k=>$v){
+		$tit=Sql::read('tit',self::$db,'v',$v[1]);
+		$bt=ico('arrow-right').' '.$tit.' '.span($v['2'],'date').' '.span(lang('by').' '.$v[0],'small');
+		$ret.=aj($cb.'|'.$a.',call|id='.$v[1],$bt,'licon active');}
+	return $ret;}
+
+static function stream($p){
+	$p['t']=self::$cols[0];
+	$ret=self::stream_notifs($p);
+	$ret.=appx::stream($p);
+	return $ret;}
+
+#interfaces
+static function tit($p){
+	$p['t']=self::$cols[0];//first column is title
+	return appx::tit($p);}
+
+//call (read)
+static function access($p){
+	$r=Sql::read('id,uid,list,pub',self::$db,'ra',$p['id']);
+	if(!$r)return help('chat not exists');
+	if($r['uid']!=ses('uid') && $r['pub']==1){
+		sesr('chat',$r['id'],$r['uid']);//owner
+		$rb=array_flip(explode(',',$r['list'])); $usr=ses('user');
+		if(!isset($rb[$usr]))return div(pic('private').' '.hlpxt('private chat'),'board');}}
+
+static function call($p){$id=val($p,'id');
+	$er=self::access($p); if($er)return $er;
+	return div(self::play($p),'chatwrapper',self::$cb.$id);}
+
+//com (write)
+static function com($p){
+	return appx::com($p);}
+
+//interface
 static function content($p){
 	//self::install();
-	if(!ses('uid'))return $form=App::open('login');
-	$p['room']=sez('room',val($p,'room',val($p,'param')));
-	if(!$p['room'])return div(self::menu(''),'chatwrapper','chtwrp');
-	return self::board($p);}
+	return appx::content($p);}
 }
 ?>

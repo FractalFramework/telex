@@ -18,7 +18,7 @@ $app=val($p,'app'); $func=val($p,'func'); $lang=val($p,'lang');
 $w='where app="'.$app.'" and func="'.$func.'" and lang="'.$lang.'"';
 $id=Sql::read('id',self::$db,'v',$w);
 if($id){
-	$txt=Sql::read('txt',self::$db,'v','where id='.$id);
+	$txt=Sql::read('txt',self::$db,'v',$id);
 	if($txt && !$p['txt'])$p['txt']=$txt;
 	Sql::updates(self::$db,$p,$id);}
 else $id=Sql::insert(self::$db,$p);
@@ -47,7 +47,7 @@ foreach($r as $k=>$v){$rid=randid('tx');
 return Build::table($r);}
 
 static function seecode($p){$id=val($p,'id');
-$ret=Sql::read('code',self::$db,'v','where id='.$id);
+$ret=Sql::read('code',self::$db,'v',$id);
 return div(Build::Code($ret),'paneb');}
 
 //build (methods)

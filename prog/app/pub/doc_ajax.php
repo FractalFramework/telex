@@ -18,33 +18,33 @@ class doc_ajax{
 		$options=array(1=>'one','two','three','four','five');
 		$ret.=select('select',$options,'two','v');
 			
-		$params=array(
+		$prm=array(
 			'com'=>'div,callback2,y',
 			'app'=>'utils,result',
 			'prm'=>'msg=text in input,verbose=1',
 			'inp'=>'inp1,checkbox,textarea,select');
-		$ret.=Ajax::call($params,'Send','btsav');
+		$ret.=aj(implode('|',$prm),'Send','btsav');
 		$ret.=tag('div',array('id'=>'callback2'),'');
 		return $ret;
 	}
 	
 	#content
-	static function content($prm){
+	static function content($p){
 		$ret='';
 		
-		#Ajax::call
-		$ret.=tag('h2','','Ajax::call()');
+		#aj
+		$ret.=tag('h2','','aj()');
 		//test
-		$params=array(
+		$prm=array(
 			'com'=>'div,callback1',
 			'app'=>'File,fdate',
 			'prm'=>'fileRoot=prog/app/pub/doc_ajax.php');
-		$ret.=Ajax::call($params,'Test: Ajax::call()','btn');
+		$ret.=aj(implode('|',$prm),'Test: aj()','btn');
 		$ret.=tag('div',array('id'=>'callback1'),'');
 		//code
 		$ret.=tag('div','class=console',Build::Code('
 //4 types of parameters:
-$params=array(
+$prm=array(
 	//com: 4 parameters : callbackType,callbackId,callbackOption,InjectJs
 	\'com\'=>\'div,callback1\',
 	//app: 2 parameters : appName,appMethod
@@ -54,7 +54,7 @@ $params=array(
 	//inp: any parameters to capture before to send to the App
 	\'inp\'=>\'\');
 //build the button and specify the css
-$ret=Ajax::call($params,\'test Ajax::call()\',\'btn\');
+$ret=aj(implode(\'|\',$prm),\'test aj()\',\'btn\');
 //div of callback
 $ret.=tag(\'div\',array(\'id\'=>\'callback1\'),\'\');'));
 		$ret.=br();
@@ -99,8 +99,8 @@ $ret.=pagup(\'File,fdate|utils,resistance\',\'pagup()\',\'btn\');'));
 		#ajax form
 		$ret.=tag('h2','','ajax form');
 		//test
-		$params=array('com'=>'popup','app'=>'doc_ajax,ajaxform');
-		$ret.=Ajax::call($params,'Test: ajax form','btn');
+		$prm=array('com'=>'popup','app'=>'doc_ajax,ajaxform');
+		$ret.=aj(implode('|',$prm),'Test: ajax form','btn');
 		//code
 		$ret.=tag('div','class=console',Build::Code('
 //inputs
@@ -114,12 +114,12 @@ $options=array(1=>\'one\',\'two\',\'three\',\'four\',\'five\');
 $ret.=select(\'select\',$options,\'two\',\'v\');
 
 //send button
-$params=array(
+$prm=array(
 	\'com\'=>\'div,callback2,y\',//reset position of popup
 	\'app\'=>\'utils,result\',
 	\'prm\'=>\'msg=text in input,verbose=1\',//verbose
 	\'inp\'=>\'inp1,checkbox,textarea,select\');
-$ret.=Ajax::call($params,\'Send\',\'btsav\');
+$ret.=aj(implode(\'|\',$prm),\'Send\',\'btsav\');
 $ret.=tag(\'div\',array(\'id\'=>\'callback2\'),\'\');'));
 		$ret.=br();
 	

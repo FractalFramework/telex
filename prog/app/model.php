@@ -1,129 +1,103 @@
 <?php
 
 class model{
-static $private='1';
+static $private='0';
+static $a='model';
 static $db='model';
-	
-static function injectJs(){return '';}
+static $cb='mdl';
+static $cols=['tit','txt','pub'];
+static $typs=['var','var','int'];//var,text,int,date
+static $conn=0;//0,1(ptag),2(brut),no(br), while using 'txt'
+static $db2='model_vals';//second db
+static $open=1;//open directly in tlex
 
+function __construct(){
+	$r=['a','db','cb','cols','db2','conn'];
+	foreach($r as $v)appx::$$v=self::$$v;}
+
+/*specific cols:
+- first col is actually used for title ['t']
+- col "txt" (var) will accept connectors ['conn']
+- col "answ" will assume choices
+- col "com" will assume settings
+- col "day" is a date
+- col "nb" number 1-10
+- col "cl" mean close
+- col "pub" will assume privacy
+$db2 must use col "bid" <-linked to-> id*/
+static function install($p=''){
+	appx::install(array_combine(self::$cols,self::$typs));}
+	//Sql::create(self::$db2,['bid'=>'int','uid'=>'int','val'=>'var'],1);
+
+static function admin($rid=''){
+	$p['rid']=$rid; $p['o']='1';
+	return appx::admin($p);}
+
+static function titles($p){return appx::titles($p);}
+static function injectJs(){return '';}
 static function headers(){
-	Head::add('csscode','.txt textarea{width:100%;}');
+	Head::add('csscode','');
 	Head::add('jscode',self::injectJs());}
 
-static function cols(){return ['tit','txt'];}
-	
-static function install(){$cols=self::cols();
-	Sql::create(self::$db,['uid'=>'int',$cols[0]=>'var',$cols[1]=>'text'],1);}
-	
-#operations
-	/*static function sysedit($p){//default editor
-	return Form::com(['table'=>self::$db,'id'=>val($p,'id')]);}*/
-	
-static function del($p){
-	$id=val($p,'id'); $rid=val($p,'rid');
-	if(val($p,'ok'))Sql::delete(self::$db,$id);
-	else return aj($rid.'|model,del|ok=1,rid='.$rid.',id='.$id,lang('confirm deleting'),'btdel');
-	return self::com($p);}
-	
-static function modif($p){$id=val($p,'id');
-	$cols=self::cols(); $r=['uid'=>ses('uid')];
-	foreach($cols as $v)$r[$v]=val($p,$v);
-	Sql::updates(self::$db,$r,$id);
-	return self::edit($p);}
-	
-static function save($p){
-	$cols=self::cols(); $r=[ses('uid')];
-	foreach($cols as $v)$r[]=val($p,$v);
-	$p['id']=Sql::insert(self::$db,$r);
-	return self::edit($p);}
-	
-static function add($p){
-	$id=val($p,'id'); $rid=val($p,'rid'); $xid=val($p,'xid');
-	$cols=self::cols(); $colstr=implode(',',$cols);
-	$ret=aj($rid.'|model,menu|rid='.$rid.',xid='.$xid,langp('back'),'btn');
-	$ret.=aj($rid.'|model,save|rid='.$rid.'|'.$colstr,lang('save'),'btsav').br();
-	$ret.=input('tit','').br();
-	$ret.=textarea('txt','','70',7);
-	return $ret;}
-	
-#editor	
-static function edit($p){
-	$id=val($p,'id'); $rid=val($p,'rid'); $xid=val($p,'xid');
-	$cols=self::cols(); $colstr=implode(',',$cols);
-	$r=Sql::read($colstr,self::$db,'ra',['id'=>$id]);
-	$ret=aj($rid.'|model,menu|rid='.$rid.',xid='.$xid,langp('back'),'btn');
-	$ret.=aj($rid.',,z|model,modif|rid='.$rid.',xid='.$xid.',id='.$id.'|'.$colstr,langp('save'),'btsav');
-	$ret.=aj($rid.'|model,del|rid='.$rid.',xid='.$xid.',id='.$id,langp('delete'),'btdel');
-	$ret.=aj('popup|model,call|rid='.$rid.',xid='.$xid.',id='.$id,langp('view'),'btn');
-	//$ret.=aj('popup|model,sysedit|id='.$id,langp('edit'),'btsav');//default editor
-	if($xid)$ret.=insertbt(lang('use'),$id.':model',$xid);
-	$ret.=div(input('tit',$r['tit']),'tit');
-	$ret.=div(textarea('txt',$r['txt'],'',7),'txt');
-	return $ret;}
-	
-#reader
-static function build($p){$id=val($p,'id');
-	$cols=self::cols(); $colstr=implode(',',$cols);
-	$r=Sql::read($colstr,self::$db,'ra',['id'=>$id]);
-	$ret['tit']=$r['tit'];
-	//telex will use Conn; this var is sent by telex::reader
-	if(val($p,'brut'))$ret['txt']=$r['txt'];
-	//connectors can be personalised using app::method
-	else $ret['txt']=Conn::load(['msg'=>$r['txt'],'app'=>'','mth'=>'','ptag'=>1]);
-	return $ret;}
-	
-static function menu($p){$rid=val($p,'rid'); $xid=val($p,'xid');
-	$r=Sql::read('id,tit,dateup',self::$db,'rr','order by id desc limit 20');
-	$ret['head']=hlpbt('model');
-	$ret['head'].=aj($p['rid'].'|model,add|rid='.$p['rid'],langp('add'),'btn');
-	if($r)foreach($r as $k=>$v){$btn=$v['tit']?$v['tit']:$v['id'];//.$v['date']
-		$ret['obj'][]=aj($rid.'|model,edit|rid='.$rid.',xid='.$xid.',id='.$v['id'],$btn);}
-	//Phylogeny (motor of templates)
-	$structure=['head','list'=>'obj'];
-	//returns $ret['head'].div($ret['obj'],'list')
-	return Phylo::read($ret,$structure);}
-	
-#interfaces
-//title (used by object of desktop and shares)
-static function tit($p){$id=val($p,'id');
-	if($id)return Sql::read('dateup',self::$db,'v','where id='.$id);}
+#edit
+static function collect($p){
+	return appx::collect($p);}
 
-//template made with connectors
+static function del($p){//->stream
+	//$p['db2']=self::$db2;//second db
+	return appx::del($p);}
+
+static function save($p){//->edit
+	return appx::save($p);}
+
+static function modif($p){//->edit
+	return appx::modif($p);}
+
+static function form($p){
+	//$p['html']='txt';//contenteditable for txt
+	return appx::form($p);}
+
+static function edit($p){//->form, ->call
+	//$p['collect']=self::$db2;//second db
+	//$p['help']='model_edit';//ref of help
+	//$p['sub']=1;//edit sub-entries in $a::subform()
+	return appx::edit($p);}
+
+static function create($p){//->form
+	//$p['pub']=0;//default privacy
+	return appx::create($p);}
+
+#build
+static function build($p){//datas
+	return appx::build($p);}
+
 static function template(){
-	return '
-[
-	[_tit*class=tit:div]
-	[_txt*class=txt:div]
-*class=board:div]';}
-	
-//call (used by connectors)
-static function call($p){
-	$r=self::build($p);
-	$template=self::template();
-	//Vue (motor of templates)
-	$ret=Vue::read($r,$template);
-	return $ret;}
-	
-//com (apps)
-/*set the icon to display in Telex in the Desktop folder /app/telex
-the displayed title is form admin_help
-the icon displayed is from admin_icons*/
-static function com($p){$id=val($p,'id');
-	//$bt=hlpbt('model');//agremented title, used by icons in telex
-	//rid (will focus on telex editor), rid (used for load onplace)
-	$p['xid']=val($p,'rid');
-	$p['edit']=1;//objects used for edition don't appear to public
-	return self::content($p);}
-	
-//interface
-static function content($p){
-	self::install();
-	$p['rid']=randid('md');
-	$id=val($p,'id',val($p,'param'));
-	$bt=hlpbt('model_app');//description
-	if($id && val($p,'edit'))$ret=self::edit($p);
-	elseif($id)$ret=self::call(['id'=>$id]);
-	else $ret=self::menu($p);
-	return div($ret,'board',$p['rid']);}
+	//return appx::template();
+	return '[[(tit)*class=tit:div][(txt)*class=txt:div]*class=paneb:div]';}
+
+static function play($p){//->build, ->template
+	//$r=self::build($p);
+	return appx::play($p);}
+
+static function stream($p){
+	//$p['t']=self::$cols[0];//used col as title
+	return appx::stream($p);}
+
+#call (read)
+static function tit($p){
+	//$p['t']=self::$cols[0];//used col as title
+	return appx::tit($p);}
+
+static function call($p){//->play
+	return appx::call($p);}
+
+#com (edit)
+static function com($p){//->content
+	return appx::com($p);}
+
+#interface
+static function content($p){//->stream, ->call
+	//self::install();
+	return appx::content($p);}
 }
 ?>

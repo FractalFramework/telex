@@ -2,8 +2,8 @@
 Free License GNU/GPL
 ====================
 
-Thank you to download and use TELEX !
-Telex is a Twitter-Like open source
+Thank you to download and use TLEX !
+Tlex is a Twitter-Like open source
 It works under this fractalFrameWork environment
 
 ====================
@@ -110,15 +110,7 @@ class myApp{
 		$text=val($p,'text');//verif if isset()
 		
 		//ajax button
-		$params=array(
-			'com'=>'popup',
-			'app'=>'tests,result',
-			'prm'=>'message='.$text; //',verbose=1,no-headers=1'
-			'prm'=>array('message'=>$text); //alternative
-			'inp'=>'inp1');
-		return Ajax::call($params,lang('send'),'btn');//lang() word in good language
-		
-		//fast method (command in one line)
+		//4 params for the command : com (where), app (call), prm (['a'=>1,'b'=>2]), inp (inputs)
 		return aj('popup|tests,result|message='.$text.'|inp1',lang('send'),'btn');
 	}
 }

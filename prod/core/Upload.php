@@ -28,7 +28,7 @@ static function save($p){$error=''; $rid='upfile'.val($p,'rid');
 	else $error.='upload refused: '.$fb;
 	File::mkthumb($fa,590);
 	//if(val($p,'getinp'))return $fb;
-	if($rid)return;
+	//if($rid)return;
 	return img('/img/mini/'.$fa,72,72);}
 
 static function call($rid){

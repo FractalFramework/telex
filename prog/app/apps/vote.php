@@ -1,294 +1,205 @@
 <?php
 
 class vote{
-static $private='0';
+static $private='1';
+static $a='vote';
+static $db='vote';
+static $cb='blcbk';
+static $cols=['txt','answ','day'];
+static $typs=['var','var','date'];
+static $open=1;
 
-static function headers(){
-	Head::add('csscode','
-.text {background:white; border-radius:2px; padding:10px; margin:10px 0; font-size:medium;}
-.score {background:white; border-radius:2px; padding:2px 10px 0; font-size:medium; border:1px solid gray;}
-.argyes {border:1px solid #22dd22;}
-.argno {border:1px solid #dd2222;}
-.for,.against {border:1px solid #dfdfdf;}
-.for:hover {border:1px solid #22dd22;}
-.against:hover {border:1px solid #dd2222;}
-.resyes {background:#22dd22; color:white;}
-.resno {background:#dd2222; color:white;}
-.sublock {margin-left:40px;}
-	');}
+function __construct(){
+	$r=['a','db','cb','cols'];
+	foreach($r as $v)appx::$$v=self::$$v;}
 
 //install
-static function install($init=0){//return;
-	Sql::create('vote_lead',array('uid'=>'int','txt'=>'var','closed'=>'int'),$init);
-	Sql::create('vote_args',array('idPoll'=>'int','uid'=>'int','position'=>'int','txt'=>'var'),$init);
-	Sql::create('vote_chat',array('idArg'=>'int','uid'=>'int','txt'=>'var'),$init);
-	Sql::create('vote_valid',array('idArg'=>'int','uid'=>'int','val'=>'int'),$init);}
+static function install(){
+	appx::install(array_combine(self::$cols,self::$typs));
+	Sql::create('vote_note',['bid'=>'int','uid'=>'int','choice'=>'int','val'=>'int'],1);}
 
-//generics
-static function linktopoll($id,$idArg){
-	if($idArg)$idArg=',idArg='.$idArg;
-	return href('/app/vote/'.$id.$idArg,ico('link'),'btn').' ';}
+static function admin($rid=''){
+	$p['rid']=$rid; $p['o']='0';
+	return appx::admin($p);}
 
-static function userdate($date,$name){
-	$date=span(date('Y-m-d',strtotime($date)),'small');
-	return $date.' '.small(lang('by').' '.$name).' ';}
-
-static function textarea($v=''){
-	return textarea('text',$v,60,4,lang('description'),'','',140).br();}
-
-static function edit($com,$p,$v){
-	$ret=textarea('text',$v,60,4,lang('description'),'','',140).br();
-	$ret.=aj($com.'|'.$p.'|text',lang('save'),'btsav');
-	return $ret;}
-
-private static function security($table,$id){
-	$uid=Sql::read('uid',$table,'v','where id='.$id);
-	if($uid==ses('uid'))return 1;}
-
-static function add($p){
-	$com='vt'.$p['idPoll'].',,x|vote,pollSave'; $p='';
-	return self::edit($com,$p,'');}
-
-#vote
-static function voteSave($p){
-	$idVote=Sql::read('id','vote_valid','v','where idArg="'.$p['idArg'].'" and uid="'.ses('uid').'"');
-	if(isset($idVote))$p['val']=$p['val']!=$p['current']?$p['val']:'0';
-	if(!isset($idVote))
-		$p['idChat']=Sql::insert('vote_valid',array($p['idArg'],ses('uid'),$p['val']));
-	else Sql::update('vote_valid','val',$p['val'],$idVote);
-	return self::voteRead($p);}
-
-static function voteRead($p){
-	$idArg=$p['idArg'];
-	$rid=randid('vote');
-	$vote=Sql::read('val','vote_valid','v','where idArg="'.$idArg.'" and uid="'.ses('uid').'"');
-	//tots
-	$yes=Sql::read('count(val)','vote_valid','v','where idArg="'.$idArg.'" and val="1"');
-	$no=Sql::read('count(val)','vote_valid','v','where idArg="'.$idArg.'" and val="2"');
-	$pb=$rid.'|vote,voteSave|idArg='.$idArg.',position='.$p['position'].',current='.$vote;
-	//vote buttons
-	$cs1=$vote==1?' active':''; $cs2=$vote==2?' active':'';
-	if($p['position']==1){$cp1='for'; $cp2='against';} else{$cp1='against'; $cp2='for';}
-	$ck1=$vote==1?ico('check'):''; $ck2=$vote==2?ico('check'):'';
-	$bt1=$ck1.' '.lang('agree',1).' ('.$yes.')';
-	$bt2=$ck2.' '.lang('not agree',1).' ('.$no.')';
-	if(ses('uid')){
-		$ret=aj($pb.',val=1',$bt1,'btn'.$cs1.' '.$cp1);
-		$ret.=aj($pb.',val=2',$bt2,'btn'.$cs2.' '.$cp2);}
-	else $ret=span($bt1,'btn').span($bt2,'btn');
-	return span($ret,'',$rid);}
-
-#chat
-static function chatDel($p){
-	if(!self::security('vote_chat',$p['idChat']))return;
-	if($p['idChat'])Sql::delete('vote_chat',$p['idChat']);
-	return self::chatRead($p);}
-static function chatSave($p){
-	$p['idChat']=Sql::insert('vote_chat',array($p['idArg'],ses('uid'),$p['text']));
-	return self::chatRead($p);}
-static function chatAdd($p){
-	$ret=self::textarea();
-	$ret.=aj($p['rid'].',,x|vote,chatSave|idPoll='.$p['idPoll'].',idArg='.$p['idArg'].'|text',lang('save'),'btsav');
-	return $ret;}
-static function chatRead($p){$ret='';
-	$rid=randid('chat');
-	$b='vote_chat';
-	$cols=$b.'.id as id,name,txt,'.$b.'.up as date';
-	$where='where '.$b.'.idArg='.$p['idArg'];
-	$r=Sql::read_inner($cols,$b,'login','uid','rr',$where);
-	//add
-	if(ses('uid'))$ret.=aj('popup|vote,chatAdd|rid='.$rid.',idPoll='.$p['idPoll'].',idArg='.$p['idArg'],langs('add,comment'),'btn').br().br();
-	//read
-	if($r)foreach($r as $v){
-		$by=span('#'.$v['id'],'btn').' '.self::userdate($v['date'],$v['name']);
-		if($v['name']==ses('user'))$by.=span(aj($rid.'|vote,chatDel|idPoll='.$p['idPoll'].',idArg='.$p['idArg'].',idChat='.$v['id'].'',lang('del'),'btdel'),'right');
-		$txt=div($v['txt'],'text');
-		$ret.=div($by.$txt,'pane');}
-	return div($ret,'',$rid);}
-
-#argument
-static function argumentDel($p){
-	if(isset($p['idArg'])){
-		if(!self::security('vote_args',$p['idArg']))return;
-		Sql::delete('vote_args',$p['idArg']);
-		Sql::delete('vote_valid',$p['idArg'],'idArg');}
-	return self::poll($p);}
-
-static function argumentSave($p){
-	$p['idArg']=Sql::insert('vote_args',array($p['idPoll'],ses('uid'),$p['position'],$p['text']));
-	return self::argumentPane($p);}
-
-static function argumentEdit($p){
-	$ret=self::textarea();
-	$ret.=aj('vt'.$p['idPoll'].',,x|vote,argumentSave|idPoll='.$p['idPoll'].',position='.$p['position'].'|text',lang('save'),'btsav');
-	return $ret;}
-
-static function argumentAdd($p){$ret='';
-	$opts=array('1'=>lang('positive'),'2'=>lang('negative'));
-	$ret=radio($opts,'position','1');
-	$ret.=aj('popup|vote,argumentEdit|idPoll='.$p['idPoll'].'|position',lang('create'),'btsav');
-	return $ret;}
-
-#pane
-static function argumentPane($p){//idPoll,idArg
-	$id=val($p,'idPoll'); $idArg=val($p,'idArg');
-	if(!isset($id) && $idArg)
-		$id=Sql::read('idPoll','vote_args','v','where id='.$idArg);
-	$cols='position,name,txt,vote_args.up as date';
-	$where='where vote_args.id='.$idArg;
-	$r=Sql::read_inner($cols,'vote_args','login','uid','ra',$where);
-	//header
-	$rt=array('1'=>'argYes','2'=>'argNo');
-	$cs=$r['position']==1?'argyes':'argno';
-	$bt='#'.$id;//ico('arrow-left').
-	$back=aj('vt'.$id.'|vote,poll|idPoll='.$id,$bt,'btn');
-	if($r['position'])$here=aj('vt'.$id.'|vote,argumentPane|idPoll='.$id.',idArg='.$idArg,'#'.$idArg.' '.langs('arg,'.$rt[$r['position']]),'btn '.$cs); else $here='';
-	$by=self::userdate($r['date'],$r['name']);
-	$bt=self::linktopoll($id,$idArg);
-	//admin
-	if($r['name']==ses('user'))$bt.=aj('vt'.$id.'|vote,argumentDel|idArg='.$idArg.',idPoll='.$id,lang('delete'),'btdel');
-	$ret=$back.' '.$here.' '.$by.' '.span($bt,'right');
-	//txt
-	$ret.=div($r['txt'],'text');
-	//vote
-	$p['position']=$r['position'];
-	$ret.=self::voteRead($p);
-	//chat
-	$n=Sql::read('count(id)','vote_chat','v','where idArg="'.$idArg.'"');
-	$p='cht'.$idArg.'|vote,chatRead|idPoll='.$id.',idArg='.$idArg;
-	$ret.=aj($p,ico('comment').' '.lang('comments').' ('.$n.')','btn');
-	if(isset($p['pagewidth']))$s='width:'.$p['pagewidth'].';'; else $s='';
-	$ret=div($ret,'pane','',$s);
-	$ret.=div('','sublock','cht'.$idArg);
-	return $ret;}
-
-//read
-static function arguments($p){$ret='';//todo
-	$r=Sql::read('id','vote_args','rv','where idPoll='.$p['idPoll'].' order by id');
-	if($r)foreach($r as $k=>$v)//if(isset($rt[$v['position']])){
-		$ret.=self::argumentPane($p+array('idArg'=>$v));
-	return $ret;}
-
-/*---*/
+static function headers(){
+		Head::add('csscode','
+	.ansprop{display:inline-block; border:1px solid #ccc; text-align:center;}
+	.anscnt{min-width:280px;}
+	.score1{background-color:#ddaaaa;}
+	.score2{background-color:#ddddaa;}
+	.score3{background-color:#aaddaa;}
+	.score4{background-color:#aadddd;}
+	.score5{background-color:#aaaadd;}
+	.tot{padding:2px 10px; background:#dcdcdc;}
+	.winner{background:#aaddaa;}');}
 
 #edit
-static function pollUpdate($p){
-	if($p['idPoll'])Sql::update('vote_lead','txt',$p['text'],$p['idPoll']);
-	return self::poll($p);}
+static function form($p){
+	return appx::form($p);}
 
-static function pollEdit($p){
-	$txt=Sql::read('txt','vote_lead','v','where id='.$p['idPoll']);
-	$ret=self::textarea($txt);
-	$ret.=aj('vt'.$p['idPoll'].',,x|vote,pollUpdate|idPoll='.$p['idPoll'].'|text',lang('save'),'btsav');
+static function edit($p){
+	$p['collect']='vote_note';
+	return appx::edit($p);}
+
+static function collect($p){
+	return appx::collect($p);}
+
+#sav
+static function modif($p){
+	return appx::modif($p);}
+
+static function del($p){
+	$p['db2']='vote_note';
+	return appx::del($p);}
+
+static function save($p){return appx::save($p);}
+static function create($p){return appx::create($p);}
+
+#note
+static function votants($p){$id=$p['id'];
+	$r=Sql::read_inner('distinct(uid),name','vote_note','login','uid','kv','where bid="'.$id.'"');
+	if($r)foreach($r as $k=>$v)$ret[]=profile::small(['usr'=>$v]);
+	return div(implode('',$ret));}
+
+static function note($p){$id=$p['id'];
+	$w=['bid'=>$id,'uid'=>ses('uid'),'choice'=>$p['choice']];
+	$idnote=Sql::read('id','vote_note','v',$w);
+	if(isset($idnote))$p['val']=$p['val']?$p['val']:'0';
+	if(!isset($idnote))
+		$p['idnote']=Sql::insert('vote_note',[$id,ses('uid'),$p['choice'],$p['val']]);
+	else Sql::update('vote_note','val',$p['val'],$idnote);
+	return self::build($p);}
+
+static function pane($rb,$closed,$note,$nb,$id){$ret='';
+	if(!ses('uid'))$com='popup|Help,get|ref=loged_needed';
+	else $com='pb'.$id.',,,1|vote,note|id='.$id;//note button
+	for($i=1;$i<=$nb;$i++){$rt='';
+		$answer=ico('square-o').' '.val($rb,$i);
+		$noted=count($note)==$nb?1:0; //$noted=$closed;
+		//if(auth(6))$noted=0;
+		$notedcase=val($note,$i);
+		for($k=1;$k<=5;$k++){
+			$ico=$k<=$notedcase?ico('star'):ico('star-o');
+			if($closed)$rt.=span($ico);
+			else $rt.=aj($com.',choice='.$i.',val='.$k,$ico);}
+		$ret[]=[$answer,$rt];}
+	return Build::table($ret,'');}
+
+//results
+static function algo($r){$re=''; $rd=''; $rank='';
+	foreach($r as $k=>$v){$tot=0;//collect scores
+		$sum=array_sum($v);//nb notes
+		for($i=5;$i>0;$i--){$ratio=0;
+			if(isset($v[$i]))$ratio=round($v[$i]/$sum,2); $tot+=$ratio;
+			$rc[$k][$i]=$ratio;//by candidat
+			if(!isset($rd[$k]) && $tot>0.5)$rd[$k]=$i;}}//majoritary mention
+	arsort($rd);//pr($rd);
+	for($i=5;$i>0;$i--){$n=0;//rank
+		if($rd)foreach($rd as $k=>$v)if($v==$i)$re[$i][]=$k;
+		if($re)foreach($re as $k=>$v){rsort($v);//todo: find differences between ex-aequo
+			foreach($v as $vb){$n++; $rank[$n]=$vb;}}}
+	//reorder
+	if($rank)foreach($rank as $k=>$v)$ret[$v]=$rc[$v];//assign rank
 	return $ret;}
 
-static function pollDel($p){
-	if(!self::security('vote_lead',$p['idPoll']))return;
-	if($p['idPoll'])Sql::update('vote_lead','closed','1',$p['idPoll']);//close
-	//if($p['idPoll']){Sql::delete('vote_lead',$p['idPoll']); self::argumentDel($p);}
-	return self::polls();}
+static function play_scores($id,$nb){$ret='';
+	$rq=Sql::query('select choice,val from vote_note where bid="'.$id.'"');
+	while($r=mysqli_fetch_row($rq))
+		$ret[$r[0]][$r[1]]=isset($ret[$r[0]][$r[1]])?$ret[$r[0]][$r[1]]+=1:1;
+	//need minimum 1 note by choice
+	//foreach($ret as $k=>$v)for($i=1;$i<5;$i++)if(!isset($v[$i]))$ret[$k][$i]=1;
+	return $ret;}
 
-static function pollSave($p){
-	if($p['text'])$nid=Sql::insert('vote_lead',array(ses('uid'),$p['text'],''));
-	return self::poll(array('idPoll'=>$nid));}
-
-//algo
-static function algo($ra,$r){$ret=0;
-	//stats
-	foreach($r as $id=>$v){$tot=array_sum($v); $pos=$ra[$id];
-		$agree=isset($v[1])?$v[1]:0; $disagree=isset($v[2])?$v[2]:0;
-		$rt[$pos][$id]=$tot; $rs[$pos][$id]=($agree-$disagree)*$tot;}
-	///ponderation of arguments
-	//tot votes by type of arg
-	if(isset($rt[1]))$tt[1]=array_sum($rt[1]); else $tt[1]=0;
-	if(isset($rt[2]))$tt[2]=array_sum($rt[2]); else $tt[2]=0;
-	//tot scores
-	if(isset($rs[1]))$ts[1]=array_sum($rs[1]); else $ts[1]=0;
-	if(isset($rs[2]))$ts[2]=array_sum($rs[2]); else $ts[2]=0;;
-	///calc
-	if($tt[1])$rs[1]=$ts[1]/$tt[1]; else $rs[1]=0;
-	if($tt[2])$rs[2]=$ts[2]/$tt[2]; else $rs[2]=0;
-	//poonderation of positions
-	$tv=array_sum($tt);//tot votes
-	if($tv)$ret=($rs[1]-$rs[2])/$tv;
-	$score=$ts[1]-$ts[2];
-	return array('ts'=>$ts,'tt'=>$tt,'res'=>$ret,'global'=>round($ret*100,1),'score'=>$score);}
-
-static function argsResume($p){$ret=''; 
-	//args by position [position]=>array([idArg])
-	$ra=Sql::read('id,position','vote_args','kv','where idPoll='.$p['idPoll']); //pr($ra);
-	//votes by args [idArg]=>array([position]=>cumul)
-	$cols='vote_args.id,val';
-	$r=Sql::read_inner($cols,'vote_valid','vote_args','idArg','kkc','where idPoll='.$p['idPoll'].' and (val=1 or val=2) order by idArg');
-	if($ra)$res=self::algo($ra,$r); //pr($res);
-	//$help=' '.hlpbt('vote_algo');
-	$css=isset($res['global'])?'resyes':'resno';
-	if(isset($res))$ret=span($res['global'].'%','score '.$css);
-	if($ret)return div(lang('score').' '.$ret,'right');}
-
-#polls
-static function poll($p){
-	$id=val($p,'idPoll'); $rid=val($p,'rid');
-	if(!$id)return;
-	$cols='name,txt,vote_lead.up as date';
-	$where='where vote_lead.id='.$id.' and closed=0';
-	$r=Sql::read_inner($cols,'vote_lead','login','uid','ra',$where);
-	if(!$r)return lang('not exists');
-	//admin
-	$go=aj('vt'.$id.'|vote,poll|idPoll='.$id,'#'.$id,'btn');
-	$by=self::userdate($r['date'],$r['name']);
-	$bt=self::linktopoll($id,'');
-	if($rid)$bt.=insertbt(lang('use'),$id.':vote',$rid);
-	if(ses('uid')){//add argument
-		$bt.=bubble('vote,argumentAdd|idPoll='.$id,langs('add,arg'),'btok',1);}
-	if($r['name']==ses('user')){
-		$bt.=aj('pagup|vote,pollEdit|idPoll='.$id,langp('modif'),'btn');
-		$bt.=aj('vt'.$id.'|vote,pollDel|idPoll='.$id,langp('del'),'btdel');}
-	$bt=div($bt,'right');
-	$txt=div(nl2br($r['txt']),'text');
-	//args
-	//if(isset($p['list'])){}
-	$n=Sql::read('count(id)','vote_args','v','where idPoll="'.$id.'"');
-	$args=aj('arg'.$id.'|vote,arguments|idPoll='.$id,langs('args').' ('.$n.')','btn');
-	//$args.=hlpbt('vote_args');
-	//resume
-	$resume=self::argsResume($p);
+static function pane_results($rb,$id,$nb_noters){
+	$ret=''; $n=0; $winner=''; $sz=200;//max width
+	$r=self::play_scores($id,$nb_noters);
+	if($r)$rc=self::algo($r);
 	//render
-	$ret=div($go.' '.$by.$bt.br().$txt.$args.$resume,'pane');
-	$ret.=div('','sublock','arg'.$id);
-	//if(!isset($p['list']))$ret.=self::arguments($p);
+	$rt[0][0]=lang('candidate');
+	$rt[0][1]=lang('rank'); $rt[0][2]='';
+	for($i=1;$i<=5;$i++)//headers
+		$rt[0][2].=span(str_pad('',$i,'*'),'ansprop score'.$i,'','width:'.($sz/5+16).'px;');
+		$rt[0][2]=div($rt[0][2],'anscnt');
+	if(isset($rc))foreach($rc as $k=>$v){
+		$stot=0; $sum=0; $n++; if(!$winner)$winner=$k;
+		$rt[$k][0]=val($rb,$k);
+		$rt[$k][1]=$n; $rt[$k][2]='';
+		for($i=1;$i<=5;$i++){$score=$v[$i]; $nb=isset($r[$k][$i])?$r[$k][$i]:0;
+			$rt[$k][2].=span($nb,'ansprop score'.$i,'','width:'.($score*$sz+16).'px;');}
+			$rt[$k][2]=div($rt[$k][2],'anscnt');}
+	$ret=Build::table($rt,'','1');
+	//winner
+	if($winner){
+		$answ=Sql::read('answ',self::$db,'v',$id);
+		$rw=explode('|',$answ); $win=$rw[$winner-1];
+		$ret.=div(lang('the winner is').' : '.$win,'valid');}
 	return $ret;}
 
-static function polls($p){$ret=''; $rid=val($p,'rid');
-	$r=Sql::read('id','vote_lead','rv','where closed!=1');
-	if($r)foreach($r as $v)
-		$ret.=div(self::poll(['idPoll'=>$v,'list'=>1,'rid'=>$rid]),'','vt'.$v);
-	return $ret;}
+#read
+static function cancel($p){
+	Sql::query('delete from vote_note where bid="'.$p['id'].'" and uid="'.ses('uid').'"');
+	return self::build($p);}
 
-#tlx
-static function call($p){$p['idPoll']=val($p,'id');
-	if($p['idPoll'])return div(self::poll($p),'','vt'.$p['idPoll']);}
-	
-static function com($p){$rid=val($p,'rid');
-	$id=val($p,'id'); $edt=val($p,'edt'); $mnu=val($p,'mnu');
-	//if($id)$ret.=self::build($p);
-	//elseif($mnu)$ret.=self::menu($p);
-	return self::content($p);}
+static function build($p){$id=$p['id']; $ret='';
+	list($answers,$end)=Sql::read('answ,day',self::$db,'rw',$id);
+	if(ses('uid'))$note=Sql::read('choice,val','vote_note','kv','where bid="'.$id.'" and uid="'.ses('uid').'"'); else $note=[];
+	$rs=Sql::read('distinct(uid)','vote_note','k','where bid="'.$id.'" order by val');
+	$rb=explode('|',$answers); $nb=count($rb); array_unshift($rb,'null'); $sum=array_sum($rs);
+	$endtime=strtotime($end);
+	$leftime=ses('time')-$endtime;
+	if($leftime>0)$closed=1; else $closed=0;
+	if(val($p,'adm'))$closed=1; //if(auth(6))$closed=1;//
+	//pane
+	if($closed)$ret=self::pane_results($rb,$id,$sum);
+	else $ret=self::pane($rb,$closed,$note,$nb,$id);
+	//footer
+	$ret.=br().aj('popup|vote,votants|id='.$id,$sum.' '.langs('noter',$sum,1),'tot').' ';
+	if($closed)$state=lang('vote closed').' '.lang('the',1).' '.$end;
+	else $state=lang('time left').' : '.Build::leftime($endtime);
+	$ret.=span($state,'grey');
+	if(ses('uid') && $note && !$closed)$ret.=aj('pb'.$id.'|vote,cancel|id='.$id,lang('cancel'),'btdel');
+	if(!$closed)$ret.=aj('pb'.$id.'|vote,build|adm=1,id='.$id,lang('see'),'btn');
+	return div($ret,'','pb'.$id);}
+
+#stream
+static function play($p){$bt=''; $go='';
+	$id=$p['id']; $rid=val($p,'rid'); $tid=randid('txt');
+	$cols=self::$db.'.id,name,txt,answ,day';
+	$where='where '.self::$db.'.id='.$id.' order by '.self::$db.'.id desc';
+	$r=Sql::read_inner($cols,self::$db,'login','uid','ra',$where);
+	if(!$r)return help('id not exists','board');
+	//admin
+	if($rid){$go=aj('blcbk|vote,stream|rid='.$rid,'#'.$id,'btn');
+		$go.=insertbt(lang('use'),$id.':vote',$rid);}
+	$go.=href('/vote/'.$id,ico('link'),'btn').' ';
+	$by=small($r['day'].' '.lang('by').' '.$r['name']).' ';
+	$bt=div($bt,'right');
+	$txt=div(nl2br($r['txt']),'tit',$tid);
+	//results
+	$results=self::build($p);
+	//render
+	$ret=div($go.' '.$by.$bt.br().$txt.$results,'paneb');
+	return div($ret,'','pol'.$id);}
+
+static function stream($p){
+	return appx::stream($p);}
+
+#interface
+static function tit($p){
+	return appx::tit($p);}
+
+static function call($p){$id=val($p,'id');
+	$ret=self::play($p);
+	return div($ret,'');}
+
+static function com($p){
+	return appx::com($p);}
 
 #content
-static function content($p){$ret='';
-	//self::install(1);
-	$id=val($p,'idPoll',val($p,'param'));
-	$ret.=aj('vt'.$id.'|vote,polls|rid='.val($p,'rid'),ico('list'),'btn').' ';
-	$ret.=hlpbt('vote_app').' ';
-	$bt=ico('plus').' '.langs('new,referendum');
-	if(ses('uid'))$ret.=aj('pagup|vote,add|idPoll='.$id,$bt,'btn').' ';
-	$ret.=br().br();
-	//root
-	if(isset($p['idArg']))$ret.=self::argumentPane($p);
-	elseif($id)$ret.=div(self::poll(['idPoll'=>$id]),'','vt'.$id);
-	else $ret.=self::polls($p);
-	return div($ret,'','vtc');}
+static function content($p){
+	//self::install();
+	return appx::content($p);}
 }
 
 ?>

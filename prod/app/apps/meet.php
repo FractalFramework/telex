@@ -2,6 +2,24 @@
 
 class meet{
 static $private='1';
+static $a='meet';
+static $db='meet';
+static $cb='mtcbk';
+static $cols=['txt','loc','day','pub'];
+static $typs=['var','var','date','int'];
+
+function __construct(){
+	$r=['a','db','cb','cols'];
+	foreach($r as $v)appx::$$v=self::$$v;}
+
+//install
+static function install(){
+	appx::install(array_combine(self::$cols,self::$typs));
+	Sql::create('meet_valid',array('bid'=>'int','uid'=>'int','ok'=>'int'),1);}
+
+static function admin($rid=''){
+	$p['rid']=$rid; $p['o']='1';
+	return appx::admin($p);}
 
 static function headers(){
 	Head::add('csscode','
@@ -13,40 +31,6 @@ static function headers(){
 .line.disactive:hover{background:#ffb2b2;}
 .text{background:white; border-radius:2px; padding:10px; margin:10px 0; font-size:medium;}
 ');}
-static function voc(){
-	return array();}
-
-//install
-static function install(){
-	Sql::create('meet',array('user'=>'var','txt'=>'var','day'=>'date','loc'=>'var'),1);
-	Sql::create('meet_valid',array('idMeet'=>'int','user'=>'var','ok'=>'int'),1);}
-
-#check
-static function checkDay($p){//p($p);
-	if($p['status']==1)Sql::update('meet_valid','ok',2,$p['uid']);
-	elseif($p['status']==2)Sql::update('meet_valid','ok',1,$p['uid']);
-	return self::rendezvous($p);}
-
-#rendezvous
-static function rendezvous($p){
-	$id=$p['id']; $user=ses('user');
-	$r=Sql::read('id,user,ok','meet_valid','rr','where idMeet='.$id);
-	if($r)foreach($r as $k=>$v){
-		$name=profile::name($v['user']);
-		if($v['ok']==2){$c=' disactive'; $ico=ico('close').$name.' '.span(lang('canceled'),'alert');}
-		else{$c=' active'; $ico=ico('check').$name;}
-		if($v['user']!=$user)$bt=tag('span','class=line opac'.$c,$ico);
-		else $bt=aj('rv'.$id.'|meet,checkDay|id='.$id.',uid='.$v['id'].',status='.$v['ok'],$ico,'line'.$c);
-		$rb[]=$bt;}
-	if(isset($rb))return Build::scroll($rb,5,'200');}
-
-#event
-static function participation($p){
-	if($p['subscribe']=='ok')
-		Sql::insert('meet_valid',[$p['id'],ses('user'),1]);
-	elseif($p['subscribe']=='ko')
-		Sql::delete('meet_valid',$p['uid']);
-	return self::build($p);}
 
 #edit
 static function gps($d){
@@ -57,43 +41,67 @@ static function gps($d){
 
 static function modif($p){
 	$r=vals($p,['txt','day','loc']);
-	if($p['id'])Sql::updates('meet',$r,$p['id']);
-	return self::event($p);}
+	if($p['id'])Sql::updates(self::$db,$r,$p['id']);
+	return self::play($p);}
 
-static function edit($p){$id=$p['id'];
-	$r=Sql::read('txt,day,loc','meet','ra','where id='.$id);
-	$ret=input('day',$r['day'],8);
-	$ret.=input('loc',$r['loc'],'32',lang('address')).br();
-	$ret.=textarea('txt',$r['txt'],70,4,lang('text'),'','',140).br();
-	$ret.=span('','small right','strcnttext');
-	$ret.=aj('mee'.$id.'|meet,modif|id='.$id.'|txt,day,loc',pic('save'),'btsav');
-	return $ret;}
+#editor
+static function form($p){return appx::form($p);}
 
-static function del($p){$id=$p['id'];
-	if(!isset($p['ok']))
-		return aj('meetcontent|meet,del|ok=1,id='.$id,langp('really?'),'btdel');
-	elseif($id){Sql::delete('meet',$p['id']);
-		Sql::delete('meet_valid',$id,'idMeet');}
-	return self::stream($p);}
+static function edit($p){
+	$p['collect']='meet_valid';
+	return appx::edit($p);}
 
+static function collect($p){return appx::collect($p);}
+static function del($p){return appx::del($p);}
+
+//static function save($p){return appx::save($p);}
 static function save($p){
-	if($p['txt'])$nid=Sql::insert('meet',array(ses('user'),$p['txt'],$p['date'],$p['loc']));
-	if(isset($nid))return div(self::event(['id'=>$nid]),'','mee'.$nid);}
+	$r=[ses('uid')]; foreach(self::$cols as $v)$r[]=val($p,$v,0);
+	if($p['txt'])$nid=Sql::insert(self::$db,$r);
+	if(isset($nid))return div(self::play(['id'=>$nid]),'','mee'.$nid);}
 
+//static function create($p){return appx::create($p);}
 static function create(){
-	$ret=input('date',date('Y-m-d',time()),8);
+	$ret=input('day',date('Y-m-d',time()),8);
 	$ret.=input('loc','','32',lang('address')).br();
-	$ret.=textarea('txt','',70,4,lang('presentation'),'','',140).br();
-	$ret.=aj('meetcontent,,x|meet,save||txt,date,loc',lang('save'),'btsav');
+	$ret.=textarea('txt','',70,4,lang('presentation'),'',216).br();
+	$ret.=aj(self::$cb.'|meet,save||txt,day,loc',lang('save'),'btsav');
 	return $ret;}
+
+#check
+static function checkDay($p){//p($p);
+	if($p['status']==1)Sql::update('meet_valid','ok',2,$p['uid']);
+	elseif($p['status']==2)Sql::update('meet_valid','ok',1,$p['uid']);
+	return self::rendezvous($p);}
+
+#rendezvous
+static function rendezvous($p){
+	$id=$p['id']; $uid=ses('uid');
+	$r=Sql::read('id,uid,ok','meet_valid','rr','where bid='.$id);
+	if($r)foreach($r as $k=>$v){
+		$name=profile::name($v['uid']);
+		if($v['ok']==2){$c=' disactive'; $ico=ico('close').$name.' '.span(lang('canceled'),'btn');}
+		else{$c=' active'; $ico=ico('check').$name;}
+		if($v['uid']!=$uid)$bt=tag('span','class=line opac'.$c,$ico);
+		else $bt=aj('rv'.$id.'|meet,checkDay|id='.$id.',uid='.$v['id'].',status='.$v['ok'],$ico,'line'.$c);
+		$rb[]=$bt;}
+	if(isset($rb))return Build::scroll($rb,10,'400');}
+
+#play
+static function participation($p){
+	if($p['subscribe']=='ok')
+		Sql::insert('meet_valid',[$p['id'],ses('uid'),1]);
+	elseif($p['subscribe']=='ko')
+		Sql::delete('meet_valid',$p['uid']);
+	return self::build($p);}
 
 #pane
 static function build($p){$id=$p['id'];
-	$n=Sql::read('count(id)','meet_valid','v','where idMeet='.$id);
+	$n=Sql::read('count(id)','meet_valid','v','where bid='.$id);
 	$bt=$n. ' '.lang('participants');
 	$ret=toggle('rv'.$id.'|meet,rendezvous|id='.$id,$bt,'nfo').' ';
-	if($user=ses('user')){
-		$uid=Sql::read('id','meet_valid','v','where idMeet="'.$id.'" and user="'.$user.'"');
+	if($uid=ses('uid')){
+		$uid=Sql::read('id','meet_valid','v','where bid="'.$id.'" and uid="'.$uid.'"');
 		$j='ev'.$id.'|meet,participation|id='.$id.',uid='.$uid;
 		if(!$uid)$ret.=aj($j.',subscribe=ok',lang('participate'),'btsav').' ';
 		else $ret.=aj($j.',subscribe=ko',lang('unsubscribe'),'btdel').' ';}
@@ -101,56 +109,41 @@ static function build($p){$id=$p['id'];
 	return div($ret,'','ev'.$id);}
 
 #stream
-static function event($p){$id=$p['id'];
-	$r=Sql::read('user,txt,day,loc','meet','ra','where id='.$id);
+static function play($p){$id=$p['id']; $rid=val($p,'rid');
+	$r=Sql::read('uid,txt,day,loc',self::$db,'ra',$id);
 	if(!$r)return lang('entry not exists');
 	$bt=href('/app/meet/'.$id,ico('link'));
-	if(ses('user'))
-		if($xid=val($p,'xid'))$bt.=insertbt(lang('use'),$id.':meet',$xid);
-	if($r['user']==ses('user')){
-		$bt.=aj('panxt'.$id.'|meet,edit|id='.$id,pic('modif'),'btn');
-		$bt.=aj('meetcontent|meet,del|id='.$id,pic('delete'),'btdel');}
+	if($rid)$bt.=insertbt(lang('use'),$id.':meet',$rid);
 	$ret=div($bt,'right');
-	if(val($p,'brut'))$txt=$r['txt']; else $txt=nl2br($r['txt']);
-	//$go=aj('mee'.$id.'|meet,event|id='.$id,pic('go').' #'.$id,'btn');
-	$go=href('/app/meet/'.$id,pic('go').' #'.$id,'btn');
-	$name=profile::name($r['user'],1);
+	if(val($p,'conn')=='no')$txt=$r['txt']; else $txt=nl2br($r['txt']);
+	$go=aj('mee'.$id.'|meet,play|id='.$id,'#'.$id,'btn');
+	//$go=href('/app/meet/'.$id,pic('url').' #'.$id,'btn');
+	$name=profile::name($r['uid'],1);
 	if(strtotime($r['day'])<ses('time'))$c='alert '; else $c='valid ';
-	$date=span(lang('date',1).' : '.$r['day'],$c.'nfo');
+	$date=span($r['day']?lang('date',1).' : '.$r['day']:lang('undefined'),$c.'date');
 	$gps=aj('popup|map,request|request='.$r['loc'],pic('gps').' '.$r['loc'],'btn');
 	$ret.=div($go.' '.span(lang('by'),'small').' '.$name.' '.$date.' '.$gps);
-	$ret.=div($txt,'txt','panxt'.$id);
+	$ret.=div($txt,'tit');
 	$ret.=self::build(['id'=>$id]);
-	return div($ret,'pane');}
+	return div($ret,'paneb');}
 
-static function stream($p){$ret='';
-	$r=Sql::read('id','meet','rv','order by day desc');
-	if($r)foreach($r as $v){$p['id']=$v;
-		$ret.=div(self::event($p),'','mee'.$v);}
-	return $ret;}
+static function stream($p){
+	return appx::stream($p);}
 
-//conn
-static function call($p){
-	$p['id']=val($p,'id');
-	if($p['id'])return div(self::event($p),'','mee'.$p['id']);}
-//tlex
+static function call($p){$id=val($p,'id');
+	return div(self::play($p),'','mee'.$id);}
+	
+static function tit($p){
+	return appx::tit($p);}
+
+//com (edit)
 static function com($p){
-	$p['xid']=val($p,'rid');
-	return self::content($p);}
+	return appx::com($p);}
 
-#content
-static function content($p){$ret='';
+//interface
+static function content($p){
 	//self::install();
-	$p['id']=val($p,'id',val($p,'param'));
-	$ret=aj('meetcontent|meet,stream',ico('home'),'btn');
-	//$ret=href('/app/meet',ico('home'));
-	$ret.=hlpbt('meet_help');
-	if(ses('uid'))$ret.=aj('pagup|meet,create',ico('plus'),'btn');
-	$ret.=br().br();
-	if($p['id'])$res=self::call($p);
-	else $res=self::stream($p);
-	$ret.=div($res,'','meetcontent');
-	return $ret;}
+	return appx::content($p);}
 }
 
 ?>

@@ -32,7 +32,7 @@ class Twit{
 		$this->_oauth_consumer_secret = $oauth_consumer_secret;*/
 		
 		$cols='consumer_key,consumer_secret,token_key,token_secret';
-		$r=Sql::read($cols,'admin_twitter','ra',['id'=>$id]); //pr($r);
+		$r=Sql::read($cols,'twitter','ra',$id); //pr($r);
 		if($r){
 			$this->_oauth_token=$r['token_key'];
 			$this->_oauth_token_secret=$r['token_secret'];

@@ -3,13 +3,13 @@ class Icon{
 static $app='';
 static function ex($d){
 	$r=sesclass('Icon','com','');
-	if(array_key_exists($d,$r))return 1;}
+	if(array_key_exists($d,$r))return $r[$d];}
 static function com(){
 	return Sql::read('ref,icon','icons','kv','');}
 static function get($d,$o=''){
 	$r=sesclass('Icon','com','');
 	if(!array_key_exists($d,$r) && $d && !is_numeric($d)){
-		Sql::insert('icons',array($d,''));
+		Sql::insert('icons',[$d,'']);
 		$r=sesclass('Icon','com','',1);}
 	$ret=isset($r[$d]) && $r[$d]?$r[$d]:'';
 	if($o)$ret=ico($ret);

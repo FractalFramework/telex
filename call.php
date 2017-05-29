@@ -10,17 +10,15 @@ $p['appMethod']=$mth;
 if(isset($p['verbose']))pr($p);
 #request
 $content=App::open($app,$p);
-//titles
-if(!isset($p['title']))
-	if(method_exists($app,'titles'))
-		$p['title']=$app::titles($p);
+//$a=new $app; $content=$a->$mth($p);
 #render
 $ret=Head::build();
 if(get('popup'))$ret.=Build::popup($content,$p);
-elseif(get('pagup'))$ret.=Build::pagup($content);
+elseif(get('pagup'))$ret.=Build::pagup($content,$p);
 elseif(get('imgup'))$ret.=Build::imgup($content);
 elseif(get('bubble'))$ret.=Build::bubble($content);
 elseif(get('menu'))$ret.=Build::menu($content);
+elseif(get('drop'))$ret.=Build::menu($content);
 elseif(get('ses'))sez($p['k'],$p['v']);
 else $ret.=$content;
 echo encode($ret);

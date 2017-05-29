@@ -4,7 +4,7 @@
 #autoload
 function loadcore($d){$f=ses('dev').'/core/'.$d.'.php'; if(file_exists($f))require_once $f;}
 function loadapp($d){$f=ses('dev').'/app/'.$d.'.php'; if(file_exists($f))require_once $f;}
-function loadappsub($d){$r=sesfunc('scandir',ses('dev').'/app');
+function loadappsub($d){$r=sesfunc('scandir_b',ses('dev').'/app',0);
 	if($r)foreach($r as $k=>$v)if(is_dir(ses('dev').'/app/'.$v))loadapp($v.'/'.$d);}
 spl_autoload_register('loadcore');
 spl_autoload_register('loadapp');
@@ -52,34 +52,42 @@ function li($t,$c='',$id='',$s=''){
 	$r=array('id'=>$id,'class'=>$c,'style'=>$s);
 	return tag('li',$r,$t);}
 
-function href($u,$t='',$c='',$o='',$id=''){if(!$t)$t=domain($u);
+function href($u,$t='',$c='',$o='',$id=''){if(!$t)$t=domain($u); //$u=http($u);
 	$r=array('href'=>$u,'id'=>$id,'class'=>$c); if($o)$r['target']='_blank';
 	return tag('a',$r,$t);}
 function btj($t,$j='',$c='',$id=''){
 	return tag('a',array('id'=>$id,'class'=>$c,'onclick'=>$j),$t);}
 function img($src,$w='',$h='',$c='',$s=''){
+	if(substr($w,-2)!='px')$w.='px'; if(substr($h,-2)!='px')$h.='px'; 
 	//if(substr($src,0,4)!='http')$src=host().'/img/full/'.$src;
 	return tag('img',array('src'=>$src,'width'=>$w,'height'=>$h,'style'=>$s,'class'=>$c),'','1');}
 
 //forms
-function input($id,$v,$sz='',$h='',$c=''){
-	$r=array('type'=>'text','id'=>$id,'value'=>$v,'size'=>$sz);
-	if($h)$r['placeholder']=$h!=1?$h:$v; if($c)$r['class']=$c;
+function inp($id,$v,$sz='',$h='',$num='',$n=''){
+	$r=['id'=>$id,'value'=>$v,'size'=>$sz]; if($n)$r['maxlength']=$n;
+	if($num){$j=atj('numonly',$id); $r['onclick']=$j; $r['onkeyup']=$j;}
+	return tag('input',$r,'',1);}
+function input($id,$v,$sz='',$h='',$c='',$n=''){
+	$r=['type'=>'text','id'=>$id,'value'=>$v,'size'=>$sz];
+	if($h)$r['placeholder']=$h!=1?$h:$v; if($c)$r['class']=$c; if($n)$r['maxlength']=$n;
 	return tag('input',$r,'',1);}
 function goodinput($id,$v){
-	if(strlen($v)<20)return input($id,$v,36); else return textarea($id,$v,40,4);}
+	if(strlen($v)<20)return inp($id,$v,36); else return textarea($id,$v,40,4);}
 function hidden($id,$v){
 	$r=array('type'=>'hidden','id'=>$id,'value'=>$v);
 	return tag('input',$r,'',1);}
-function password($id,$v,$sz='',$h=''){$type=$h?'placeholder':'value';
-	$r=array('type'=>'password','id'=>$id,$type=>$v,'size'=>$sz);
+function password($id,$v,$sz='',$h=''){
+	$r=array('type'=>'password','id'=>$id,'value'=>$v,'size'=>$sz);
+	if($h)$r['placeholder']=$h!=1?$h:$v;
 	return tag('input',$r,'',1);}
-function textarea($id,$v,$cols=70,$rows=7,$h='',$c='',$m='',$n=''){
+function textarea($id,$v,$cols=70,$rows=7,$h='',$c='',$n=''){
 	$r=['id'=>$id,'cols'=>$cols,'rows'=>$rows]; $op='';
-	if($h)$r['placeholder']=$h; if($c)$r['class']=$c; if($m)$r['maxlength']=$m;
-	if($n){$r['onkeyup']='strcount(\''.$id.'\','.$n.')';
+	if($h)$r['placeholder']=$h!=1?$h:$v; if($c)$r['class']=$c;
+	if($n){$js='strcount1(\''.$id.'\','.$n.')'; $r['onclick']=$js; $r['onkeyup']=$js;
 		$op=' '.span($n-mb_strlen($v),'small','strcnt'.$id.'');}
 	return tag('textarea',$r,$v).$op;}
+function divarea($id,$v,$c='editon'){$bt=Build::wysiwyg($id);
+	return $bt.tag('div',['id'=>$id,'class'=>'editarea '.$c,'contenteditable'=>'true'],$v);}
 function label($for,$v,$id=''){return tag('label',['for'=>$for,'id'=>$id],$v);}
 function small($t){return tag('small','',$t);}
 function iframe($f,$w='',$h=''){if(!$w)$w='400px'; if(!$h)$h='350px';
@@ -87,49 +95,50 @@ return tag('iframe',['width'=>$w,'height'=>$h,'frameborder'=>'0','scrolling'=>'n
 function video($f,$w='',$h=''){if(!$w)$w='640px'; if(!$h)$h='400px'; return '<video controls width="'.$w.'" height="'.$h.'"><source src="'.$f.'" type="video/'.$xt.'"></video>';}
 function audio($d,$id=''){return '<audio controls>
 <source id="mp3'.$id.'" src="'.$d.'" type="audio/mpeg"></audio>';}
-function bar($id,$v=50,$step=10,$min=0,$max=100,$js='inn',$c=''){return '<input type="range" id="'.$id.'" min="'.$min.'" max="'.$max.'" step="'.$step.'" v="'.$v.'" onchange="'.$js.'(this.value,\'lbl'.$id.'\');"/>'.label($id,$v,'lbl'.$id);}
+function bar($id,$v=50,$step=10,$min=0,$max=100,$js='inn',$c=''){return '<input type="range" id="'.$id.'" min="'.$min.'" max="'.$max.'" step="'.$step.'" value="'.$v.'" onmousemove="'.$js.'(this.value,\'lbl'.$id.'\');"/>'.label($id,$v,'lbl'.$id);}
 
 function select($id,$r,$slct='',$o=''){$ret='';
 	if($r)foreach($r as $k=>$v){
-		if($o)$k=is_numeric($k)?$v:$k;
+		if($o==1)$k=is_numeric($k)?$v:$k; if($o==2)$v=lang($v);
 		if($k==$slct)$chk='selected'; else $chk='';
-		$ret.=tag('option',array('value'=>$k,'selected'=>$chk),$v);}
+		$ret.=tag('option',['value'=>$k,'selected'=>$chk],$v);}
 	return tag('select',['id'=>$id],$ret);}
-function radio($r,$nm,$ck,$o=''){$ret='';
+function radio($d,$r,$ck,$o=''){$ret='';
 	foreach($r as $k=>$v){
-		if($o)$k=is_numeric($k)?$v:$k;
-		$chk=$k==$ck?'checked':'';
-		$atb=array('type'=>'radio','name'=>$nm,'id'=>$k,'value'=>$k,'checked'=>$chk);
-		$ret.=tag('input',$atb,'',1).label($k,$v).' ';}
+		if($o)$k=is_numeric($k)?$v:$k; $chk=$k==$ck?'checked':'';
+		$atb=['type'=>'radio','name'=>$d,'id'=>$d.'-'.$k,'value'=>$k,'checked'=>$chk];
+		$ret.=tag('input',$atb,'',1).label($d.'-'.$k,$v).' ';}
 	return $ret;}
-function checkbox($d,$r,$ck='',$sp=' '){$ret='';
-	foreach($r as $k=>$v){$chk=$k==$ck?'checked':'';
-		$atb=array('type'=>'checkbox','name'=>$d,'id'=>$k,'value'=>1,'checked'=>$chk);
-		$ret.=tag('input',$atb,'',1).label($k,$v).$sp;}
+function checkbox($d,$r,$ck='',$o=' '){$ret='';
+	foreach($r as $k=>$v){
+		if($o)$k=is_numeric($k)?$v:$k; $chk=$k==$ck?'checked':'';
+		$atb=['type'=>'checkbox','name'=>$d,'id'=>$d.'-'.$k,'value'=>$v,'checked'=>$chk];
+		$ret.=tag('input',$atb,'',1).label($d.'-'.$k,$v).' ';}
 	return $ret;}
-function datalist($r,$id,$v,$s=16,$t=''){$ret=''; $opt='';
+function datalist($id,$r,$v,$s=16,$t=''){$ret=''; $opt='';
 	if($t)$ret=label($id,$t);
-	$ret.=tag('input',array('id'=>$id,'list'=>'dt'.$id,'size'=>$s,'value'=>$v),'',1);
+	$ret.=tag('input',['id'=>$id,'list'=>'dt'.$id,'size'=>$s,'value'=>$v],'',1);
 	foreach($r as $v)$opt.=tag('option','value='.$v,'',1);
-	$ret.=tag('datalist',array('id'=>'dt'.$id),$opt);
+	$ret.=tag('datalist',['id'=>'dt'.$id],$opt);
 	return $ret;}
-function input_label($id,$v,$t){return input($id,$v).label($id,$t);}
+function input_label($id,$v,$t){return div(label($id,$t)).div(input($id,$v));}
+function input_row($id,$bt,$t){return div(div(label($id,lang($t)),'cell').div($bt,'cell'),'row');}
 
 //aj
-function aj($call,$t,$c='',$r=''){//replace Ajax::j()
-	$ra=explode('|',$call); $rb=explode(',',$ra[0]);//wait for data-jb/-prmtm/-toggle
-	$onc=isset($r['onclick'])?' '.$r['onclick']:'';
-	$r['onclick']='ajbt(this);'.$onc; $r['data-j']=($call);//base64_encode
+function aj($call,$t,$c='',$r=''){
+	//wait for data-jb/-prmtm/-toggle
+	$onc=isset($r['onclick'])?' '.$r['onclick']:''; $r['data-j']=$call;
+	$r['onclick']='ajbt(this);'.$onc; //$r['onTouchStart']='ajbt(this);'.$onc;
 	if($c)$r['class']=$c;//onmousedown not mobile
-	if(auth(6) && !isset($r['title']))$r['title']=$call;
+	if(auth(6))$r['title']=$call;
 	return tag('a',$r,$t);}
-function popup($call,$t,$c=''){return aj('popup|'.$call,$t,$c);}
-function pagup($call,$t,$c=''){return aj('pagup|'.$call,$t,$c);}
+function ajs($call,$prm='',$inp=''){$prm=$prm?_jr(explode(',',$prm)):'';
+	return atjr('ajaxCall',[$call,$prm,$inp]);}
+function popup($call,$t,$c=''){return aj('popup,,,1|'.$call,$t,$c);}
+function pagup($call,$t,$c=''){return aj('pagup,,,1|'.$call,$t,$c);}
 function imgup($f,$t,$c=''){return aj('imgup|Img,read|f='.$f,$t,$c);}
-function bubble($call,$t,$c='',$o=''){$id=randid('bb');
-	return span(aj('bubble,'.$id.','.$o.'|'.$call,$t,$c,['id'=>$id]));}
-function dropdown($call,$t,$c='',$r=''){$id=randid('bb');
-	return span(aj('bubble,'.$id.',1|'.$call,$t,$c,$r),'',$id);}
+function bubble($call,$t,$c='',$o=''){$id=randid('bb');//,['id'=>$id]
+	return span(aj('bubble,'.$id.','.$o.'|'.$call,$t,$c),'',$id);}
 function toggle($call,$t,$c='',$o=''){//need container for close others
 	$id=randid('tg'); $div=before(before($call,'|',1),',',1);
 	return aj($call,$t,$c.($o?' active':''),['id'=>$id,'data-toggle'=>$div,'rel'=>$o]);}
@@ -137,44 +146,48 @@ function ajtime($call,$prm,$t,$c=''){$id=randid('bbt');
 	$r['onmouseover']='ajaxTimer(\'bubble,'.$id.',1|'.$call.'\',\''.$prm.'\'); zindex(\''.$id.'\');';
 	$r['onmouseout']='clearTimeout(xc);'; $r['onmouseup']='clearTimeout(xc);';
 	return span(aj('bubble,'.$id.',1|'.$call,$t,$c,$r),'',$id);}
-
-//lang
-function lang($d,$o='',$no=''){return Lang::get($d,$o,$no);}//ucfirst
-function langs($d){$r=explode(',',$d); foreach($r as $v)$ret[]=Lang::get($v);
-	return ucfirst(implode(' ',$ret));}
+	
 //icons
-function ico($d,$s='',$c='',$t='',$ti='',$tb=''){
+function ico($d,$s='',$c='',$t='',$ti='',$tb='',$id=''){
 	if(is_numeric($s))$s='font-size:'.$s.'px'; if($s)$r['style']=$s; 
-	$r['class']='pic fa fa-'.$d.($c?' '.$c:'');
-	if($t)$t=lang($t); elseif($ti)$r['title']=lang($t);
-	return tag('span',$r,'').$t.($tb?' '.$tb:'');}
+	$r['class']='pic fa fa-'.$d.($c?' '.$c:''); if($id)$r['id']=$id; 
+	if($t)$t=lang($t); elseif($ti)$r['title']=lang($ti); elseif($tb)$t=' '.$tb;
+	return tag('span',$r,'').$t;}
 function icxt($d,$t,$c='',$s=''){return span(ico($d,$s).$t,$c);}
 function icit($d,$t,$c='',$s=''){return ico($d,$s,$c,'',$t);}
+//function icid($d,$t,$id){return ico($d,'','',$t,'','',$id);}
 function ics($d,$o=''){return Icon::get($d,$o);}
 function pic($d,$s='',$c=''){return ico(ics($d),$s,$c);}
-function langp($d){return pic($d).lang($d);}
-function langpi($d){return tag('span',['title'=>lang($d)],pic($d));}
-function langph($d){return pic($d).span(lang($d),'react');}
-function plurial($d,$n,$o=''){return lang($d.($n>1?'s':''),$o);}
+//lang
+function lang($d,$o='',$no=''){return Lang::get($d,$o,$no);}//ucfirst
+function langc($d,$c=''){return span(Lang::get($d),$c);}
+/*function langs($d){$r=explode(',',$d); foreach($r as $v)$ret[]=Lang::get($v);
+	return ucfirst(implode(' ',$ret));}*/
+function langp($d,$s=''){return ico(ics($d),'','ico').lang($d);}
+function langpi($d){return ico(ics($d),'','','',$d);}
+function langph($d){return ico(ics($d),'','ico').span(lang($d),'react');}
+function langs($d,$n,$o=''){return lang($d.($n>1?'s':''),$o);}
 //philum
 function picto($d,$s='',$c=''){if($c)$c=' '.$c; if(is_numeric($s))$s='font-size:'.$s.'px;';
 	return span('','philum ic-'.$d.$c,'',$s);}
 //helps
 function help($d,$c='',$b=''){return Help::get(['ref'=>$d,'css'=>$c,'conn'=>$b]);}
-function hlpbt($d,$t=''){return bubble('Help,com|ref='.$d,$t?$t:ico('info'),'');}
+function hlpbt($d,$t=''){return bubble('Help,com|ref='.$d,$t?$t:ico('info'),'btn');}
 function hlpxt($d){return Help::get(['ref'=>$d,'brut'=>1]);}
+function hlpic($d,$s){return pic($d,$s).Help::get(['ref'=>$d,'brut'=>1]);}
 
 //strings
-function delbr($d,$o=''){return str_replace(array('<br />','<br/>','<br>'),$o,$d);}
+function delbr($d,$o=''){return str_replace(['<br />','<br/>','<br>'],$o,$d);}
 function deln($d,$o=''){return str_replace("\n",$o,$d);}
 function delsp($d){return str_replace("&nbsp;",' ',$d);}
 function stripAccents($d){
-	$a='àáâãäçèééêëìíîïñòóôõöùúûüıÿÀÁÂÃÄÇÈÉÊËÌÍÎÏÑÒÓÔÕÖÙÚÛÜİ';
-	$b='aaaaaceeeeeiiiinooooouuuuyyAAAAACEEEEIIIINOOOOOUUUUY';
+	$a='ÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏĞÑÒÓÔÕÖØÙÚÛÜİŞßàáâãäåæçèéêëìíîïğñòóôõöøùúûıışÿ';
+	$b='aaaaaaaceeeeiiiidnoooooouuuuybsaaaaaaaceeeeiiiidnoooooouuuyyby';
 	return strtr($d,$a,$b);}
 function normalize($d){
 	$d=str_replace(array(' ',"'",'"','?','/','§',',',';',':','!','%','&','$','#','_','+','=','!',"\n","\r","\0","[\]",'~','(',')','[',']','{','}','«','»',"&nbsp;",'-','.'),'',($d));
 	return stripAccents($d);}
+function ucfirst_b($d){return strtoupper(stripAccents(substr($d,0,1))).substr($d,1);}
 
 function del_p($d){$d=str_replace(array('<p>','</p>'),"\n",$d);
 	return str_replace('<br>',"\n",$d);}
@@ -182,13 +195,14 @@ function clean_firstspace($d){$r=explode("\n",$d);
 	foreach($r as $v)$rb[]=trim($v); return implode("\n",$rb);}
 function clean_n($ret){
 	$ret=str_replace("\r","\n",$ret);
-	$ret=mb_ereg_replace("[ ]{2,}"," ",$ret);
-	$ret=mb_ereg_replace("[\n]{2,}","\n\n",$ret);
+	$ret=preg_replace('/( ){2,}/',' ',$ret);
+	$ret=preg_replace('/(\n){2,}/',"\n\n",$ret);
 	return $ret;}
 
-function ptag($d){$r=explode("\n\n",$d);
-	if($r)foreach($r as $k=>$v)if(trim($v) && $v!="\n")$rb[$k]='<p>'.trim($v).'</p>';
-	if(isset($rb))return implode('',$rb);}//return str_replace('</p>'."\n",'</p>',$ret);
+function ptag($d){$r=explode("\n\n",$d); $ret=''; $ex='<h1<h2<h3<h4<br<hr<bl<pr<di<sp<if';
+	foreach($r as $k=>$v){$v=trim($v); if($v){$cn=substr($v,0,3);
+		if(strpos($ex,$cn)===false)$ret.='<p>'.$v.'</p>'; else $ret.=$v;}}
+	$ret=preg_replace('/(\n){2,}/',"\n",$ret); $ret=nl2br($ret); return $ret;}
 
 //php
 function combine($a,$b){$n=count($a); $r=array();
@@ -219,19 +233,24 @@ function stringToAssocArray($d,$line,$col){$r=explode($line,$d);
 	return $ret;}
 function in_array_k($r,$d){foreach($r as $k=>$v)if($v==$d)return $k;}
 function maxk($r){$d=max($r); return in_array_k($r,$d);}
+function max_b($r){$mx=0; foreach($r as $k=>$v)if($v>$mx)$mx=$v; return $mx;}
+function max_k($r){$mx=0; foreach($r as $k=>$v)if($v>$mx){$mx=$v; $mk=$k;} return $mk;}
+function scandir_b($d){$r=scandir($d);
+if($r[0]=='.')unset($r[0]); if($r[1]=='..')unset($r[1]); return $r;}
 
 //mecanics
 function in_array_key($va,$r){foreach($r as $k=>$v)if($v==$va)return $k;}
 function str_prm($v,$s,$n){$r=explode($s,$v); return $r[$n];}
 function randid($prefix=''){return $prefix.substr(microtime(),2,6);}
 function http($d){return substr($d,0,4)!='http'?'http://'.$d:$d;}
-function nohttp($d){return str_replace(array('https','http','://','www.'),'',$d);}
+function nohttp($d){return str_replace(array('https','http','://'),'',$d);}
 function domain($d){$d=nohttp($d); return before($d,'/',1);}
 function reload($u=''){echo tag('script','','window.location='.($u?$u:'document.URL'));}
 function is_img($d){$n=strrpos($d,'.'); $xt=substr($d,$n);
 if($xt=='.jpg' or $xt=='.png' or $xt=='.gif' or $xt=='.jpeg')return true;}
 function extension($d){$a=strrpos($d,'.'); if($a)$d=strtolower(substr($d,$a));
 $b=strrpos($d,'/'); if($b)$d=substr($d,0,$b); if(strlen($d<6))return $d;}
+function rgb($d){return[hexdec(substr($d,0,2)),hexdec(substr($d,2,2)),hexdec(substr($d,4,2))];}
 
 //parse
 function substrpos($v,$a,$b){return substr($v,$a+1,$b-$a-1);}
@@ -254,16 +273,17 @@ function innerfunc($d,$func){
 
 //controls
 function auth($n){if(ses('uid') && ses('auth')>=$n)return true;}
-function val($r,$d,$b=''){if(!isset($r[$d]))return $b;
+function val($r,$d,$b=''){
+	if(!isset($r[$d]))return $b; elseif(!$r[$d])return $b;
 	return $r[$d]=='memtmp'?memtmp():$r[$d];}
-function vals($r,$rb){foreach($rb as $k=>$v)$ret[$v]=isset($r[$v])?$r[$v]:''; return $ret;}
+function vals($p,$r){foreach($r as $k=>$v)$ret[$v]=val($p,$v); return $ret;}
 function prm($p){foreach($p as $k=>$v)$ret[]=$k.'='.$v; if($ret)return implode(',',$ret);}
 function mkprm($p){foreach($p as $k=>$v)$ret[]=$k.'='.$v; if($ret)return implode('&',$ret);}
 function get($d){if(isset($_GET[$d]))return urldecode($_GET[$d]);}
 function post($d){if(isset($_POST[$d]))return $_POST[$d];}
 function cookie($d,$v=''){if($v)setcookie($d,$v,time()+86400);
 	elseif(isset($_COOKIE[$d]))$v=$_COOKIE[$d]; return $v;}
-function ses($d,$v=''){if($v)$_SESSION[$d]=$v; if(isset($_SESSION[$d]))return $_SESSION[$d];}
+function ses($d,$v=''){if($v)$_SESSION[$d]=$v; return isset($_SESSION[$d])?$_SESSION[$d]:0;}
 function sez($d,$v=''){return $_SESSION[$d]=$v;}
 function sesif($d,$v=''){return ses($d)?ses($d):ses($d,$v);}
 function sesr($d,$k,$v=''){if($v)return $_SESSION[$d][$k]=$v;
@@ -272,7 +292,7 @@ function sesrz($d,$k,$v=''){if($v)return $_SESSION[$d][$k]=$v; else unset($_SESS
 function sesfunc($d,$v,$z=''){if(!ses($d) or $z)ses($d,$d($v)); return ses($d);}
 function sesclass($d,$met,$p='',$z=''){$v=$d.$met.$p;
 	if(!ses($v) or $z)sez($v,$d::$met($p)); return ses($v);}
-function onoff($d){return ses($d)?sez($d,0):ses($d,1);}
+function sestg($d){return ses($d)?sez($d,0):ses($d,1);}
 
 //conn
 function readconn($d){$p=strrpos($d,':');//p*o:connector
@@ -305,8 +325,7 @@ function _jr($r){$ret='';//tostring
 	if($ret)return implode(',',$ret);}
 function _jrb($d){$r=explode(',',$d); $ret='';//mkarray
 	if($r)foreach($r as $v){$rb=explode(':',$v); 
-		if(isset($rb[1]))
-			$ret[$rb[0]]=mb_convert_encoding(jurl($rb[1],1),'HTML-ENTITIES','UTF-8');}
+		if(isset($rb[1]))$ret[$rb[0]]=utf8_decode_b(jurl($rb[1],1));}
 	return $ret;}
 function unicode($d){
 	if(strpos($d,'%u')===false)return $d; $n=strlen($d); $ret='';
@@ -316,6 +335,8 @@ function unicode($d){
 		else $ret.=$c.$cb;}
 	else $ret.=substr($d,$i,1);}
 return $ret;}
+function protect($d,$o=''){$a='|'; $b='(bar)';
+	return str_replace($o?$b:$a,$o?$a:$b,$d);}
 
 //json
 function json_r($r){
@@ -331,7 +352,7 @@ return '{'.implode(',',$ret).'}';}
 function utf_r($r,$o=''){
 foreach($r as $k=>$v){
 	if(is_array($v))$ret[$k]=utf_r($v,$o);
-	else $ret[$k]=$o?utf8_decode($v):utf8_encode($v);}
+	else $ret[$k]=$o?utf8_decode($v):utf8_decode_b($v);}//
 return $ret;}
 
 function json_enc($r){$r=utf_r($r);
@@ -339,7 +360,7 @@ return json_encode($r,JSON_FORCE_OBJECT| JSON_HEX_TAG| JSON_HEX_APOS| JSON_HEX_Q
 
 function json_dec($d){
 if($d)$r=json_decode($d,true);
-return utf_r($r,1);}
+return utf_r($r,ses('enc'));}
 
 //clr
 function invert_color($p,$o){
@@ -352,9 +373,11 @@ return $ret;}
 function host(){return 'http://'.$_SERVER['HTTP_HOST'];}
 function encode($d){return ses('enc')==1?utf8_encode($d):$d;}
 function decode($d){return ses('enc')==1?utf8_decode($d):$d;}
+function utf8_decode_b($d){return mb_convert_encoding($d,'HTML-ENTITIES','UTF-8');}
+function utf8_decode_c($d){return mb_convert_encoding($d,'iso-8859-1','UTF-8');}
 function ip(){return gethostbyaddr($_SERVER['REMOTE_ADDR']);}
 function chrono($name=''){$ret=''; static $start;
-	if($start)$ret=round(array_sum(explode(' ',microtime()))-$start,3);
+	if($start)$ret=round(array_sum(explode(' ',microtime()))-$start,5);
 	$start=array_sum(explode(' ',microtime()));
 	return tag('small','',$name.':'.$ret);}
 

@@ -11,7 +11,7 @@ static function api($vr,$mode){
 	$vr['key']=self::getkey();
 	if(!$mode)$mode='translate';//detect//getLangs
 	$u='https://translate.yandex.net/api/v1.5/tr.json/'.$mode.'?'.mkprm($vr);
-	$d=File::read($u);
+	if($vr)$d=file_get_contents($u);
 	$r=json_decode($d,true);
 	//$r=json_dec($d);
 	return $r;}
@@ -33,7 +33,7 @@ static function build($p){$id=val($p,'id'); $ret='';
 	$format=val($p,'format','plain');//plain//html
 	$options=val($p,'option','1');//1 for autodetect (empty) from
 	if($from)$lang=$from.'-'.$to; else $lang=$to;
-	$vr=['text'=>$txt,'lang'=>$lang,'format'=>$format,'options'=>$options];
+	$vr=['text'=>rawurlencode(html_entity_decode($txt)),'lang'=>$lang,'format'=>$format,'options'=>$options]; //echo $vr['text'];
 	$r=self::api($vr,'translate');
 	return $r;}
 
@@ -49,6 +49,7 @@ static function read($p){
 static function com($p,$o=''){
 	$r=self::build($p);
 	$ret=$r['text'][0];
+	if($o)$ret=rawurldecode($ret);
 	if($o)$ret=utf8_decode($ret);
 	return $ret;}
 	

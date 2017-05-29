@@ -4,12 +4,16 @@ class Trans{
 	static $conn=['h1'=>'h1','h2'=>'h2','h3'=>'h3','b'=>'b','i'=>'i','u'=>'u','blockquote'=>'q','em'=>'b','sup'=>'e','strike'=>'k','small'=>'s','sup'=>'sup','sub'=>'sub','ul'=>'list','ol'=>'numlist'];
 
 	static function tags($tag,$atb,$txt){switch($tag){
-	case('a'): $u=segment($atb,'href="','"'); return '['.$u.'*'.$txt.':url]'; break;
-	case('img'): $u=segment($atb,'src="','"'); return '['.$u.':img]'; break;
-	case('table'): return '['.$txt.':table]';break;
-	case('tr'): return $txt.'¬'; break;
-	case('td'): return $txt.'|'; break;
-	case('li'): return $txt."\n"; break;}
+	case('a'): $u=segment($atb,'href="','"');
+		if($u){if($txt)$u.='*'.$txt; return '['.$u.':url]';} break;
+	case('img'): $u=segment($atb,'src="','"'); $w=segment($atb,'width="','"');
+		$h=segment($atb,'height="','"'); if($w)$u.='*'.$w.'-'.$h;
+		return '['.$u.':img]'; break;
+	case('table'): return '['.trim($txt).':table]';break;
+	case('tr'): return trim($txt).'¬'; break;
+	case('th'): return trim($txt).'|'; break;
+	case('td'): return trim($txt).'|'; break;
+	case('li'): return trim($txt)."\n"; break;}
 	$r=self::$conn;
 	foreach($r as $k=>$v)if($txt && $k==$tag)$txt='['.$txt.':'.$v.']';
 	return $txt;}
@@ -64,8 +68,8 @@ class Trans{
 	$txt=del_p($txt);
 	$txt=clean_firstspace($txt);
 	$txt=clean_n($txt);
-	$txt=Trans::convert($txt);
-	$txt=Trans::cleanconn($txt);
+	$txt=self::convert($txt);
+	$txt=self::cleanconn($txt);
 	return $txt;}
 }
 

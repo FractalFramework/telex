@@ -9,7 +9,7 @@ static function injectJs(){return 'ajaxCall("popup|upgrade,auto","");';}
 static function auto(){
 	$ret=update::loaddl();
 	$r=['lang','icons','help','desktop'];
-	foreach($r as $k=>$v){$ret.=apisql::call(['app'=>$v]); sleep(1);}
+	foreach($r as $k=>$v){$ret.=upsql::call(['app'=>$v]).br();}// sleep(1);
 	return $ret;}
 
 #interface

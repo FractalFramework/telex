@@ -1,6 +1,5 @@
 <?php
-$dbq=mysqli_connect('localhost','root','database','password');
-$utf8=0;
+$dbq=new mysqli('localhost','root','database','password');
 $index='index';
-$lang='fr';
+$utf8=0;
 ?>

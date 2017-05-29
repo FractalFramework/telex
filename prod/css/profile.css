@@ -1,0 +1,30 @@
+.bigprofile{margin:29px 0 0 0; width:100%;}
+.profile{background-color:white; color:#424242; border-radius:5px; margin:0; min-width:280px;}
+.profileb{border:1px solid #e1e8ed; border-radius:6px;  box-shadow:0 0 13px rgba(0,0,0,0.1);}
+.cols .profile{min-width:290px; margin-bottom:10px; min-height: 240px;}
+.banner{margin:1px 0 0 0; height:90px; border-radius:4px 4px 0 0; background-image:linear-gradient(#7ba8fd,#97c2ff); background-size:100% auto; background-position:0 50%; background-size:cover; box-shadow:0px -10px 30px -20px #000 inset;}
+.bansmall{text-align:center; padding:20px; background-color:rgba(0,0,0,0.2);}
+.bansmall a{color:white;}
+.bansmall .usrnam a{color:white; text-shadow:0px 1px 1px #000;}
+.bansmall .usrnam a:hover{color:white;}
+.banr{}
+.avatar,.avatarsmall,.avatarbig{background-color:#7ba8fd; display:inline-block; width:90px; height:90px; border-radius:6px; background-size:100% auto; background-position:center; background-size:cover; box-shadow:1px 1px 7px #AFAFAF inset; border:1px solid #AFAFAF;}
+.avatar{float:left; margin:-34px 10px 10px 10px;}
+.avatarsmall{width:60px; height:60px; margin:0px 10px 0 0; border-radius:30px;}
+.cicon .avatarsmall{margin:0px 10px;}
+.avatarbig{width:280px; height:220px; margin:-40px 10px 10px 0px; border-width:1px; border-radius:10px; box-shadow:0px -10px 30px -20px #000;}
+/*.username{clear:both;}*/
+.profile .username{margin:0px 10px;}
+.usrnam{text-shadow:0px 1px 1px #fff; font-size:22px; margin:2px 0 2px;}
+.usrnam a{text-decoration:underline; color:black;}
+.usrnam .grey{font-size:14px;}
+.status{clear:both; color:#444; margin:10px; padding:0 0 4px;}
+.statustxt,.statusdiv{margin:4px 0; font-size:14px;}
+.cols .statustxt{height:110px; overflow-x:visible; overflow-y:auto;}
+.subscrban{clear:both; padding:7px; margin-bottom:10px; background:white;}
+.subscrstats{text-align:center; max-width:720px; margin:0 auto;}
+.subscrbt{text-align:center; display:inline-block; padding:0 4px;}
+.subscrxt{font-variant:small-caps; font-size:12px; color:#9d9d9d;}
+.followbt{float:right; margin:0 0 0 10px;}
+a:hover .subscrxt{color:#1da1f2;}
+.subscrnb{font-size:18px; color:#1da1f2;}

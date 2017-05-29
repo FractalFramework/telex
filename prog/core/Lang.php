@@ -26,7 +26,7 @@ static function get($d,$o='',$no=''){
 		Sql::insert('lang',array($d,'',$applng,$lang));
 		$r=sesclass('Lang','com',$lang,'1');}
 	$ret=isset($r[$d]) && $r[$d]?$r[$d]:$d;
-	if(!$o)$ret=ucfirst($ret);
+	if(!$o)$ret=ucfirst_b($ret);
 	return $ret;}
 }
 ?>

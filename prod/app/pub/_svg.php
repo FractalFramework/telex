@@ -33,13 +33,11 @@ static function ex(){return '
 ';}
 
 static function content($prm){$rid=randid('plg');
-$code=val($prm,'code'); $size=val($prm,'size'); 
-if(!$code)$code=self::ex();
-$prm=array('code'=>$code,'size'=>$size);
-$bt=textarea('code',$code,74,10).' ';
-$bt.=aj($rid.',2|Svg,j||code',lang('ok'),'btn');
-$ret=Svg::j($prm);
-//echo textarea('',$ret,60,10);
-return $bt.div($ret,'',$rid);}
+	$code=val($prm,'code'); $size=val($prm,'size',600); 
+	if(!$code)$code=self::ex();
+	$bt=textarea('code',$code,74,10).' ';
+	$bt.=aj($rid.',,2|Svg,j||code',lang('ok',1),'btn');
+	$ret=Svg::call(['code'=>$code,'size'=>$size]);
+	return $bt.div($ret,'',$rid);}
 	
 }
