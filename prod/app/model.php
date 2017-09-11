@@ -1,5 +1,4 @@
 <?php
-
 class model{
 static $private='0';
 static $a='model';
@@ -53,8 +52,11 @@ static function save($p){//->edit
 static function modif($p){//->edit
 	return appx::modif($p);}
 
+//static function fc_tit($k,$v){}
 static function form($p){
 	//$p['html']='txt';//contenteditable for txt
+	//$p['fctit']=1;//form col call fc_tit();
+	//$p['barfunc']='barlabel';//function for bar()
 	return appx::form($p);}
 
 static function edit($p){//->form, ->call
@@ -80,12 +82,12 @@ static function play($p){//->build, ->template
 	return appx::play($p);}
 
 static function stream($p){
-	//$p['t']=self::$cols[0];//used col as title
+	$p['t']=self::$cols[0];//used col as title
 	return appx::stream($p);}
 
 #call (read)
 static function tit($p){
-	//$p['t']=self::$cols[0];//used col as title
+	$p['t']=self::$cols[0];//used col as title
 	return appx::tit($p);}
 
 static function call($p){//->play

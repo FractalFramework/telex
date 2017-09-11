@@ -5,30 +5,30 @@ form{display:inline-block;}
 h1,h2,h3{margin:12px 0;}
 h2{font-family:Arial; font-variant:small-caps;}
 hr{border:1px solid #e1e8ed;}
-#page{padding:0; margin:36px 8px;}
-.container{width:890px; margin:0 auto;}
+#page{padding:0; margin:30px 0 0 0;}
+.container{width:890px; margin:36px auto;}
 .navigation{position:relative; width:890px; margin:0px auto;}
 /*dashboard*/
 .dashboard{width:280px; position:absolute; max-width:600px;}
-.publishbt,.refreshbt{display:none; height:36px; color:#0084b4; background-color:#e1e8ed; text-align:center; font-size:14px; line-height:36px; margin:0; margin-bottom:10px;}
+.publishbt,.refreshbt{display:none; height:36px; color:#1da1f2; background-color:#e1e8ed; text-align:center; font-size:14px; line-height:36px; margin:0; margin-bottom:10px;}
 .refreshbt:hover{background-color:#bedfef;}
 .publishbt{background-color:#e5f2f7;}
-/*#tlxapps{margin-top:10px;}*/
-.nbntf{background:#0084b4; border-radius:2px; color:white; font-size:14px; margin:0 3px;}
+.nbntf{background:#1da1f2; border-radius:2px; color:white; font-size:14px; margin:0 3px;}
 a.nbntf{color:white;}
 .ntftit{color:#777; margin:0 1px 6px; font-weight:bold;}
 /*publish*/
 .pblshcnt{margin-bottom:10px; max-width:660px;}
 .area{resize:none; overflow-wrap:break-word; width:100%; min-height:72px; background:white; border:1px solid #cfcfcf; padding:5px 10px;}
-#edcnt{background:rgba(0,0,0,0.1); padding:10px;}
+#edcnt{}
 #edtsv{margin-top:6px;}
+.tlxapps{margin-top:10px; background:rgba(0,0,0,0.1); padding:10px;}
 .btsavno{color:gray; background-color:black;}
 .btsavno:hover{color:white; background-image:linear-gradient(#ffcccc,#ff0000);}
 .publishcnt{background-color:#e5f2f7; margin-bottom:10px;}
 .editordiv{width:600px; min-height:36px; padding:10px; font-size:16px; line-height:24px;}
 .edtbt{height:32px;}
 /*#pblshcnt form{width:100%;}*/
-#srchfrm input{font-size:16px; padding:10px; width:calc(100vw - 50px); max-width:580px;}
+#srchfrm input{font-size:16px; padding:10px; width:calc(100vw - 50px); max-width:600px;}
 #srchfrm input:hover, #srchfrm input{color:#222;}
 /*content*/
 .bigbt{padding:4px 20px 4px 10px;}
@@ -59,7 +59,7 @@ a.nbntf{color:white;}
 /*objects*/
 .app{font-size:14px;}
 .app a{display:block; padding:2px; transition:all 0.2s linear 0s;}
-.app a:hover{background:#ffffff; color:#0084b4;}
+.app a:hover{background:#ffffff; color:#1da1f2;}
 .apptyp{font-family:Ubuntu; font-size:14px; color:#7f7f7f; padding:2px;}
 .apptit{font-size:16px;}
 .objects{margin:4px 0; overflow-wrap:break-word;}

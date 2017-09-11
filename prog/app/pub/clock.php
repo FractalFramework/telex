@@ -146,7 +146,7 @@ class clock{
 		$ret.=tag('div',array('id'=>'needleSecFrame'),$needleSec);
 		$ret.=tag('div',array('id'=>'clockCenter'),'');
 		$ret.=tag('div',array('id'=>'digit'),'');
-		$ret.=Head::jsCode('clock();');
+		$ret.=Head::jscode('clock();');
 		$ret=tag('div',array('id'=>'clockFrame'),$ret);
 		return $ret;
 	}

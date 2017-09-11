@@ -4,7 +4,7 @@ class index{
 	
 #content
 static function content($prm){
-	return Desk::load('desktop','com',val($prm,'dir'));}
+	return div(Desk::load('desktop','com',val($prm,'dir')),'','wrapper');}
 	
 }
 

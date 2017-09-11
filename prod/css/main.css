@@ -1,30 +1,10 @@
-/*FractalFramework.com*/
+/*FractalFramework*/
 
-body{
-	background:#f5f5f5;
-}
+body{background:#f5f5f5;}
 
 /*textarea full page*/
-.editarea{
-	background-color:#FFFFFF; 
-	font-size:large; 
-	border:1px dotted grey; 
-	padding:8px 12px; 
-	width:100%; 
-	height:calc(100vh - 100px); 
-	overflow-y:auto;
-}
-.txarea{
-	font-family:Lucida Console, Courier New;
-	background-color:#2F2F2F; 
-	border-left:4px solid #000; 
-	word-wrap:break-word; 
-	color:#fff; 
-	border:0; 
-	padding:10px; 
-	width:100%; 
-	height:calc(100vh - 100px);
-}
+.editarea{background-color:#FFFFFF;  font-size:large;  border:1px dotted grey;  padding:8px 12px;  width:100%;  height:calc(100vh - 100px);  overflow-y:auto;}
+.txarea{font-family:Lucida Console, Courier New; background-color:#2F2F2F;  border-left:4px solid #000;  word-wrap:break-word;  color:#fff;  border:0;  padding:10px;  width:100%;  height:calc(100vh - 100px);}
 
 /*additions*/
 .btn, .btsav, .btdel{
@@ -49,69 +29,68 @@ body{
 
 /*popup*/
 .popup{}
-
 .bubble{}
-
 .popa{}
-
 .popu{}
-
 .bubu{}
-
 .bubu a{}
 
 /*@keyframes pagup{
 	from {background-color:black;}
 	to {background-color:background:rgba(0,0,0,0.5);}
 }
-
-.pagup{
-	background-color:background:rgba(0,0,0,0.5);
-	animation-name:pagup;
-	animation-duration:1s;
+.pagup{background-color:background:rgba(0,0,0,0.5); animation-name:pagup; animation-duration:1s;
 }*/
 
-#page{
-}
+#page{}
+#wrapper{}
+#content{background:#f5f5f5; padding:20px;}
 
-#content{
-	background:#f5f5f5;
-	padding:20px;
-}
+/*art*/
+.wrapper{width:100% - 40px); margin:0 0px;}
+.article{border:1px dotted white;}
+
+/*chat*/
+.chatwrapper{background-color:#eaeaea; max-width:600px;}
+.chatcontent{height:calc(100vh - 200px); overflow-x:visible; overflow-y:auto; background-color:#eaeaea; padding:10px;}
+.chatpane{font-size:12px; color:black; background-color:lightblue; border:0px solid #aaa; margin:10px 0; padding:7px 10px; border-radius:2px; box-shadow: 2px 2px 4px #aaa; min-width:100px; max-width:60%;}
+.chatpane a{color:black;}
+.chatdate{display:block; font-size:x-small; margin:0 7px;}
+.chatprofile{background:whitesmoke; padding:9px; font-size:small;}
+.chatform{background-color:#f4f4f4; width:auto; display:block;}
+.flex-container{padding:0; margin:10px 0; list-style:none;
+-ms-box-orient: horizontal; display: -webkit-box; display: -moz-box; display: -ms-flexbox; display: -moz-flex; display: -webkit-flex; display: flex;}
+.chatarea{width:100%; max-width:calc(100vw - 24px); resize:none; padding:4px;}
+.divarea{display:block; height:100px; width:100%; overflow-y:auto; background:white; padding:4px;}
+.row{-webkit-flex-direction: row; flex-direction: row;}
+.row-reverse{-webkit-flex-direction: row-reverse; flex-direction: row-reverse;}
+.flex-container li{margin:0;}  
+.row-reverse .chatpane{background:steelblue; color:white;}
+.menu,.menuactive{clear:left; background:#f4f4f4; margin:0; padding:4px 7px;}
+.menuactive{background:#D0D0D0;}
+.menu:hover{background:#ffffff;}
+
+/*slide*/
+.slide{background:black; color:white; align:center; display:flex; min-height:300px; width:100%; padding:100px; margin:10px 0 0 0; white-space:pre-wrap;}
+
+/*card*/
+.cstitle{font-size:22px; font-family:Ubuntu;}
+.csfunction{font-size:18px; font-family:Ubuntu; font-color:silver;}
+.csname{font-size:14px; font-color:orange;}
+.cssite{font-size:14px; font-color:grey;}
+.csinfos{font-size:12px; font-color:silver;}
+.cscard{text-align:center; border:2px solid black; padding:20px 40px;}
+.cscard div{margin:4px;}
 
 /*page-elements*/
-
-.track{
-	border:1px solid silver;
-	padding:10px;
-	border-radius:4px;
-}
+.track{border:1px solid silver; padding:10px; border-radius:4px;}
 
 /*share*/
-.pic.twitter{
-	padding:0 10px;
-	color:#1da1f2;
-}
-.pic.facebook{
-	padding:0 10px;
-	color:#3b5998;
-}
-.pic.stumble{
-	padding:0 10px;
-	color:#ab4924;
-}
-.pic.gplus{
-	padding:0 10px;
-	color:#c03c30;
-}		
+.pic.twitter{padding:0 10px; color:#1da1f2;}
+.pic.facebook{padding:0 10px; color:#3b5998;}
+.pic.stumble{padding:0 10px; color:#ab4924;}
+.pic.gplus{padding:0 10px; color:#c03c30;}	
 
 /*dev*/
-#dev{
-	font-size:small;
-	position: fixed;
-	min-width: 40px;
-	top: 0;
-	right: 0;
-	z-index: 2;
-	background: #e5e5e5;
+#dev{font-size:small; position: fixed; min-width: 40px; top: 0; right: 0; z-index: 2; background: #e5e5e5;
 }

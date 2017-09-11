@@ -1,19 +1,22 @@
 <?php
 class model1{
 static $private='0';
-static $a='model1';
-static $db='model1';
+static $a='model';
+static $db='model';
 static $cb='mdl';
 static $cols=['tit','txt','pub'];
 static $typs=['var','var','int'];
+static $conn=0;
+static $db2='model_vals';
 static $open=1;
 
 function __construct(){
-	$r=['a','db','cb','cols'];
+	$r=['a','db','cb','cols','db2','conn'];
 	foreach($r as $v)appx::$$v=self::$$v;}
 
 static function install($p=''){
 	appx::install(array_combine(self::$cols,self::$typs));}
+	//Sql::create(self::$db2,['bid'=>'int','uid'=>'int','val'=>'var'],1);
 
 static function admin($rid=''){
 	$p['rid']=$rid; $p['o']='1';
@@ -30,6 +33,7 @@ static function collect($p){
 	return appx::collect($p);}
 
 static function del($p){
+	//$p['db2']=self::$db2;
 	return appx::del($p);}
 
 static function save($p){
@@ -38,13 +42,21 @@ static function save($p){
 static function modif($p){
 	return appx::modif($p);}
 
+//static function fc_tit($k,$v){}
 static function form($p){
+	//$p['html']='txt';
+	//$p['fctit']=1;
+	//$p['barfunc']='barlabel';
 	return appx::form($p);}
 
 static function edit($p){
+	//$p['collect']=self::$db2;
+	//$p['help']='model_edit';
+	//$p['sub']=1;
 	return appx::edit($p);}
 
 static function create($p){
+	//$p['pub']=0;//default privacy
 	return appx::create($p);}
 
 #build
@@ -52,6 +64,7 @@ static function build($p){
 	return appx::build($p);}
 
 static function template(){
+	//return appx::template();
 	return '[[(tit)*class=tit:div][(txt)*class=txt:div]*class=paneb:div]';}
 
 static function play($p){
@@ -59,10 +72,12 @@ static function play($p){
 	return appx::play($p);}
 
 static function stream($p){
+	//$p['t']=self::$cols[0];
 	return appx::stream($p);}
 
 #call (read)
 static function tit($p){
+	//$p['t']=self::$cols[0];
 	return appx::tit($p);}
 
 static function call($p){

@@ -23,14 +23,7 @@ static function admin($rid=''){
 static function injectJs(){return '';}
 
 static function headers(){
-	Head::add('csscode','
-	.cstitle{font-size:22px; font-family:Ubuntu;}
-	.csfunction{font-size:18px; font-family:Ubuntu; font-color:silver;}
-	.csname{font-size:14px; font-color:orange;}
-	.cssite{font-size:14px; font-color:grey;}
-	.csinfos{font-size:12px; font-color:silver;}
-	.cscard{text-align:center; border:2px solid black; padding:20px 40px;}
-	.cscard div{margin:4px;}');
+	Head::add('csscode','');
 	Head::add('jscode',self::injectJs());}
 
 #operations

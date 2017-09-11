@@ -87,7 +87,7 @@ static function reader($d,$b){
 		case('art'):return App::open($c,(['id'=>$p]),''); break;
 		case('form'):return forms::conn(['fcom'=>$p]); break;
 		case('apj'):$js='ajaxCall("div,cn'.$c.',,1|'.$p.','.$o.'","headers=1");';
-			return div(Head::jsCode($js),'','cn'.$c); break;
+			return div(Head::jscode($js),'','cn'.$c); break;
 		case('app'):return App::open($p,['param'=>$o,'headers'=>1]); break;
 		case('popup'):return popup($p,$o,'btxt'); break;
 		case('pagup'):return pagup($p,$o,'btxt'); break;

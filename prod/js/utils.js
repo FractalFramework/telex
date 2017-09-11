@@ -215,10 +215,14 @@ function strcount(id,limit){
 	to.innerHTML=limit-ob.length;}
 
 function strcount1(id,limit){
-	var t=getbyid(id).value; var to=getbyid('strcnt'+id);
-	if(t.length>limit)getbyid('edtbt'+id).className='btsav btsavno';
-	else getbyid('edtbt'+id).className='btsav';
-	to.innerHTML=limit-t.length;}
+	var tx=getbyid(id).value; var tn=getbyid('strcnt'+id); var tb=getbyid('edtbt'+id);
+	if(tx.length>limit){
+		tb.style.display='none';
+		tn.className='btxt small red';}
+	else{
+		tb.style.display='';
+		tn.className='btxt small';}
+	tn.innerHTML=limit-tx.length;}
 
 function isNumeric(n){return !isNaN(parseFloat(n)) && isFinite(n);}
 

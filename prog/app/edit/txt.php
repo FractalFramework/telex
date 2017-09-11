@@ -26,7 +26,7 @@ static function content($prm){$ret='';
 	$ret.=tag('a','id=ckc,class=btsav,onclick=memStorage(\'txarea_m1_sav\');',lang('save'));
 	$inp=tag('textarea',array('id'=>'txarea','class'=>'editarea'),'');
 	$ret.=div($inp);
-	$ret.=Head::jsCode(self::injectJs());
+	$ret.=Head::jscode(self::injectJs());
 	return $ret;}
 }
 ?>

@@ -104,7 +104,7 @@ static function algo($r){$re=''; $rd=''; $rank='';
 	return $ret;}
 
 static function play_scores($id,$nb){$ret='';
-	$rq=Sql::query('select choice,val from vote_note where bid="'.$id.'"');
+	$rq=Sql::qr('select choice,val from vote_note where bid="'.$id.'"');
 	while($r=mysqli_fetch_row($rq))
 		$ret[$r[0]][$r[1]]=isset($ret[$r[0]][$r[1]])?$ret[$r[0]][$r[1]]+=1:1;
 	//need minimum 1 note by choice
@@ -138,7 +138,7 @@ static function pane_results($rb,$id,$nb_noters){
 
 #read
 static function cancel($p){
-	Sql::query('delete from vote_note where bid="'.$p['id'].'" and uid="'.ses('uid').'"');
+	Sql::qr('delete from vote_note where bid="'.$p['id'].'" and uid="'.ses('uid').'"');
 	return self::build($p);}
 
 static function build($p){$id=$p['id']; $ret='';

@@ -55,6 +55,6 @@ static function read($p){$rid=val($p,'rid');
 	$ret.=hidden('cto','1').br();
 	$ret.=textarea('ctxt','',64,14,lang('message')).br();
 	$ret.=aj($rid.'|contact,save||cmail,cto,ctit,ctxt',langp('send'),'btsav');
-	return div($ret,'',$rid);}
+	return div($ret,'board',$rid);}
 }
 ?>

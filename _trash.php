@@ -1,6 +1,64 @@
 <?php
 //trash
 
+//appx
+
+/*static function form2($p){
+	$cb=self::$cb; $ret=''; $db=self::$db2; $id=$p['id']; $r['bid']=$id;
+	$cols=Sql::columns($db,2); $cls=Sql::columns($db,3); $uid=val($p,'uid');
+	foreach($cols as $k=>$v){$val=val($p,$k); $label='';
+		if($k=='bid')$bt=hidden($k,$id);
+		elseif($k=='uid')$bt=hidden($k,ses('uid'));
+		elseif($v=='var')$bt=input($k,$val,63,'','',255);
+		elseif($v=='text')$bt=textarea($k,$val,60,12,'');
+		elseif($v=='date')$bt=inp($k,$val?$val:date('Y-m-d',time()),8,'');
+		elseif($v=='int')$bt=inp($k,$val,8,'');
+		if($k!='bid' && $k!='uid')$label=label($k,lang($k),'');
+		$ret.=div(div($label,'row').div($bt,'cell'),'row');}
+	$bt=aj(self::$cb.'|'.self::$a.',save2|id='.$id.'|'.$cls,langp('save'),'btsav');
+	$ret.=div(div('','row').div($bt,'cell'),'row');
+	return $ret;}*/
+
+//tlex///pane
+/*if($id=$_POST['repost']){
+	$by=bubble('tlex,profile|usr='.$usr,'@'.$usr,'',1);
+	$ret=div($by.' '.lang('has_repost',1),'grey');
+	$ret.=$msg;
+	//$ret.=self::playquote($id);
+	$r=self::api(['id'=>$id]);
+	return $ret.self::pane($r[0]);}*/
+
+//tlxcall
+/*static function menuapps1($p){$ret=''; $rid=val($p,'rid'); $dr=val($p,'dir');
+$dir='/apps/tlex'.($dr?'/'.$dr:'');
+$r=Sql::read('com','desktop','rv','where dir="'.$dir.'" and auth<="'.ses('auth').'"'); //p($r);
+$prm['onclick']='closebub(event);';
+foreach($r as $k=>$v){$bt=pic($v,28).span(hlpxt($v));
+	if(method_exists($v,'com'))
+		$ret.=aj('tlxapps,,,1|'.$v.',com|headers=1,rid='.$rid,$bt,'cicon',$prm);}
+return $ret;}
+
+static function menuapps0($p){$ret=''; $rid=val($p,'rid');
+$r=Sql::read('distinct(substring(dir,12))','desktop','rv','where dir like "/apps/tlex/%" and auth<="'.ses('auth').'"');
+foreach($r as $k=>$v)
+	$ret.=aj('applist|tlxcall,menuapps1|rid='.$rid.',dir='.$v,langp($v));
+return div($ret,'cell list','','').div('','cell','applist','');}*/
+
+//tlex
+//publishbt
+/*static function saveapp($p){$txt=val($p,$p['ids']);
+$txt=self::build_conn($txt,1); $ib=val($p,'ibs',0);
+if($lbl=post('lbl'))$_POST['lbl']='';
+if($lbl && !is_numeric($lbl))$lbl=Sql::read('id','labels','v','where ref="'.$lbl.'"');
+$id=Sql::insert(self::$db,array(ses('uid'),$txt,(int)$lbl,$ib,0));
+if(isset($_POST['ntf']))self::saventf($id,1,'ntf');
+if(isset($_POST['ntf-r']))self::saventf($id,2,'ntf-r');
+return self::read($p);}*/
+
+//lib
+/*function langs($d){$r=explode(',',$d); foreach($r as $v)$ret[]=Lang::get($v);
+	return ucfirst(implode(' ',$ret));}*/
+
 //bank
 /*static function coin($typ,$n){$ret='';
 	for($i=10;$i>0;$i--){

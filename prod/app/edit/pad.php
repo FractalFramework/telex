@@ -36,7 +36,7 @@ static function content($p){$w=val($p,'pagewidth'); $ret='';
 	//$txt=Conn::load(['msg'=>val($p,'txt'),'ptag'=>1]);
 	$txt=val($p,'txt');
 	$ret.=tag('div',['contenteditable'=>'true','id'=>'txarea','class'=>'editarea','style'=>'min-width:310px; min-height:140px;'],$txt);
-	$ret.=Head::jsCode(self::injectJs());
+	$ret.=Head::jscode(self::injectJs());
 	return $ret;}
 }
 

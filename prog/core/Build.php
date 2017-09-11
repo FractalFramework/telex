@@ -79,10 +79,11 @@ static function divTable($r,$csa='',$csb=''){$ret=''; $i=0;
 		$ret.=tag('span',['id'=>$k,'class'=>'row '.$alterenateCss],$td);}
 	return $ret;}
 
-static function toggle($p){$v=$p['v']; $rid=randid('itg'); 
-	if($v==1){$ic='on'; $t='yes';}else{$ic='off'; $t='no';}
-	$j=$rid.'|Build,toggle|id='.$p['id'].',v='.($v==1?0:1); $t=$v==1?'yes':'no';
-	return span(aj($j,ico('toggle-'.$ic,22).lang($t)).hidden($p['id'],$v),'',$rid);}
+static function toggle($p){$v=$p['v']; $rid=randid('itg');
+	$yes=val($p,'yes','yes'); $no=val($p,'no','no');
+	if($v==1){$ic='on'; $t=$yes;}else{$ic='off'; $t=$no;}
+	$j=$rid.'|Build,toggle|id='.$p['id'].',v='.($v==1?0:1); $j.=',yes='.$yes.',no='.$no;
+	return span(aj($j,ico('toggle-'.$ic,22).lang($v==1?$yes:$no)).hidden($p['id'],$v),'',$rid);}
 
 static function leftime($end){$time=$end-ses('time');
 	if($time>86400)$ret=($n=floor($time/86400)).' '.langs('day',$n);

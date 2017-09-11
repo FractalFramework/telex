@@ -2,7 +2,7 @@
 
 class Form{	
 static function build($r){$ret='';
-	foreach($r as $k=>$v){$val=val($v,'value');
+	foreach($r as $k=>$v){$val=val($v,'value'); $d='';
 		$ret[$k]['label']=div(label($k,$v['label']),'fcell');
 		switch($v['type']){
 			case('input'):$d=input($k,$val,20,'','100p'); break;
@@ -25,7 +25,7 @@ static function buildfromstring($fcom){
 		if($type=='select')$rb[$id]['opts']=explode('/',$vb[2]);
 		if($type=='checkbox')$rb[$id]['opts']=explode('/',$vb[2]);
 		if($type=='radio')$rb[$id]['opts']=explode('/',$vb[2]);}
-return self::build($rb);}
+if($rb)return self::build($rb);}
 
 static function save($p){
 	unset($p['pagewidth']); unset($p['appName']); unset($p['appMethod']);

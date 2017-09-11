@@ -33,10 +33,10 @@ static function appdir($dir,$files){$ret='';
 	if($ret)return div(div($dir),'block').div($ret,'list');}
 
 static function tlex(){$ret='';
-	$r=Sql::read('com','desktop','rv','where dir="/apps/tlex" and auth<=2');
+	$r=Sql::read('com','desktop','rv','where dir like "/apps/tlex%" and auth<=2');
 	$bt=tag('h1','',lang('applist'));
-	if($r)foreach($r as $k=>$v)
-		$ret.=div(tag('h3','',pic($v,32).hlpxt($v)).hlpxt($v.'_app','board'));
+	if($r)foreach($r as $k=>$v){$va=after($v,'/');
+		$ret.=div(tag('h3','',pic($va,32).hlpxt($va)).hlpxt($va.'_app','board'));}
 	return $bt.div($ret,'board');}
 
 static function content($prm){$ret='';

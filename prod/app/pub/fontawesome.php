@@ -18,7 +18,7 @@ static function admin(){
 static function varslight(){return '';} 
 static function vars(){
 	$d=file_get_contents('prog/css/fa.css');
-	$r=explode('.fa-',$d);
+	$r=explode('.fa-',$d); $_POST['nb']=count($r);
 	foreach($r as $v){
 		$pos=strpos($v,':before');
 		if($pos!==false)$ret[]=substr($v,0,$pos);}
@@ -29,15 +29,15 @@ static function vars(){
 	return span('','fa fa-'.$d.$c,'',$s);}*/
 
 //builder
-static $ret;
 static function build($p){
 	$inp=val($p,'inp1','');
 	$r=self::vars();
+	$ret=$_POST['nb'];
 	foreach($r as $v){
 		if(($inp && strpos($v,$inp)!==false) or !$inp or $inp==$v)
-			//self::$ret.=ico($v,32).':'.$v.br();
-			self::$ret.=tag('span','class=icon',ico($v,32).br().$v).' ';}
-	return self::$ret;}
+			//$ret.=ico($v,32).':'.$v.br();
+			$ret.=tag('span','class=icon',ico($v,32).br().$v).' ';}
+	return $ret;}
 
 static function com($p){$id=val($p,'id'); $ret='';
 	$r=self::vars();

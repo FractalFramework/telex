@@ -23,9 +23,7 @@ static function admin($rid=''){
 	return appx::admin($p);}
 
 static function headers(){
-	Head::add('csscode','.slide{background:black; color:white; align:center;
-	display:flex; min-height:300px; width:100%; padding:100px; margin:10px 0 0 0;
-	white-space:pre-wrap;}');}
+	Head::add('csscode','');}
 
 static function titles($p){
 	$d=val($p,'appMethod');
@@ -73,7 +71,7 @@ static function sldel($p){
 	elseif($id && $delall){Sql::delete(self::$db,$id); Sql::delete('slide_page',$id,'bid'); 
 		return self::stream($p);}
 	elseif($id && $idn){//reorder slides and parents after deleting
-		Sql::query('delete from slide_page where bid="'.$id.'" and idn="'.$idn.'"');
+		Sql::qr('delete from slide_page where bid="'.$id.'" and idn="'.$idn.'"');
 		$r=Sql::read('id,idn','slide_page','kv','where bid="'.$id.'" and idn>"'.$idn.'" order by idn');
 		if($r)foreach($r as $k=>$v){$nidn=$v-1; Sql::update('slide_page','idn',$nidn,$k);}
 		$r=Sql::read('id,idp','slide_page','kv','where bid="'.$id.'" and idp>="'.$idn.'" order by idn');

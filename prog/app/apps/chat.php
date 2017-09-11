@@ -31,25 +31,7 @@ static function injectJs(){
 	Head::add('jscode','chatlive();');}
 
 static function headers(){
-	Head::add('csscode','
-.chatwrapper{background-color:#eaeaea; max-width:600px;}
-.chatcontent{height:calc(100vh - 200px); overflow-x:visible; overflow-y:auto; background-color:#eaeaea; padding:10px;}
-.chatpane{font-size:12px; color:black; background-color:lightblue; border:0px solid #aaa; margin:10px 0; padding:7px 10px; border-radius:2px; box-shadow: 2px 2px 4px #aaa; min-width:100px; max-width:60%;}
-.chatpane a{color:black;}
-.chatdate{display:block; font-size:x-small; margin:0 7px;}
-.chatprofile{background:whitesmoke; padding:9px; font-size:small;}
-.chatform{background-color:#f4f4f4; width:auto; display:block;}
-.flex-container{padding:0; margin:10px 0; list-style:none;
--ms-box-orient: horizontal; display: -webkit-box; display: -moz-box; display: -ms-flexbox; display: -moz-flex; display: -webkit-flex; display: flex;}
-.chatarea{width:100%; max-width:calc(100vw - 24px); resize:none; padding:4px;}
-.divarea{display:block; height:100px; width:100%; overflow-y:auto; background:white; padding:4px;}
-.row{-webkit-flex-direction: row; flex-direction: row;}
-.row-reverse{-webkit-flex-direction: row-reverse; flex-direction: row-reverse;}
-.flex-container li{margin:0;}  
-.row-reverse .chatpane{background:steelblue; color:white;}
-.menu,.menuactive{clear:left; background:#f4f4f4; margin:0; padding:4px 7px;}
-.menuactive{background:#D0D0D0;}
-.menu:hover{background:#ffffff;}');}
+	Head::add('csscode','');}
 
 #edit
 static function del($p){return appx::del($p);}

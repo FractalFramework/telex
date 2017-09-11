@@ -80,14 +80,14 @@ static function reader($d,$b){
 		case('pic'):return pic($p,$o); break;
 		case('picto'):return picto($p,$o); break;
 		case('lang'):return lang($p,$o); break;
-		case('help'):return help($p,$o); break;
+		case('help'):return hlpxt($p,$o); break;
 		//case('css'):return span($p,$o); break;
 		case('code'):return tag('pre','',tag('code','',$p.($o?'*'.$o:''))); break;
 		case('artit'):return href('/art/'.$p,art::tit(['id'=>$p]),'btlk'); break;
 		case('art'):return App::open($c,(['id'=>$p]),''); break;
 		case('form'):return forms::conn(['fcom'=>$p]); break;
 		case('apj'):$js='ajaxCall("div,cn'.$c.',,1|'.$p.','.$o.'","headers=1");';
-			return div(Head::jsCode($js),'','cn'.$c); break;
+			return div(Head::jscode($js),'','cn'.$c); break;
 		case('app'):return App::open($p,['param'=>$o,'headers'=>1]); break;
 		case('popup'):return popup($p,$o,'btxt'); break;
 		case('pagup'):return pagup($p,$o,'btxt'); break;

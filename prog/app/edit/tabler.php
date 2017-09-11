@@ -7,7 +7,7 @@ static $db='tabler';
 static $cb='tbl';
 static $cols=['tit','txt','pub'];
 static $typs=['var','var','int'];
-static $open=1;
+static $open=0;
 
 function __construct(){
 	$r=['a','db','cb','cols'];
@@ -32,6 +32,7 @@ static function headers(){
 //trans
 static function trans($d){
 	$ret=Trans::call(['txt'=>$d]);
+	$ret=trim($ret);
 	if(strpos($ret,':table]'))$ret=substr($ret,1,-7);
 	return $ret;}
 

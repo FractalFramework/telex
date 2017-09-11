@@ -23,9 +23,7 @@ static function admin($rid=''){
 	return appx::admin($p);}
 
 static function headers(){
-	Head::add('csscode','.slide{background:black; color:white; align:center;
-	display:flex; min-height:300px; width:100%; padding:100px; margin:10px 0 0 0;
-	white-space:pre-wrap;}');}
+	Head::add('csscode','');}
 
 static function titles($p){
 	$d=val($p,'appMethod');

@@ -43,28 +43,29 @@ function tag($tag,$r,$t='',$o=''){$ret='';
 	return '<'.$tag.$ret.(!$o?'>'.$t.'</'.$tag.'>':'/>');}
 
 function div($t,$c='',$id='',$s='',$rb=''){
-	$r=array('id'=>$id,'class'=>$c,'style'=>$s); if($rb)$r+=$rb;
+	$r=['id'=>$id,'class'=>$c,'style'=>$s]; if($rb)$r+=$rb;
 	return tag('div',$r,$t);}
 function span($t,$c='',$id='',$s='',$rb=''){
-	$r=array('id'=>$id,'class'=>$c,'style'=>$s); if($rb)$r+=$rb;
+	$r=['id'=>$id,'class'=>$c,'style'=>$s]; if($rb)$r+=$rb;
 	return tag('span',$r,$t);}
+function ul($t,$c='',$id='',$s=''){
+	return tag('ul',['id'=>$id,'class'=>$c,'style'=>$s],$t);}
 function li($t,$c='',$id='',$s=''){
-	$r=array('id'=>$id,'class'=>$c,'style'=>$s);
-	return tag('li',$r,$t);}
+	return tag('li',['id'=>$id,'class'=>$c,'style'=>$s],$t);}
 
-function href($u,$t='',$c='',$o='',$id=''){if(!$t)$t=domain($u); //$u=http($u);
-	$r=array('href'=>$u,'id'=>$id,'class'=>$c); if($o)$r['target']='_blank';
+function href($u,$t='',$c='',$o='',$id=''){if(!$t)$t=domain($u);
+	$r=['href'=>$u,'id'=>$id,'class'=>$c]; if($o)$r['target']='_blank';
 	return tag('a',$r,$t);}
 function btj($t,$j='',$c='',$id=''){
-	return tag('a',array('id'=>$id,'class'=>$c,'onclick'=>$j),$t);}
+	return tag('a',['id'=>$id,'class'=>$c,'onclick'=>$j],$t);}
 function img($src,$w='',$h='',$c='',$s=''){
-	if(substr($w,-2)!='px')$w.='px'; if(substr($h,-2)!='px')$h.='px'; 
-	//if(substr($src,0,4)!='http')$src=host().'/img/full/'.$src;
-	return tag('img',array('src'=>$src,'width'=>$w,'height'=>$h,'style'=>$s,'class'=>$c),'','1');}
+	if(substr($w,-2)!='px')$w.='px'; if(substr($h,-2)!='px')$h.='px';
+	return tag('img',['src'=>$src,'width'=>$w,'height'=>$h,'style'=>$s,'class'=>$c],'','1');}
 
 //forms
 function inp($id,$v,$sz='',$h='',$num='',$n=''){
-	$r=['id'=>$id,'value'=>$v,'size'=>$sz]; if($n)$r['maxlength']=$n;
+	$r=['id'=>$id,'value'=>$v,'size'=>$sz];
+	if($h)$r['placeholder']=$h!=1?$h:$v; if($n)$r['maxlength']=$n;
 	if($num){$j=atj('numonly',$id); $r['onclick']=$j; $r['onkeyup']=$j;}
 	return tag('input',$r,'',1);}
 function input($id,$v,$sz='',$h='',$c='',$n=''){
@@ -96,6 +97,7 @@ function video($f,$w='',$h=''){if(!$w)$w='640px'; if(!$h)$h='400px'; return '<vi
 function audio($d,$id=''){return '<audio controls>
 <source id="mp3'.$id.'" src="'.$d.'" type="audio/mpeg"></audio>';}
 function bar($id,$v=50,$step=10,$min=0,$max=100,$js='inn',$c=''){return '<input type="range" id="'.$id.'" min="'.$min.'" max="'.$max.'" step="'.$step.'" value="'.$v.'" onmousemove="'.$js.'(this.value,\'lbl'.$id.'\');"/>'.label($id,$v,'lbl'.$id);}
+function progress($n){return '<progress value="'.$n.'" max="100"></progress>';}
 
 function select($id,$r,$slct='',$o=''){$ret='';
 	if($r)foreach($r as $k=>$v){
@@ -105,13 +107,13 @@ function select($id,$r,$slct='',$o=''){$ret='';
 	return tag('select',['id'=>$id],$ret);}
 function radio($d,$r,$ck,$o=''){$ret='';
 	foreach($r as $k=>$v){
-		if($o)$k=is_numeric($k)?$v:$k; $chk=$k==$ck?'checked':'';
+		if($o==1)$k=is_numeric($k)?$v:$k; $chk=$k==$ck?'checked':''; if($o==2)$v=lang($v);
 		$atb=['type'=>'radio','name'=>$d,'id'=>$d.'-'.$k,'value'=>$k,'checked'=>$chk];
 		$ret.=tag('input',$atb,'',1).label($d.'-'.$k,$v).' ';}
 	return $ret;}
 function checkbox($d,$r,$ck='',$o=' '){$ret='';
 	foreach($r as $k=>$v){
-		if($o)$k=is_numeric($k)?$v:$k; $chk=$k==$ck?'checked':'';
+		if($o==1)$k=is_numeric($k)?$v:$k; $chk=$k==$ck?'checked':''; if($o==2)$v=lang($v);
 		$atb=['type'=>'checkbox','name'=>$d,'id'=>$d.'-'.$k,'value'=>$v,'checked'=>$chk];
 		$ret.=tag('input',$atb,'',1).label($d.'-'.$k,$v).' ';}
 	return $ret;}
@@ -122,15 +124,14 @@ function datalist($id,$r,$v,$s=16,$t=''){$ret=''; $opt='';
 	$ret.=tag('datalist',['id'=>'dt'.$id],$opt);
 	return $ret;}
 function input_label($id,$v,$t){return div(label($id,$t)).div(input($id,$v));}
-function input_row($id,$bt,$t){return div(div(label($id,lang($t)),'cell').div($bt,'cell'),'row');}
+function input_row($id,$bt,$t){return div(div(label($id,lang($t)),'cell2').div($bt,'cell'),'row');}
 
 //aj
-function aj($call,$t,$c='',$r=''){
-	//wait for data-jb/-prmtm/-toggle
+function aj($call,$t,$c='',$r=''){//wait for data-jb/-prmtm/-toggle
 	$onc=isset($r['onclick'])?' '.$r['onclick']:''; $r['data-j']=$call;
 	$r['onclick']='ajbt(this);'.$onc; //$r['onTouchStart']='ajbt(this);'.$onc;
 	if($c)$r['class']=$c;//onmousedown not mobile
-	if(auth(6))$r['title']=$call;
+	if(auth(6) && !isset($r['title']))$r['title']=$call;
 	return tag('a',$r,$t);}
 function ajs($call,$prm='',$inp=''){$prm=$prm?_jr(explode(',',$prm)):'';
 	return atjr('ajaxCall',[$call,$prm,$inp]);}
@@ -161,8 +162,6 @@ function pic($d,$s='',$c=''){return ico(ics($d),$s,$c);}
 //lang
 function lang($d,$o='',$no=''){return Lang::get($d,$o,$no);}//ucfirst
 function langc($d,$c=''){return span(Lang::get($d),$c);}
-/*function langs($d){$r=explode(',',$d); foreach($r as $v)$ret[]=Lang::get($v);
-	return ucfirst(implode(' ',$ret));}*/
 function langp($d,$s=''){return ico(ics($d),'','ico').lang($d);}
 function langpi($d){return ico(ics($d),'','','',$d);}
 function langph($d){return ico(ics($d),'','ico').span(lang($d),'react');}
@@ -241,7 +240,7 @@ if($r[0]=='.')unset($r[0]); if($r[1]=='..')unset($r[1]); return $r;}
 //mecanics
 function in_array_key($va,$r){foreach($r as $k=>$v)if($v==$va)return $k;}
 function str_prm($v,$s,$n){$r=explode($s,$v); return $r[$n];}
-function randid($prefix=''){return $prefix.substr(microtime(),2,6);}
+function randid($p=''){return $p.substr(microtime(),2,6);}
 function http($d){return substr($d,0,4)!='http'?'http://'.$d:$d;}
 function nohttp($d){return str_replace(array('https','http','://'),'',$d);}
 function domain($d){$d=nohttp($d); return before($d,'/',1);}
@@ -251,6 +250,7 @@ if($xt=='.jpg' or $xt=='.png' or $xt=='.gif' or $xt=='.jpeg')return true;}
 function extension($d){$a=strrpos($d,'.'); if($a)$d=strtolower(substr($d,$a));
 $b=strrpos($d,'/'); if($b)$d=substr($d,0,$b); if(strlen($d<6))return $d;}
 function rgb($d){return[hexdec(substr($d,0,2)),hexdec(substr($d,2,2)),hexdec(substr($d,4,2))];}
+function b36($n,$o=''){return base_convert($n,$o?36:10,$o?10:36);}
 
 //parse
 function substrpos($v,$a,$b){return substr($v,$a+1,$b-$a-1);}
@@ -277,6 +277,7 @@ function val($r,$d,$b=''){
 	if(!isset($r[$d]))return $b; elseif(!$r[$d])return $b;
 	return $r[$d]=='memtmp'?memtmp():$r[$d];}
 function vals($p,$r){foreach($r as $k=>$v)$ret[$v]=val($p,$v); return $ret;}
+function valk($p,$r){foreach($r as $k=>$v)$ret[]=val($p,$v); return $ret;}
 function prm($p){foreach($p as $k=>$v)$ret[]=$k.'='.$v; if($ret)return implode(',',$ret);}
 function mkprm($p){foreach($p as $k=>$v)$ret[]=$k.'='.$v; if($ret)return implode('&',$ret);}
 function get($d){if(isset($_GET[$d]))return urldecode($_GET[$d]);}
@@ -306,7 +307,8 @@ function atbr($d){$ret=''; $r=explode(',',$d);//make k="v" from k=v,
 function tagb($tag,$p,$t=''){//for Vue
 	if(trim($t))return '<'.$tag.atbr($p).'>'.$t.'</'.$tag.'>';}
 
-function insertbt($t,$v,$id){return $ret=btj($t,'insert(\'['.$v.']\',\''.$id.'\')','btok');}
+//function insertbt($t,$v,$id){return btj($t,'insert(\'['.$v.']\',\''.$id.'\')','btok');}
+function insertbt($t,$v,$id){return tlex::publishbt($t,$v,$id);}
 
 //amt
 function memtmp(){
@@ -335,6 +337,7 @@ function unicode($d){
 		else $ret.=$c.$cb;}
 	else $ret.=substr($d,$i,1);}
 return $ret;}
+function ascii($v){if(is_numeric($v))$v='#'.$v; return '&'.$v.';';}
 function protect($d,$o=''){$a='|'; $b='(bar)';
 	return str_replace($o?$b:$a,$o?$a:$b,$d);}
 
@@ -346,8 +349,8 @@ foreach($r as $k=>$v){
 	//else $ret[]='"'.$k.'":"'.utf8_encode(htmlspecialchars($v)).'"';}
 	elseif(is_numeric($k))$ret[]='"'.rawurlencode($v).'"';
 	else $ret[]='"'.$k.'":"'.rawurlencode($v).'"';}
-if(is_numeric($k))return '['.implode(',',$ret).']'; else 
-return '{'.implode(',',$ret).'}';}
+if(is_numeric($k))return '['.implode(',',$ret).']';
+else return '{'.implode(',',$ret).'}';}
 
 function utf_r($r,$o=''){
 foreach($r as $k=>$v){
@@ -368,6 +371,8 @@ if($o)return hexdec($p)<8300000?'ffffff':'000000';
 for($i=0;$i<3;$i++){$d=dechex(255-hexdec(substr($p,$i*2,2)));
 if(strlen($d)==1)$d='0'.$d; $ret.=$d=='0'||!$d?'00':$d;}
 return $ret;}
+
+function row($r){$ret=''; foreach($r as $v)$ret.=div($v,'cell'); return div($ret,'row');}
 
 //utils
 function host(){return 'http://'.$_SERVER['HTTP_HOST'];}

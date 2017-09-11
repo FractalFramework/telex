@@ -65,6 +65,7 @@ static function mkthumb($nm,$w,$h=''){if(!$h)$h=$w;
 
 static function saveimg($f,$prf,$w,$h=''){$er=1;
 	if(substr($f,0,4)!='http')return;
+	if(strpos($f,'?'))$f=before($f,'?');
 	$xt=extension($f); if(!$xt)$xt='.jpg';
 	$nm=$prf.substr(md5($f),0,10); $h=$h?$h:$w;
 	$fa='img/full/'.$nm.$xt; Dir::mkdir_r($fa);

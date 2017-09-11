@@ -43,20 +43,6 @@ html5Upload.initialize({
 	static function headers(){
 		Head::add('csscode','');
 		Head::add('jscode',self::injectJs());}
-	static function admin(){
-		$r[]=array('','j','popup|drag,content','plus',lang('open'));
-		return $r;}
-	static function install(){
-		Sql::create('drag',array('mid'=>'int','mname'=>'var'),0);}//1=update
-	static function titles($p){
-		$d=val($p,'appMethod');
-		$r['content']='welcome';
-		$r['build']='drag';
-		if(isset($r[$d]))return lang($r[$d]);}
-	
-	//edit
-	static function edit(){
-		$ret=Form::com(['table'=>self::$db]);}
 	
 	//builder
 	static function build($p){
@@ -113,12 +99,8 @@ html5Upload.initialize({
 	
 	//interface
 	static function content($p){
-		//self::install();
 		$p['rid']=randid('md');
-		$p['p1']=val($p,'param',val($p,'p1'));
-		//$ret=hlpbt('drag');
-		$ret=input('inp1',$p['p1'],'10',1);
-		$ret.=aj('popup|drag,build|msg=text|inp1',lang('send'),'btn');
+		//$ret=self::build($p);
 		return div($ret,'',$p['rid']);}
 }
 ?>

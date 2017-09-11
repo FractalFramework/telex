@@ -21,7 +21,7 @@ return $r;}
 
 static function profile(){
 $usr=ses('user')?ses('user'):'profile'; $dev=ses('dev');
-$r[]=[$usr,'j','tlxbck,,,1|profile,edit','user','edit profile'];
+$r[]=[$usr,'pop','profile,edit','user','edit profile'];
 $r[]=[$usr.'/lang','j','returnVar,lng,reload|Lang,set|lang=fr','flag','fr'];
 $r[]=[$usr.'/lang','j','returnVar,lng,reload|Lang,set|lang=en','flag','en'];
 $r[]=[$usr.'/lang','j','returnVar,lng,reload|Lang,set|lang=es','flag','es'];
@@ -33,6 +33,14 @@ if($n>1)$r[]=[$usr.'/badger','in','Admin,badger','','badger'];
 $r[]=[$usr,'pop','desktop|dir=/documents','','desktop'];
 $r[]=[$usr.'/utils','','pad','file-text-o','notes'];
 $r[]=[$usr.'/utils','','tickets','','tickets'];
+$r[]=[$usr.'/about','pop','art|id=6','tlex','welcome'];
+$r[]=[$usr.'/about','pop','art|id=54','art','features'];
+$r[]=[$usr.'/about','pop','applist,tlex|','art','list of Apps'];
+$r[]=[$usr.'/about','pop','art|id=4','info','confidentiality'];
+$r[]=[$usr.'/about','pop','art|id=5','art','developpers'];
+$r[]=[$usr.'/about','pop','devnote','','devnote'];
+$r[]=[$usr.'/about','pop','contact','','contact'];
+$r[]=[$usr.'/about','pop','art|id=2','info','credits'];
 //$r[]=[$usr.'/'.'utils','','convert','file-text-o','convert'];
 if(auth(6)){
 	$r[]=[$dev.'/admin','pop','admin_lang','','lang'];

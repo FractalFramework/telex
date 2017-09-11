@@ -44,7 +44,7 @@ static function recoverSave($p){
 	$pswd=val($p,'recpsw');
 	$user=ses('recoveryUsr');
 	if(!$id=ses('recoveryId'))return 'recovery_fail';
-	if($user && $pswd)Sql::query('update login set password=PASSWORD("'.$pswd.'") where id='.$id);
+	if($user && $pswd)Sql::qr('update login set password=PASSWORD("'.$pswd.'") where id='.$id);
 	sez('recoveryUsr'); sez('recoveryRid'); sez('recoveryId');
 	return Auth::login($user,$pswd);}
 

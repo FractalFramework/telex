@@ -21,7 +21,7 @@ return $r;}
 
 static function profile(){
 $usr=ses('user')?ses('user'):'profile'; $dev=ses('dev');
-$r[]=[$usr,'j','tlxbck,,,1|profile,edit','user','edit profile'];
+$r[]=[$usr,'pop','profile,edit','user','edit profile'];
 $r[]=[$usr.'/lang','j','returnVar,lng,reload|Lang,set|lang=fr','flag','fr'];
 $r[]=[$usr.'/lang','j','returnVar,lng,reload|Lang,set|lang=en','flag','en'];
 $r[]=[$usr.'/lang','j','returnVar,lng,reload|Lang,set|lang=es','flag','es'];

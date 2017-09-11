@@ -48,26 +48,29 @@ static function setq($q,$b){
 	elseif(is_numeric($q))return 'where '.$b.'.id="'.$q.'"';
 	else return $q;}
 
+static function cols($d,$b){
+	if(is_array($d))$d=implode(',',$d);
+	elseif(substr($d,-6)=='timeup')$d=substr($d,0,-6).'unix_timestamp('.$b.'.up) as time';
+	elseif(substr($d,-6)=='dateup')$d=substr($d,0,-6).'date_format('.$b.'.up,"%d/%m/%Y") as date';
+	elseif($d=='all')$d=self::columns($b,3);
+	return $d;}
+
 //read('id','qda','rv','where id=""');
 static function read($d,$b,$p,$q='',$z=''){
-if(substr($d,-6)=='timeup')$d=substr($d,0,-6).'unix_timestamp('.$b.'.up) as time';
-if(substr($d,-6)=='dateup')$d=substr($d,0,-6).'date_format('.$b.'.up,"%d/%m/%Y") as date';
-if($d=='all')$d=self::columns($b,3);
-$q=self::setq($q,$b);
-$sql='select '.$d.' from '.$b.' '.$q;
-$rq=self::query($sql,$z);
-if($rq){$ret=self::sqlformat($rq,$p); mysqli_free_result($rq); return $ret;}}
+	$d=self::cols($d,$b);
+	$q=self::setq($q,$b);
+	$sql='select '.$d.' from '.$b.' '.$q;
+	$rq=self::query($sql,$z);
+	if($rq){$ret=self::sqlformat($rq,$p); mysqli_free_result($rq); return $ret;}}
 
 //join b2 to b1, associating b2.$key to b1.id
 static function read_inner($d,$b1,$b2,$key,$p,$q='',$z=''){
-if(substr($d,-6)=='timeup')$d=substr($d,0,-6).'unix_timestamp('.$b1.'.up) as time';
-if(substr($d,-6)=='dateup')$d=substr($d,0,-6).'date_format('.$b1.'.up,"%d/%m/%Y") as date';
-$q=self::setq($q,$b1);
-$q='left join '.$b2.' on '.$b1.'.'.$key.'='.$b2.'.id '.$q;
-return self::read($d,$b1,$p,$q,$z);}
+	$q=self::setq($q,$b1);
+	$q='left join '.$b2.' on '.$b1.'.'.$key.'='.$b2.'.id '.$q;
+	return self::read($d,$b1,$p,$q,$z);}
 
 static function select($sql,$p,$z=''){if($z)echo $sql; $rq=self::query($sql,$z);
-if($rq){$ret=self::sqlformat($rq,$p); mysqli_free_result($rq); return $ret;}}
+	if($rq){$ret=self::sqlformat($rq,$p); mysqli_free_result($rq); return $ret;}}
 
 static function escape($v){
 	if(ses('enc'))$v=($v); else $v=html_entity_decode($v);//utf8_decode
@@ -101,9 +104,11 @@ static function insert($b,$r,$z=''){
 	$rq=self::query($sql,$z); return mysqli_insert_id(self::$dbq);}
 static function update($b,$d,$v,$id,$col='',$z=''){$col=$col?$col:'id';
 	self::query('update '.$b.' set '.$d.'="'.self::escape($v).'" where '.$col.'="'.$id.'"',$z);}
-static function updates($b,$r,$id,$z=''){$com='';
+static function updates($b,$r,$id,$col='',$z=''){$com=''; $col=$col?$col:'id';
 	foreach($r as $k=>$v)$rb[]=$k.'="'.self::escape($v).'"';
-	self::query('update '.$b.' set '.implode(',',$rb).' where id="'.$id.'"',$z);}
+	self::query('update '.$b.' set '.implode(',',$rb).' where '.$col.'="'.$id.'"',$z);}
+
+#maintenance
 static function reflush($b,$o=''){
 	self::query('alter table '.$b.' order by id');}
 static function reflush_ai($b){$id=self::lastid($b)+1;

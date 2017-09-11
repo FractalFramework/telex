@@ -31,9 +31,7 @@ static function headers(){
 	Head::add_prop('og:title',self::$title);
 	Head::add_prop('og:description',self::$description);
 	Head::add_prop('og:image',self::$image);
-	Head::add('csscode','
-	.wrapper{width:100% - 40px); margin:0 0px;}
-	.article{border:1px dotted white;}');
+	Head::add('csscode','');
 	Head::add('jscode',self::injectJs());}
 
 //edit
@@ -204,7 +202,7 @@ static function tit($p){$id=val($p,'id');
 static function call($p){$id=val($p,'id'); $ret='';
 	if($id){$p['id']=Sql::read('id',self::$db,'v',$id);
 		if($p['id'])$ret=self::play($p); else $ret=help('article not exists','board');}
-	return div($ret,'wrapper','art'.$id,'');}
+	return div($ret,'content','art'.$id,'');}
 
 static function com($p){
 	return appx::com($p);}

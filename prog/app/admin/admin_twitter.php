@@ -3,7 +3,7 @@
 class admin_twitter{
 static $private='1';
 static $db='twitter';
-	
+
 static function injectJs(){return '';}
 
 static function cols(){
@@ -31,7 +31,7 @@ static function save($p){
 	foreach($cols as $v)$r[]=val($p,$v);
 	$p['id']=Sql::insert(self::$db,$r);
 	return self::edit($p);}
-	
+
 static function add($p){
 	$id=val($p,'id'); $rid=val($p,'rid');
 	$cols=self::cols(); $colstr=implode(',',$cols);
@@ -39,7 +39,7 @@ static function add($p){
 	$ret.=aj($rid.'|admin_twitter,save|rid='.$rid.'|'.$colstr,lang('save'),'btsav').br();
 	foreach($cols as $v)$ret.=div(input($v,'',54,$v));
 	return $ret;}
-	
+
 #editor	
 static function edit($p){
 	$id=val($p,'id'); $rid=val($p,'rid');
@@ -51,13 +51,13 @@ static function edit($p){
 	//$ret.=aj('popup|admin_twitter,call|rid='.$rid.',id='.$id,langp('view'),'btn');
 	foreach($cols as $v)$ret.=div($v,'tit').input($v,$r[$v],54);
 	return $ret;}
-	
+
 #reader
 static function build($p){$id=val($p,'id');
 	$cols=self::cols(); $colstr=implode(',',$cols);
 	$ret=Sql::read($colstr,self::$db,'ra',$id);
 	return $ret;}
-	
+
 static function menu($p){$rid=val($p,'rid');
 	$r=Sql::read('id,owner',self::$db,'rr',['uid'=>ses('uid')]);
 	//$ret['help']=hlpbt('admin_twitter');

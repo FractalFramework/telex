@@ -17,7 +17,7 @@ static function reader($d,$b){
 		case('img'): return img($p,$o); break;
 		//case('thumb'): return make_thumb_d($p,$o); break;
 		case('apj'):$js='ajaxCall("div,cn'.$c.',,1|'.$p.','.$o.'","headers=1");';
-			return div(Head::jsCode($js),'','cn'.$c); break;
+			return div(Head::jscode($js),'','cn'.$c); break;
 		case('app'):return App::open($p,['param'=>$o,'headers'=>1]); break;
 		case('appbt'):return aj('popup|'.$c.','.$o.'|param='.$p,langp('open').' '.$c.':'.$p,'btn'); break;
 		case('no'):return '['.$p.']'; break;}

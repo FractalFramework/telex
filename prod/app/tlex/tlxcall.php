@@ -5,13 +5,24 @@ static $private='0';
 static function clr(){$d='mintcream thistle olivedrab lightyellow lightsteelblue lightblue lavender greenyellow darkseagreen darkkhaki cornflowerblue cadetblue blanchedalmond ThreeDLightShadow scrollbar';}
 
 //menu apps
-static function menuapps($p){$ret=''; $rid=val($p,'rid');
-$rb=Sql::read('com','desktop','rv','where dir="/apps/tlex" and auth<="'.ses('auth').'"');
+/*static function menuapps0($p){$ret=''; $rid=val($p,'rid');
+$r=Sql::read('com','desktop','rv','where dir like "/apps/tlex/%" and auth<="'.ses('auth').'"');
 $prm['onclick']='closebub(event);';
-foreach($rb as $k=>$v){$bt=pic($v,28).div(hlpxt($v));
-	if(method_exists($v,'com'))
-		$ret.=aj('tlxapps,,,1|'.$v.',com|headers=1,rid='.$rid,$bt,'cicon',$prm);}
-return $ret;}
+foreach($r as $k=>$v){$v=after($v,'/');
+	if(method_exists($v,'com')){
+	$bt=pic($v,28).div(hlpxt($v));
+		$ret.=aj('tlxapps,,,1|'.$v.',com|headers=1,rid='.$rid,$bt,'cicon',$prm);}}
+return $ret;}*/
+
+static function menuapps($p){$ret=''; $rid=val($p,'rid');
+$r=Sql::read('dir,com','desktop','kr','where dir like "/apps/tlex/%" and auth<="'.ses('auth').'"');
+$prm['onclick']='closebub(event);';
+foreach($r as $k=>$v){$ret.=div(after($k,'/'),'tit');
+	foreach($v as $ka=>$va)if(method_exists($va,'com')){
+		$prm['title']=addslashes(hlpxt($va.'_app'));
+		$bt=pic($va,20).span(hlpxt($va));
+		$ret.=aj('tlxapps,,,1|'.$va.',com|headers=1,rid='.$rid,$bt,'licon',$prm);}}
+return div($ret,'tlxapps');}
 
 //keep
 static function keepsave($p){//dir,type,com,picto,bt
@@ -20,7 +31,7 @@ $o=val($p,'p2'); $t=val($p,val($p,'ict'),val($p,'tit'));
 if($com=='img'){$ncom=$d; $t=before($d,'.'); $ic='image';}
 elseif($com=='web'){$ncom='tlex,objplayer|obj=playweb,p1='.$d.',p2='.$o;}
 elseif($com=='video'){$ncom='Video,call|p='.$d.',id='.$id; $ic='video';}
-elseif($com=='art'){$ncom='art,play|id='.$d; $ic='file-o';}//dont'change it!
+elseif($com=='art'){$ncom='art,call|id='.$d; $ic='file-o';}//dont'change it!
 elseif($com=='chat'){$ncom='chat|id='.$d; $ic='comments';}
 elseif($com=='gps'){$ncom='map,call|coords='.$d; $ic='map';}
 elseif($com=='poll'){$ncom='poll,readtlx|id='.$d;}
@@ -97,6 +108,7 @@ $ptw=ico('twitter-square','24','twitter'); $pfb=ico('facebook-official','24','fa
 $pgp=ico('google-plus-circle','24','gplus'); $pst=ico('stumbleupon-circle','24','stumble');
 $ret=href($tw,$ptw,'',1).href($fb,$pfb,'',1);
 $ret.=href($gp,$pgp,'',1).href($st,$pst,'',1);
+$ret.=popup('iframe,getcode|url=tlex.fr/api/read/'.$id,ico('code',24));
 $ret.=aj('sndml'.$id.'|tlxcall,sendmail|id='.$id,ico('envelope-o',24)).span('','','sndml'.$id);
 $r=Sql::read('id,owner','twitter','kv',['uid'=>ses('uid')]);
 if($r){foreach($r as $k=>$v)
@@ -176,9 +188,10 @@ return $ret;}
 
 //notification (likes,follow)
 static function saventf1($tousr,$id,$type){
-//$ex=Sql::read('id','tlex_ntf','v',['4usr'=>$tousr,'byusr'=>ses('user'),'typntf'=>$type,'txid'=>$id]);
-Sql::insert('tlex_ntf',[$tousr,ses('user'),$type,$id,'1']);
-$send=Sql::read('ntf','profile','v',['pusr'=>$tousr]);
+$r=['4usr'=>$tousr,'byusr'=>ses('user'),'typntf'=>$type,'txid'=>$id];
+$ex=Sql::read('id','tlex_ntf','v',$r);
+if(!$ex){Sql::insert('tlex_ntf',[$tousr,ses('user'),$type,$id,'1']);
+	$send=Sql::read('ntf','profile','v',['pusr'=>$tousr]);}
 if($send!=1){
 	$mail=Sql::read('mail','login','v',['name'=>$tousr]);
 	$subject=lang('tlex');
@@ -267,6 +280,20 @@ elseif(val($p,'chan')){//display
 static function zero_telex(){
 $ret=help('empty_home','board');
 $ret.=div(aj('tlxbck|profile,edit',langp('edit profile')),'board');
+return $ret;}
+
+static function one($p){$r=tlex::api($p);
+if($r)return self::pane(current($r),$p['id']);}
+
+static function pane($v,$current=''){$id=$v['id']; $usr=$v['name'];
+$v['idv']='tlx'.$id; $tg='popup';
+$avatar='';//bubble('tlex,profile|usr='.$usr.',small=1',tlex::avatar($v),'btxt',1);
+$head=tlex::panehead($v,$tg); tlex::$objects='';
+if($v['ko'])$msg=div(help('telex_banned'),'alert');
+else $msg=Conn::load(['msg'=>$v['txt'],'app'=>'tlex','mth'=>'reader','ptag'=>1]);
+$msg=div($msg,'message');//div($avatar,'bloc_left').
+$ret=div($head.$msg,'bloc_content');
+$ret.=div('','','pn'.$v['idv']);
 return $ret;}
 
 //apicom

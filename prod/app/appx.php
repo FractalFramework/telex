@@ -140,20 +140,23 @@ static function answ($p){$ret=''; $answ=val($p,'answ');
 
 static function form($p){$cb=self::$cb; $ret='';
 	$cols=Sql::columns(self::$db,4); $uid=val($p,'uid'); $html=val($p,'html');
-	foreach($cols as $k=>$v){$val=val($p,$k); $bt='';
+	foreach($cols as $k=>$v){$val=val($p,$k); $a=self::$a; $bt=''; $no='';
 		if($k==$html)$bt=divarea($k,$val);
+		elseif(val($p,'fc'.$k)){$f='fc_'.$k; $ret.=$a::$f($k,$val); $no=1;}
 		elseif($k=='txt'){if(self::$conn)$bt=art::wswg($k);
 			$bt.=textarea($k,$val,60,4,'','',$v=='var'?255:0);}
 		elseif($k=='pub')$bt=self::pub($k,$val,$uid);
 		elseif($k=='answ')$bt=self::answ($p);
 		elseif($k=='com')$bt=self::sets($p);
 		elseif($k=='cl')$bt=Build::toggle(['id'=>$k,'v'=>$val]);
-		elseif($k=='nb')$bt=bar($k,$val,1,1,10);
+		elseif($k=='nb')$bt=div(bar($k,$val,1,1,10),'inp');//,val($p,'barfunc')
 		elseif($v=='var')$bt=input($k,$val,63,'','',255);
 		elseif($v=='text')$bt=textarea($k,$val,60,12,'');
 		elseif($v=='date')$bt=inp($k,$val?$val:date('Y-m-d',time()),8,'');
-		elseif($v=='int')$bt=inp($k,$val,8,'');
-		$ret.=div(label($k,lang($k)),'applabel').$bt;}
+		elseif($v=='int')$bt=inp($k,$val,'','',1);
+		if(!$no)$ret.=div($bt.label($k,lang($k)));
+		//if(!$no)$ret.=input_row($k,$bt,$k);
+		}
 	if(val($p,'sub')){$a=self::$a; $ret.=div($a::subform($p),'',$cb.'sub');}
 	return $ret;}
 
@@ -185,7 +188,7 @@ static function create($p){
 
 static function edit($p){
 	$id=val($p,'id'); $rid=val($p,'rid'); 
-	$db2=val($p,'collect'); $uid=ses('uid'); $own=0;
+	$db2=val($p,'collect'); $uid=ses('uid'); $own=0; $sav='';
 	$a=self::$a; $cb=self::$cb; $db=self::$db; $cls=implode(',',self::$cols);
 	$r=Sql::read('id,uid,'.$cls,$db,'ra',$id); $pub=val($r,'pub'); $r['sub']=val($p,'sub');
 	$ok=self::permission($db,$id,$pub); if($r['uid']==$uid or auth(6))$own=1;
@@ -195,29 +198,36 @@ static function edit($p){
 	if($own or $ok){$r['own']=1;
 		$ret.=aj($cb.'|'.$a.',edit|id='.$id.',rid='.$rid,langp('edit'),'btn');
 		if($hlp=val($p,'help'))$ret.=hlpbt($hlp);
-		$ret.=aj($cb.'|'.$a.',modif|id='.$id.',rid='.$rid.'|'.$cls,langp('save'),'btsav');}
+		$sav=aj($cb.'|'.$a.',modif|id='.$id.',rid='.$rid.'|'.$cls,langp('save'),'btsav').br();}
 	if($own){
 		$ret.=aj($cb.'edit|'.$a.',del|id='.$id.',rid='.$rid,langpi('delete'),'btdel');
 		if($db2)$ret.=aj($cb.'edit|'.$a.',collect|id='.$id.',db='.$db2,langpi('datas'),'btn');}
 	$ret.=href('/'.$a.'/'.$id,pic('url'),'btn');
-	if($own or $ok)$ret.=div($a::form($r),'',$cb.'edit');
+	if($own or $ok)$ret.=div($sav.$a::form($r),'',$cb.'edit');
 	else $ret.=self::call($p);//arrived here by krack
 	return $ret;}
 
 #collected datas
+static function delb($p){
+	if(auth(4))Sql::delete($p['db'],$p['id']);
+	return self::collect($p);}
+
 static function collect($p){
-	$ra=Sql::columns($p['db'],2); unset($ra['bid']); $ra=array_keys($ra); array_unshift($ra,'name');
-	$r=Sql::read_inner(implode(',',$ra),$p['db'],'login','uid','rr',['bid'=>$p['id']],0);
+	$ra=Sql::columns($p['db'],2);
+	unset($ra['bid']); $ra=array_keys($ra);
+	array_unshift($ra,'name'); array_unshift($ra,$p['db'].'.id');
+	$r=Sql::read_inner($ra,$p['db'],'login','uid','rr',['bid'=>$p['id']],0);
+	if(auth(6))foreach($r as $k=>$v)
+		$r[$k]['del']=aj(self::$cb.'edit|appx,delb|db='.$p['db'].',id='.$v['id'],pic('del'));
 	$r=array_merge([$ra],$r);
 	return Build::table($r,'',0,1);}
 
 #build
-static function build($p){$id=val($p,'id');
-	$a=self::$a; $db=self::$db;
-	$cols=implode(',',self::$cols);
-	//$cols=Sql::columns($db,2);
+static function build($p){
+	$id=val($p,'id'); $db=self::$db;
+	$cols=implode(',',self::$cols); //$cols=Sql::columns($db,2);
 	$r=Sql::read($cols,$db,'ra',$id);
-	//tlex will use Conn; this var is sent by tlex::reader
+	//tlex will use $conn; this var is sent by tlex::reader
 	if(isset($r['txt']) && self::$conn)
 		$r['txt']=Conn::load(['msg'=>$r['txt'],'app'=>'','mth'=>'','ptag'=>self::$conn]);
 	return $r;}

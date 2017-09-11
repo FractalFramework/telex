@@ -122,7 +122,7 @@ static function select($lang){
 static function com($p){$rb=array();
 	$lang=val($p,'lang');
 	$bt=self::select($lang).br();
-	$r=Sql::read('id,ref,txt',self::$db,'','where lang="'.$lang.'"');
+	$r=Sql::read('id,ref,txt',self::$db,'','where lang="'.$lang.'" order by ref');
 	$n=count($r);
 	$bt.=span($n.' '.langs('occurence',$n,1),'small');
 	if($r)foreach($r as $k=>$v){$v[2]=nl2br($v[2]);

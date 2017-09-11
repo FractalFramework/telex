@@ -24,7 +24,7 @@ static function equalize($p){
 	return self::com($p);}
 
 static function duplicates($p){
-	$r=Sql::select('select id,ref,count(*) from lang where lang="'.$p['lang'].'" group by ref having count(*)>1','');
+	$r=Sql::query('select id,ref,count(*) from lang where lang="'.$p['lang'].'" group by ref having count(*)>1','');
 	return Build::table($r);}
 
 //create new language

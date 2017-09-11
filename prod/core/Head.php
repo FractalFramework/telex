@@ -10,18 +10,18 @@ static function headerHtml(){
 static function meta($attr,$prop,$content=''){
 	return '<meta '.$attr.'="'.$prop.'"'.($content?' content="'.$content.'"':'').'>';}
 
-static function cssLink($u){
+static function csslink($u){
 	if(strrchr($u,'.')=='.css')
 		return '<link href="/'.ses('dev').$u.'" rel="stylesheet" type="text/css">';}
 
-static function jsLink($u){
+static function jslink($u){
 	if(substr($u,0,4)!='http')$root='/'.ses('dev'); else $root='';
 	return '<script src="'.$root.$u.'"></script>';}
 
-static function cssCode($code){
+static function csscode($code){
 	return '<style type="text/css">'.$code.'</style>';}
 
-static function jsCode($code){
+static function jscode($code){
 	return '<script type="text/javascript">'.$code.'</script>';}
 
 static function add($action,$r){
@@ -40,10 +40,10 @@ static function build(){$ret='';
 			if(is_array($v))$va=current($v);
 			switch(key($v)){
 				case('code'):$ret.=$va."\n"; break;
-				case('csslink'):$ret.=self::cssLink($va)."\n"; break;
-				case('jslink'):$ret.=self::jsLink($va)."\n"; break;
-				case('csscode'):$ret.=self::cssCode($va)."\n"; break;
-				case('jscode'):$ret.=self::jsCode($va)."\n"; break;
+				case('csslink'):$ret.=self::csslink($va)."\n"; break;
+				case('jslink'):$ret.=self::jslink($va)."\n"; break;
+				case('csscode'):$ret.=self::csscode($va)."\n"; break;
+				case('jscode'):$ret.=self::jscode($va)."\n"; break;
 				case('rel'):$ret.='<link rel="'.$v['rel']['name'].'" href="'.$v['rel']['value'].'">'."\n"; break;
 				case('meta'):$ret.=self::meta($v['meta']['attr'],$v['meta']['prop'],$v['meta']['content'])."\n"; break;
 				case('tag'):$ret.=tag($v['tag'][0],$v['tag'][1],$v['tag'][2]); break;}}

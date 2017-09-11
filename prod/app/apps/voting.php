@@ -1,6 +1,6 @@
 <?php
 class voting{
-static $private='0';
+static $private='6';
 static $a='voting';
 static $db='voting';
 static $cb='vtn';
@@ -16,7 +16,7 @@ function __construct(){
 
 static function install($p=''){
 	appx::install(array_combine(self::$cols,self::$typs));
-	Sql::create(self::$db2,['bid'=>'int','uid'=>'int','postcode'=>'int','candidate'=>'var','score'=>'int'],1);}
+	Sql::create(self::$db2,['bid'=>'int','uid'=>'int','postcode'=>'int','desk'=>'var','candidate'=>'var','score'=>'int'],1);}
 
 static function admin($rid=''){
 	$p['rid']=$rid; $p['o']='1';
@@ -63,7 +63,7 @@ static function form2($p){
 		elseif($v=='var')$bt=input($k,$val,63,'','',255);
 		elseif($v=='text')$bt=textarea($k,$val,60,12,'');
 		elseif($v=='date')$bt=inp($k,$val?$val:date('Y-m-d',time()),8,'');
-		elseif($v=='int')$bt=inp($k,$val,8,'');
+		elseif($v=='int')$bt=inp($k,$val,8,'',1);
 		if($k!='bid' && $k!='uid')$label=label($k,lang($k),'');
 		$ret.=div(div($label,'row').div($bt,'cell'),'row');}
 	$bt=aj(self::$cb.'|'.self::$a.',save2|id='.$id.'|'.$cls,langp('save'),'btsav');
@@ -105,7 +105,7 @@ static function com($p){
 
 #interface
 static function content($p){
-	//self::install();
+	self::install();
 	return appx::content($p);}
 }
 ?>

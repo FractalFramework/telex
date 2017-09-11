@@ -265,8 +265,8 @@ if(!img){//closer
 	if(typeof imu!='undefined')while(imu.innerHTML==''){i++; imu=popu.children[i];}
 	imu.id='pgu'+nb; zindex('pgu'+nb);
 	clbubob={esc:'pgu'+nb,cl:'pop'+nb,bt:0};}
-if(img)addEvent(popu,'mousedown',function(){Close('popup')});
-poph(popu,1);//before ppos
+if(img)addEvent(popu,'mouseup',function(){Close('popup')});
+//poph(popu,1);//before ppos
 pp.style.left=0; pp.style.top=0;
 pp.style.right=0; pp.style.bottom.top=0;
 Timer('opac','pop'+nb,0,100,10);
@@ -277,7 +277,7 @@ function bpos(id,nb,mode){//bubble
 var bt=getbyid(id); var pos=getPositionRelative(bt);//btn of reference
 var bl=getbyid(nb); var pob=getPositionAbsolute(bl);//bubble
 var px=pos.x+pos.w+6; var py=pos.y-((pob.h-pos.h)/2);
-if(pob.h>300){var popu=getbyid('popu'); popu.style.maxHeight=300+'px'; py=pos.y;}
+if(pob.h>300){var popu=getbyid('popu'); py=pos.y;}// popu.style.maxHeight='300px';
 if(mode){px=pos.x; py=pos.y+bt.offsetHeight+6;}//as menu
 if(py<20)py=20;
 var sz=innersizes();
@@ -339,7 +339,6 @@ var pos=bpos(id,pid,mode);
 pp.style.left=pos.x; pp.style.top=pos.y;
 popu.id='popu'+id;}//after bpos
 
-
 function bubClose2(){bubBodyCloser(0);//
 var bub=document.getElementsByClassName('bub');
 for(var i=0;i<bub.length;i++)bubCloseOthers(bub[i]);}
@@ -377,7 +376,7 @@ var posbub=getPositionRelative(pp);
 var bub=getPositionRelative(popu); var sz=innersizes();
 if(mode=='1'){//vertical
 	var px=posRel.x; var py=posRel.y+posRel.h; var pz='';
-	if(posAbs.x+posbub.w>sz.w)px=px+posRel.w-posbub.w+10;//flip
+	if(posAbs.x+posbub.w>(sz.w/2))px=px+posRel.w-posbub.w+10;//flip
 	//if(px+posbub.w>sz.w){px=''; pz=-10;}
 }
 else{//horizontal, second iteration

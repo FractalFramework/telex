@@ -39,7 +39,7 @@ static function savemdfdr($p){
 	if($p['mdfdr'])
 	foreach($r as $k=>$v){$vb=str_replace($p['dir'],$p['mdfdr'],$v['dir']);
 		if($vb!=$v['dir'])
-			Sql::query('update desktop set dir="'.$vb.'" where id="'.$v['id'].'"');}
+			Sql::qr('update desktop set dir="'.$vb.'" where id="'.$v['id'].'"');}
 	return Desk::load('desktop','com',before($p['mdfdr'],'/'));}
 	
 static function modifdir($p){$sz=val($p,'sz',8);

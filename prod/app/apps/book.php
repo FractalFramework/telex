@@ -22,15 +22,15 @@ static function admin($rid=''){
 	return appx::admin($p);}
 
 static function injectJs(){
-	return '
-function format(p,o){document.execCommand(p,false,o?o:null);}';}
+	$d='function format(p,o){document.execCommand(p,false,o?o:null);}';
+	return ;}
 
 static function headers(){
 	//Head::add_prop('og:title',self::$title);
 	//Head::add_prop('og:description',self::$description);
 	//Head::add_prop('og:image',self::$image);
 	Head::add('csscode','
-	.book{padding:20%; font-family:Times New Roman,serif; text-align:justify; font-size:20px;}
+	.book{padding:60px; font-family:Times New Roman,serif; text-align:justify; font-size:20px;}
 	.bookcover{margin:20px text-align:center;}
 	.booknfo{padding:10px 0; text-align:center;}');
 	Head::add('jscode',self::injectJs());}

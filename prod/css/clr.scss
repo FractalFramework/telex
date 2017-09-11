@@ -1,0 +1,18 @@
+$design: #1da1f2;
+
+.active a:hover{color:$design;}
+a.btxt:hover{text-decoration:none; color:$design;}
+.article a.btxt{color:$design;}
+.article a.btxt:hover{text-decoration:underline; color:$design;}
+a.btlk{text-decoration:none; color:$design;}
+.abbt:hover{background-image:linear-gradient(#e5e5e5,#f4f4f4); color:$design;}
+.abbt:hover .pic{color:$design;}
+
+
+.publishbt,.refreshbt{display:none; height:36px; color:$design; background-color:#e1e8ed; text-align:center; font-size:14px; line-height:36px; margin:0; margin-bottom:10px;}
+.nbntf{background:$design; border-radius:2px; color:white; font-size:14px; margin:0 3px;}
+.app a:hover{background:#ffffff; color:$design;}
+
+
+a:hover .subscrxt{color:$design;}
+.subscrnb{font-size:18px; color:$design;}

@@ -1,6 +1,6 @@
 <?php
 class voting{
-static $private='0';
+static $private='6';
 static $a='voting';
 static $db='voting';
 static $cb='vtn';

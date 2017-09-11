@@ -2,11 +2,12 @@
 class profile{
 static $private='1';
 static $db='profile';
-static $default_clr='#f5f5f5';
+static $default_clr='#1da1f2';//e6ecf0
+static $roles=['human','group','industry','institution','collectivity','state','world'];
 
 //install
 static function install(){
-Sql::create(self::$db,array('puid'=>'int','pusr'=>'var','pname'=>'var','status'=>'var','clr'=>'var','avatar'=>'var','banner'=>'var','web'=>'var','gps'=>'var','location'=>'var','privacy'=>'int','oAuth'=>'var','ntf'=>'int'),1);}
+Sql::create(self::$db,array('puid'=>'int','pusr'=>'var','pname'=>'var','status'=>'var','clr'=>'var','avatar'=>'var','banner'=>'var','web'=>'var','gps'=>'var','location'=>'var','privacy'=>'int','oAuth'=>'var','ntf'=>'int','role'=>'int'),1);}
 
 static function injectJs(){return '';}
 static function headers(){}
@@ -38,7 +39,7 @@ static function banner($r,$big){
 	if(is_file($ban)){
 		$sty='background-color:#'.$clr.'; background-image:url(/'.$ban.'); background-size:cover; background-position:center center;';}
 	else $sty='background-image:linear-gradient(#97c2ff,#'.$clr.');';
-	if($big)$sty.=' height:320px;';
+	if($big)$sty.=' height:280px;';
 	$ret=div(val($r,'cntban'),'banner','',$sty);
 	if($r['banner'])return imgup($ban,$ret);
 	else return $ret;}
@@ -77,19 +78,30 @@ static function divim($f,$c,$clr){
 
 //status
 static function status_save($p){$id=val($p,'id');
-	$rk=['pname','status','clr','web','gps','location'];
+	$rk=['pname','status','web','gps','clr','role'];
 	ses('clr'.$p['usr'],$p['clr']);
-	foreach($rk as $v)if($val=val($p,$v))Sql::update(self::$db,$v,$val,$id);
+	$r=vals($p,$rk); Sql::updates(self::$db,$r,$id);
 	return self::standard($p);}
+
+//authorize levels//by
+static function roles($d){
+	$w='inner join login on '.self::$db.'.puid=login.id 
+	inner join tlex_ab on login.name=tlex_ab.usr 
+	where ab="'.ses('uid').'"';
+	//$r=Sql::read('puid,login.name,role',self::$db,'rr',$w); p($r);
+	if(auth(6))$n=7; else $n=4;
+	foreach(self::$roles as $k=>$v)if($k<$n)$r[]=$v;
+	return $r;}
 
 static function status_edit($p){
 	if($v='id')$ret=hidden($v,$p[$v]);
-	if($v='pname')$ret.=inp($v,$p[$v],30,lang('name',1)).br();
-	if($v='status')$ret.=tag('textarea',['id'=>$v,'style'=>'width:274px; height:94px;','placeholder'=>lang('presentation',1),'maxlength'=>255],$p[$v]).br();
-	if($v='web')$ret.=inp($v,$p[$v],30,lang('web',1)).br();
+	if($v='pname')$ret.=inp($v,$p[$v],'',lang('name',1)).br();
+	if($v='status')$ret.=tag('textarea',['id'=>$v,'placeholder'=>lang('presentation',1),'maxlength'=>255],$p[$v]).br();
+	if($v='role')$ret.=select($v,self::roles($v),$p[$v],2).br();
+	if($v='web')$ret.=input($v,$p[$v],'',lang('web',1)).br();
 	if($v='clr'){$clr=$p[$v]?$p[$v]:val($p,'clr'); $clrb=invert_color($clr,1);
-		$ret.=tag('input',['type'=>'text','id'=>$v,'value'=>$clr,'size'=>30,'style'=>'background:#'.$clr.'; color:#'.$clrb,'onkeyup'=>'affectclr(this)'],'',1).br();}
-	$ret.=aj('prfl|profile,status_save|usr='.$p['pusr'].'|id,pname,status,web,gps,clr',langp('save'),'btsav');
+		$ret.=tag('input',['type'=>'text','id'=>$v,'value'=>$clr,'size'=>30,'placeholder'=>lang('color',1),'style'=>'background:#'.$clr.'; color:#'.$clrb,'onkeyup'=>'affectclr(this)'],'',1).br();}
+	$ret.=aj('prfl|profile,status_save|usr='.$p['pusr'].'|id,pname,status,web,gps,clr,role',langp('save'),'btsav');
 	return $ret;}
 
 static function username($p){
@@ -101,6 +113,8 @@ static function username($p){
 
 static function status($r){
 	$ret=div(nl2br(val($r,'status')),'statusdiv');
+	$rol=val($r,'role',0); $rol=self::$roles[$rol];
+	$ret.=div(langp($rol),'statusdiv');
 	if($web=val($r,'web'))
 		$ret.=div(href(http($web),ico('link',12).$web,'grey',1),'statusdiv');
 	$ret.=div(self::gps($r),'statusdiv');
@@ -194,39 +208,39 @@ static function deleteaccount($p){$ret='';
 
 //edit
 static function edit($p){
-	$cols='id,puid,pusr,pname,status,clr,avatar,banner,web,gps,location,privacy,oAuth,ntf';
+	$cols='id,puid,pusr,pname,status,clr,avatar,banner,web,gps,location,privacy,oAuth,ntf,role';
 	$r=Sql::read($cols,self::$db,'ra','where puid='.ses('uid'),0);
 	$ret=tag('h2','',lang('status'));
-	$ret.=self::status_edit($r);
+	$ret.=div(self::status_edit($r),'board');
 	$ret.=tag('h2','',lang('banner'));
-	$ret.=self::banner_edit($r,val($p,'big'));
+	$ret.=div(self::banner_edit($r,val($p,'big')),'board');
 	$ret.=tag('h2','',lang('avatar'));
-	$ret.=self::avatar_edit($r,val($p,'big'));
+	$ret.=div(self::avatar_edit($r,val($p,'big')),'board');
 	$ret.=tag('h2','',lang('location'));
 	if($r['gps'])$del=aj('prfloc|profile,gpsav',pic('delete')); else $del='';
-	$ret.=div(self::gps($r).$del,'','prfloc');
+	$ret.=div(self::gps($r).$del,'board','prfloc');
 	$ret.=tag('h2','',lang('mail'));
-	$ret.=div(self::mail_edit($r),'','prml');
+	$ret.=div(self::mail_edit($r),'board','prml');
 	$ret.=tag('h2','',lang('notifications'));
-	$ret.=div(self::ntfbt($r),'','prnt');
+	$ret.=div(self::ntfbt($r),'board','prnt');
 	$ret.=tag('h2','',lang('privacy'));
-	$ret.=div(self::privbt($r),'','prvc');
+	$ret.=div(self::privbt($r),'board','prvc');
 	$ret.=tag('h2','','Api');
-	$ret.=self::oAuth($r);
+	$ret.=div(self::oAuth($r),'board');
 	$ret.=tag('h2','',lang('Twitter Api')).hlpbt('twitterApi');
-	$ret.=App::open('admin_twitter');
+	$ret.=div(App::open('admin_twitter'),'board');
 	$ret.=tag('h2','',lang('modif password'));
-	$ret.=div(self::modifpass($r),'','mdfp');
+	$ret.=div(self::modifpass($r),'board','mdfp');
 	$ret.=tag('h2','',lang('remove account'));
-	$ret.=self::deleteaccount($r);
-	return div($ret,'board');}
+	$ret.=div(self::deleteaccount($r),'board');
+	return div($ret,'','');}
 
 //build
 static function datas($usr){
-	$cols='puid,pusr,pname,status,clr,avatar,banner,web,gps,location,privacy,oAuth,ntf';
+	$cols='puid,pusr,pname,status,clr,avatar,banner,web,gps,location,privacy,oAuth,ntf,role';
 	$r=Sql::read($cols,self::$db,'ra','where pusr="'.$usr.'"');
 	if(!$r && $usr && $usr==ses('user'))$r=self::create($usr);
-	if(!$r)$r=['puid'=>'','pusr'=>$usr,'pname'=>$usr,'status'=>'','clr'=>self::$default_clr,'avatar'=>'','banner'=>'','web'=>'','gps'=>'','location'=>'','privacy'=>'','oAuth'=>'','ntf'=>''];
+	//if(!$r)$r=['puid'=>'','pusr'=>$usr,'pname'=>$usr,'status'=>'','clr'=>'','avatar'=>'','banner'=>'','web'=>'','gps'=>'','location'=>'','privacy'=>'','oAuth'=>'','ntf'=>'','role'=>''];
 	if(!$r['clr'])$r['clr']=sesif('clr'.$usr,self::$default_clr);//Clr::random()
 	else sez('clr'.$usr,$r['clr']);//clr
 	return $r;}
@@ -262,24 +276,24 @@ static function small($p){$usr=val($p,'usr');
 	return $ret;}
 
 static function standard($p){
-	$rp=self::build($p);
-	$usn=div($rp['username'].$rp['status']);
-	$prf=div($rp['banner'].$rp['avatar'].$rp['follow'].$usn);//,'','prfl'
-	return div($prf,'profile');}
+	$r=self::build($p);
+	$ret=div($r['username'].$r['status']);
+	$ret=div($r['banner'].$r['avatar'].$r['follow'].$ret);//,'','prfl'
+	return div($ret,'profile');}
 
 static function big($p){$usr=val($p,'usr');
-	$rp=self::build(['usr'=>$usr,'big'=>'1']);
-	if(ses('user')!=$usr)$subsc=div($rp['follow'],'right'); else $subsc='';
-	$ret[0]=$rp['banner'].div($subsc.$rp['subscribe'],'subscrban');
-	$ret[1]=$rp['avatar'].div($rp['username'].$rp['status'],'board','prfl');
+	$r=self::build(['usr'=>$usr,'big'=>'1']);
+	if(ses('user')!=$usr)$subsc=div($r['follow'],'right'); else $subsc='';
+	$ret[0]=$r['banner'].div($subsc.$r['subscribe'],'subscrban');
+	$ret[1]=$r['avatar'].div($r['username'].$r['status'],'board-sans','prfl');
 	return $ret;}
 
 //create	
 static function create($usr){$uid=ses('uid');
 	$id=Sql::read('id',self::$db,'v','where puid='.$uid);
 	if(!$id && $uid){
-		$clr=sesif('clr'.$usr,Clr::random());
-		$r=['puid'=>ses('uid'),'pusr'=>$usr,'pname'=>$usr,'status'=>'','clr'=>$clr,'avatar'=>'','banner'=>'','web'=>'','gps'=>'','location'=>'','privacy'=>0,'oAuth'=>keygen::build(),'ntf'=>0];
+		$kg=keygen::build(); $clr=sesif('clr'.$usr,self::$default_clr);//Clr::random()
+		$r=['puid'=>ses('uid'),'pusr'=>$usr,'pname'=>$usr,'status'=>'','clr'=>$clr,'avatar'=>'','banner'=>'','web'=>'','gps'=>'','location'=>'','privacy'=>0,'oAuth'=>$kg,'ntf'=>0,'role'=>0];
 		$r['id']=Sql::insert(self::$db,$r);
 		return $r;}}
 
@@ -300,7 +314,7 @@ static function name($uid,$o=''){
 
 //interface
 static function content($p){
-	self::install();
+	//self::install();
 	$usr=val($p,'user',ses('user')); $id=val($p,'id');
 	if(ses('uid'))self::create($usr);
 	$ret=self::standard(['id'=>$id,'usr'=>$usr]);
